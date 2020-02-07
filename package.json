@@ -1,0 +1,23 @@
+{
+  "name": "conversation-tests-with-webrtc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "nodemon": "^2.0.2",
+    "npm": "^6.13.7",
+    "socket.io": "^2.3.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.tubit.tu-berlin.de/pavanct/conversation-tests-with-webrtc.git"
+  },
+  "author": "Pavan Chitradurga Thammana\u001b[Dna",
+  "license": "ISC"
+}
