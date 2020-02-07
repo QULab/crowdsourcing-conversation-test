@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>WebRTC audio Call</title>
+    <link rel="stylesheet" href="css/main.css" />
+</head>
+
+<body>
+    <div id="container">
+        <h1>WebRTC Audio Call</h1>
+
+        <div id="select-room">
+            <label for="">Type room number. Maximum for 2 people</label>
+            <input id="room-number" type="text" />
+            <button id="go-room">Go</button>
+        </div>
+
+        <div id="audio">
+            <div id="consulting-room" style="display: none;">
+                <div class="label">Local Audio</div>
+                <audio id="local-audio" controls autoplay muted></audio>
+            </div>
+            <!-- <div>
+                <div class="label">Remote Audio</div>
+                <audio id="remote-audio" controls autoplay></audio>
+            </div> -->
+        </div>
+
+        <div id="buttons" style="display: none;">
+            <select id="codec">
+                <!-- Codec values are matched with how they appear in the SDP.
+                        For instance, opus matches opus/48000/2 in Chrome, and ISAC/16000
+                        matches 16K iSAC (but not 32K iSAC). -->
+                <option value="opus">Opus</option>
+                <option value="ISAC">iSAC 16K</option>
+                <option value="G722">G722</option>
+                <option value="PCMU">PCMU</option>
+            </select>
+            
+        </div>
+        <button id="hangupButton">Hang Up</button>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/icecandidates.js"></script>
+    <script src="js/client.js"></script>
+</body>
+
+</html>
