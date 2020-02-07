@@ -40,11 +40,34 @@
                 <option value="G722">G722</option>
                 <option value="PCMU">PCMU</option>
             </select>
-            
+
         </div>
         <button id="hangupButton">Hang Up</button>
+        <div id="statediv"></div></td>
+        <td><div id="div"></div><br><div id="statsdiv"></div></td>
+        </tr>
+        <table>
+            <tbody>
+                <tr class="firefox-not-allowed chrome-allowed">
+                    <td>latency</td>
+                    <td>
+                        <span id="audio-latency"></span><br>
+                    </td>
+                </tr>
+
+                <tr class="firefox-not-allowed chrome-allowed">
+                    <td>packetsLost</td>
+                    <td>
+                        <span id="audio-packetsLost"></span><br>
+                    </td>
+                </tr>
+            </tbody>
+
+        </table>
+
     </div>
     <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.webrtc-experiment.com/getStats.js"></script>
     <script src="js/icecandidates.js"></script>
     <script src="js/client.js"></script>
 </body>

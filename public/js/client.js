@@ -25,7 +25,6 @@ let streamConstraints = { audio: true };
 let isCaller;
 
 let socket = io();
-
 btnGoRoom.onclick = function () {
     if (inputRoomNumber.value === "") {
         alert("Please enter a room number");
@@ -44,7 +43,7 @@ socket.on("created", function (room) {
         streamConstraints,
         function (stream) {
             localStream = stream;
-            localAudio.srcObject = stream;
+            localAudio.srcObject = stream;        
             isCaller = true;
         },
         function (error) {
@@ -54,12 +53,15 @@ socket.on("created", function (room) {
 });
 
 socket.on("joined", function (room) {
+    rtcPeerConnection = new RTCPeerConnection(iceServers);
     navigator.getUserMedia(
         streamConstraints,
         function (stream) {
             localStream = stream;
             localAudio.srcObject = stream;
-
+            for (const track of localStream.getTracks()) {
+                rtcPeerConnection.addTrack(track, localStream);
+            }
             socket.emit("ready", roomNumber);
         },
         function (error) {
@@ -78,6 +80,7 @@ socket.on("ready", function () {
         for (const track of localStream.getTracks()) {
             rtcPeerConnection.addTrack(track, localStream);
         }
+        console.log("local audio", localStream);
 
         rtcPeerConnection.addStream(localStream);
 
@@ -115,6 +118,7 @@ socket.on("candidate", function (event) {
     });
 
     rtcPeerConnection.addIceCandidate(candidate);
+
 });
 
 function onAddStream(event) {
@@ -123,9 +127,54 @@ function onAddStream(event) {
     audioContainer.setAttribute("autoplay", true);
     console.log(event.stream);
     audioContainer.srcObject = event.stream;
+    //remoteAudio.srcObject = event.streams[0];
     remoteStream = event.stream;
 
     divConsultingRoom.appendChild(audioContainer);
+    var repeatInterval = 2000;
+    rtcPeerConnection.getStats().then(function(stats) {
+        // document.getElementById("audio-packetsLost").innerHTML =
+        //         stats.packetsLost;
+        console.log(stats);
+        var s = "";
+        stats.forEach(stat => {
+            if (stat.type == "outbound-rtp" && !stat.isRemote) {
+              s += "<h4>Sender side</h4>" + dumpStats(stat);
+              console.log("asdasdasdas",stat);
+            }
+          });
+      }, repeatInterval);
+    // getStats Code
+    var repeatInterval = 2000; // 2000 ms == 2 seconds
+    getStats(rtcPeerConnection, function (result) {
+        console.log(result.audio);
+        console.log(result.audio.packetsLost);
+        console.log(result.audio.latency);
+
+        // bandwidth download speed (bytes per second))
+        result.connectionType.remote.ipAddress
+        result.connectionType.remote.candidateType
+        result.connectionType.transport
+
+        result.bandwidth.speed // bandwidth download speed (bytes per second)
+        document.getElementById('audio-latency').innerHTML = result.audio.latency + 'ms';
+
+        document.getElementById('audio-packetsLost').innerHTML = result.audio.packetsLost;
+        // to access native "results" array
+        result.results.forEach(function (item) {
+            if (item.type === 'ssrc' && item.transportId === 'Channel-audio-1') {
+                var packetsLost = item.packetsLost;
+                var packetsSent = item.packetsSent;
+                var audioInputLevel = item.audioInputLevel;
+                var trackId = item.googTrackId; // media stream track id
+                var isAudio = item.mediaType === 'audio'; // audio or video
+                var isSending = item.id.indexOf('_send') !== -1; // sender or receiver
+
+                console.log('SendRecv type', item.id.split('_send').pop());
+                console.log('MediaStream track type', item.mediaType);
+            }
+        });
+    }, repeatInterval);
 }
 
 function onIceCandidate(event) {
@@ -185,4 +234,50 @@ function hangup() {
     remoteStream.getAudioTracks()[0].stop();
     hangupButton.disabled = true;
 }
+
+function dumpStats(o) {
+    var s = "";
+    if (o.mozAvSyncDelay !== undefined || o.mozJitterBufferDelay !== undefined) {
+      if (o.mozAvSyncDelay !== undefined) s += "A/V sync: " + o.mozAvSyncDelay + " ms";
+      if (o.mozJitterBufferDelay !== undefined) {
+        s += " Jitter buffer delay: " + o.mozJitterBufferDelay + " ms";
+      }
+      s += "<br>";
+    }
+    s += "Timestamp: "+ new Date(o.timestamp).toTimeString() +" Type: "+ o.type +"<br>";
+    if (o.ssrc !== undefined) s += "SSRC: " + o.ssrc + " ";
+    if (o.packetsReceived !== undefined) {
+      s += "Recvd: " + o.packetsReceived + " packets";
+      if (o.bytesReceived !== undefined) {
+        s += " ("+ (o.bytesReceived/1024000).toFixed(2) +" MB)";
+      }
+      if (o.packetsLost !== undefined) s += " Lost: "+ o.packetsLost;
+    } else if (o.packetsSent !== undefined) {
+      s += "Sent: " + o.packetsSent + " packets";
+      if (o.bytesSent !== undefined) s += " ("+ (o.bytesSent/1024000).toFixed(2) +" MB)";
+    } else {
+      s += "<br><br>";
+    }
+    s += "<br>";
+    if (o.bitrateMean !== undefined) {
+      s += " Avg. bitrate: "+ (o.bitrateMean/1000000).toFixed(2) +" Mbps";
+      if (o.bitrateStdDev !== undefined) {
+        s += " ("+ (o.bitrateStdDev/1000000).toFixed(2) +" StdDev)";
+      }
+      if (o.discardedPackets !== undefined) {
+        s += " Discarded packts: "+ o.discardedPackets;
+      }
+    }
+    s += "<br>";
+    if (o.framerateMean !== undefined) {
+      s += " Avg. framerate: "+ (o.framerateMean).toFixed(2) +" fps";
+      if (o.framerateStdDev !== undefined) {
+        s += " ("+ o.framerateStdDev.toFixed(2) +" StdDev)";
+      }
+    }
+    if (o.droppedFrames !== undefined) s += " Dropped frames: "+ o.droppedFrames;
+    if (o.jitter !== undefined) s += " Jitter: "+ o.jitter;
+    return s;
+  }
+
 
