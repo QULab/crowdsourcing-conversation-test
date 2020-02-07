@@ -23,6 +23,7 @@ let iceServers = iceServers1;
 
 let streamConstraints = { audio: true };
 let isCaller;
+let latencyArray = [];
 
 let socket = io();
 btnGoRoom.onclick = function () {
@@ -157,9 +158,16 @@ function onAddStream(event) {
         result.connectionType.transport
 
         result.bandwidth.speed // bandwidth download speed (bytes per second)
-        document.getElementById('audio-latency').innerHTML = result.audio.latency + 'ms';
+        document.getElementById('audio-latency').innerHTML = result.audio.latency + ' ms';
 
         document.getElementById('audio-packetsLost').innerHTML = result.audio.packetsLost;
+        
+        latencyArray.push(parseInt(result.audio.latency));
+        console.log(latencyArray);
+        let averageArray = arr => arr.reduce((prev, curr) => prev + curr) / arr.length;
+        let averageLatency = Math.round(averageArray(latencyArray) * 100 + Number.EPSILON) / 100;
+        console.log(averageLatency);
+        document.getElementById('audio-averageLatency').innerHTML = averageLatency + ' ms';
         // to access native "results" array
         result.results.forEach(function (item) {
             if (item.type === 'ssrc' && item.transportId === 'Channel-audio-1') {
