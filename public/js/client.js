@@ -26,6 +26,9 @@ let isCaller;
 let latencyArray = [];
 
 let socket = io();
+
+let isFirefox = false;
+
 btnGoRoom.onclick = function () {
     if (inputRoomNumber.value === "") {
         alert("Please enter a room number");
@@ -40,35 +43,45 @@ btnGoRoom.onclick = function () {
 };
 
 socket.on("created", function (room) {
-    navigator.getUserMedia(
-        streamConstraints,
-        function (stream) {
+    rtcPeerConnection = new RTCPeerConnection(iceServers);
+    if(navigator.userAgent.indexOf("Firefox") != -1){
+        document.getElementById('table-stats').style.display = 'none';
+    }
+    navigator.mediaDevices.getUserMedia(
+        streamConstraints).then(
+        (stream) =>  {
             localStream = stream;
-            localAudio.srcObject = stream;        
+            localAudio.srcObject = stream;
             isCaller = true;
-        },
-        function (error) {
-            console.log(`An error occured when accessing media devices`);
-        }
-    );
+            for (const track of localStream.getTracks()) {
+                rtcPeerConnection.addTrack(track, localStream);
+            }
+            socket.emit("ready", roomNumber);
+            console.log("room created, track added local");
+        }).catch((error) => { 
+            console.log(`An error occured when accessing media devices`, error);
+        });
 });
 
 socket.on("joined", function (room) {
     rtcPeerConnection = new RTCPeerConnection(iceServers);
-    navigator.getUserMedia(
-        streamConstraints,
-        function (stream) {
+    console.log("inside joined");
+    navigator.mediaDevices.getUserMedia(
+        streamConstraints).then(
+        (stream) =>  {
+            console.log("inside joined", stream);
+
             localStream = stream;
             localAudio.srcObject = stream;
             for (const track of localStream.getTracks()) {
                 rtcPeerConnection.addTrack(track, localStream);
             }
+            console.log("room joined, track added local");
             socket.emit("ready", roomNumber);
-        },
-        function (error) {
-            console.log(`An error occured when accessing media devices`);
-        }
-    );
+        }).catch((error) => { 
+            console.log(`An error occured when accessing media devices`, error);
+        });
+            //socket.emit("ready", roomNumber);
 });
 
 socket.on("ready", function () {
@@ -81,6 +94,7 @@ socket.on("ready", function () {
         for (const track of localStream.getTracks()) {
             rtcPeerConnection.addTrack(track, localStream);
         }
+        console.log("not screwd up yet");
         console.log("local audio", localStream);
 
         rtcPeerConnection.addStream(localStream);
@@ -133,18 +147,18 @@ function onAddStream(event) {
 
     divConsultingRoom.appendChild(audioContainer);
     var repeatInterval = 2000;
-    rtcPeerConnection.getStats().then(function(stats) {
+    rtcPeerConnection.getStats().then(function (stats) {
         // document.getElementById("audio-packetsLost").innerHTML =
         //         stats.packetsLost;
         console.log(stats);
         var s = "";
         stats.forEach(stat => {
             if (stat.type == "outbound-rtp" && !stat.isRemote) {
-              s += "<h4>Sender side</h4>" + dumpStats(stat);
-              console.log("asdasdasdas",stat);
+                s += "<h4>Sender side</h4>" + dumpStats(stat);
+                console.log("asdasdasdas", stat);
             }
-          });
-      }, repeatInterval);
+        });
+    }, repeatInterval);
     // getStats Code
     var repeatInterval = 2000; // 2000 ms == 2 seconds
     getStats(rtcPeerConnection, function (result) {
@@ -161,7 +175,7 @@ function onAddStream(event) {
         document.getElementById('audio-latency').innerHTML = result.audio.latency + ' ms';
 
         document.getElementById('audio-packetsLost').innerHTML = result.audio.packetsLost;
-        
+
         latencyArray.push(parseInt(result.audio.latency));
         console.log(latencyArray);
         let averageArray = arr => arr.reduce((prev, curr) => prev + curr) / arr.length;
@@ -246,46 +260,46 @@ function hangup() {
 function dumpStats(o) {
     var s = "";
     if (o.mozAvSyncDelay !== undefined || o.mozJitterBufferDelay !== undefined) {
-      if (o.mozAvSyncDelay !== undefined) s += "A/V sync: " + o.mozAvSyncDelay + " ms";
-      if (o.mozJitterBufferDelay !== undefined) {
-        s += " Jitter buffer delay: " + o.mozJitterBufferDelay + " ms";
-      }
-      s += "<br>";
+        if (o.mozAvSyncDelay !== undefined) s += "A/V sync: " + o.mozAvSyncDelay + " ms";
+        if (o.mozJitterBufferDelay !== undefined) {
+            s += " Jitter buffer delay: " + o.mozJitterBufferDelay + " ms";
+        }
+        s += "<br>";
     }
-    s += "Timestamp: "+ new Date(o.timestamp).toTimeString() +" Type: "+ o.type +"<br>";
+    s += "Timestamp: " + new Date(o.timestamp).toTimeString() + " Type: " + o.type + "<br>";
     if (o.ssrc !== undefined) s += "SSRC: " + o.ssrc + " ";
     if (o.packetsReceived !== undefined) {
-      s += "Recvd: " + o.packetsReceived + " packets";
-      if (o.bytesReceived !== undefined) {
-        s += " ("+ (o.bytesReceived/1024000).toFixed(2) +" MB)";
-      }
-      if (o.packetsLost !== undefined) s += " Lost: "+ o.packetsLost;
+        s += "Recvd: " + o.packetsReceived + " packets";
+        if (o.bytesReceived !== undefined) {
+            s += " (" + (o.bytesReceived / 1024000).toFixed(2) + " MB)";
+        }
+        if (o.packetsLost !== undefined) s += " Lost: " + o.packetsLost;
     } else if (o.packetsSent !== undefined) {
-      s += "Sent: " + o.packetsSent + " packets";
-      if (o.bytesSent !== undefined) s += " ("+ (o.bytesSent/1024000).toFixed(2) +" MB)";
+        s += "Sent: " + o.packetsSent + " packets";
+        if (o.bytesSent !== undefined) s += " (" + (o.bytesSent / 1024000).toFixed(2) + " MB)";
     } else {
-      s += "<br><br>";
+        s += "<br><br>";
     }
     s += "<br>";
     if (o.bitrateMean !== undefined) {
-      s += " Avg. bitrate: "+ (o.bitrateMean/1000000).toFixed(2) +" Mbps";
-      if (o.bitrateStdDev !== undefined) {
-        s += " ("+ (o.bitrateStdDev/1000000).toFixed(2) +" StdDev)";
-      }
-      if (o.discardedPackets !== undefined) {
-        s += " Discarded packts: "+ o.discardedPackets;
-      }
+        s += " Avg. bitrate: " + (o.bitrateMean / 1000000).toFixed(2) + " Mbps";
+        if (o.bitrateStdDev !== undefined) {
+            s += " (" + (o.bitrateStdDev / 1000000).toFixed(2) + " StdDev)";
+        }
+        if (o.discardedPackets !== undefined) {
+            s += " Discarded packts: " + o.discardedPackets;
+        }
     }
     s += "<br>";
     if (o.framerateMean !== undefined) {
-      s += " Avg. framerate: "+ (o.framerateMean).toFixed(2) +" fps";
-      if (o.framerateStdDev !== undefined) {
-        s += " ("+ o.framerateStdDev.toFixed(2) +" StdDev)";
-      }
+        s += " Avg. framerate: " + (o.framerateMean).toFixed(2) + " fps";
+        if (o.framerateStdDev !== undefined) {
+            s += " (" + o.framerateStdDev.toFixed(2) + " StdDev)";
+        }
     }
-    if (o.droppedFrames !== undefined) s += " Dropped frames: "+ o.droppedFrames;
-    if (o.jitter !== undefined) s += " Jitter: "+ o.jitter;
+    if (o.droppedFrames !== undefined) s += " Dropped frames: " + o.droppedFrames;
+    if (o.jitter !== undefined) s += " Jitter: " + o.jitter;
     return s;
-  }
+}
 
 
