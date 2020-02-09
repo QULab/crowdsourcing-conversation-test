@@ -17,7 +17,6 @@ hangupButton.onclick = hangup;
 let roomNumber;
 let localStream;
 let remoteStream;
-let rtcPeerConnection;
 
 let iceServers = iceServers1;
 
@@ -25,10 +24,20 @@ let streamConstraints = { audio: true };
 let isCaller;
 let latencyArray = [];
 
+let audioContainer;
 let socket = io();
 
 let isFirefox = false;
 
+let rtcPeerConnection = new RTCPeerConnection(iceServers);
+
+console.log("firefox", navigator.userAgent.includes("Firefox"));
+
+if(navigator.userAgent.includes("Firefox")){
+    isFirefox = true;
+}
+
+// Room code
 btnGoRoom.onclick = function () {
     if (inputRoomNumber.value === "") {
         alert("Please enter a room number");
@@ -42,9 +51,9 @@ btnGoRoom.onclick = function () {
     }
 };
 
+// on creating the room
 socket.on("created", function (room) {
-    rtcPeerConnection = new RTCPeerConnection(iceServers);
-    if(navigator.userAgent.indexOf("Firefox") != -1){
+    if(isFirefox){
         document.getElementById('table-stats').style.display = 'none';
     }
     navigator.mediaDevices.getUserMedia(
@@ -53,9 +62,10 @@ socket.on("created", function (room) {
             localStream = stream;
             localAudio.srcObject = stream;
             isCaller = true;
-            for (const track of localStream.getTracks()) {
-                rtcPeerConnection.addTrack(track, localStream);
-            }
+            // for (const track of localStream.getTracks()) {
+            //     console.log("inside local stream", track); 
+            //     rtcPeerConnection.addTrack(track, localStream);
+            // }
             socket.emit("ready", roomNumber);
             console.log("room created, track added local");
         }).catch((error) => { 
@@ -63,9 +73,10 @@ socket.on("created", function (room) {
         });
 });
 
+// when someone joins
 socket.on("joined", function (room) {
-    rtcPeerConnection = new RTCPeerConnection(iceServers);
-    console.log("inside joined");
+    //rtcPeerConnection = new RTCPeerConnection(iceServers);
+    console.log("someone joined");
     navigator.mediaDevices.getUserMedia(
         streamConstraints).then(
         (stream) =>  {
@@ -73,31 +84,31 @@ socket.on("joined", function (room) {
 
             localStream = stream;
             localAudio.srcObject = stream;
-            for (const track of localStream.getTracks()) {
-                rtcPeerConnection.addTrack(track, localStream);
-            }
+            // for (const track of localStream.getTracks()) {
+            //     rtcPeerConnection.addTrack(track, localStream);
+            // }
             console.log("room joined, track added local");
             socket.emit("ready", roomNumber);
         }).catch((error) => { 
             console.log(`An error occured when accessing media devices`, error);
         });
-            //socket.emit("ready", roomNumber);
+           // socket.emit("ready", roomNumber);
 });
 
+// on emit ready
 socket.on("ready", function () {
     if (isCaller) {
-        rtcPeerConnection = new RTCPeerConnection(iceServers);
+        //rtcPeerConnection = new RTCPeerConnection(iceServers);
 
         rtcPeerConnection.onicecandidate = onIceCandidate;
-        rtcPeerConnection.onaddstream = onAddStream;
+        rtcPeerConnection.ontrack = onAddStream;
 
-        for (const track of localStream.getTracks()) {
-            rtcPeerConnection.addTrack(track, localStream);
-        }
         console.log("not screwd up yet");
         console.log("local audio", localStream);
 
-        rtcPeerConnection.addStream(localStream);
+        for (const track of localStream.getTracks()) {
+          rtcPeerConnection.addTrack(track, localStream);
+      }
 
         rtcPeerConnection.createOffer(setLocalOffer, function (e) {
             console.log(e);
@@ -105,14 +116,17 @@ socket.on("ready", function () {
     }
 });
 
+// on offer 
 socket.on("offer", function (event) {
     if (!isCaller) {
-        rtcPeerConnection = new RTCPeerConnection(iceServers);
+        //rtcPeerConnection = new RTCPeerConnection(iceServers);
 
         rtcPeerConnection.onicecandidate = onIceCandidate;
-        rtcPeerConnection.onaddstream = onAddStream;
+        rtcPeerConnection.ontrack = onAddStream;
 
-        rtcPeerConnection.addStream(localStream);
+        for (const track of localStream.getTracks()) {
+          rtcPeerConnection.addTrack(track, localStream);
+      }
 
         rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(event));
 
@@ -122,10 +136,12 @@ socket.on("offer", function (event) {
     }
 });
 
+// socket on answering the offer
 socket.on("answer", function (event) {
     rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(event));
 });
 
+// socket on ICE candidate
 socket.on("candidate", function (event) {
     var candidate = new RTCIceCandidate({
         sdpMLineIndex: event.label,
@@ -136,16 +152,22 @@ socket.on("candidate", function (event) {
 
 });
 
+// TODO subistitute event stream with web audio
+
+// on adding the stream
 function onAddStream(event) {
-    var audioContainer = document.createElement("audio");
+    audioContainer = document.createElement("audio");
     audioContainer.setAttribute("width", "max-content");
     audioContainer.setAttribute("autoplay", true);
-    console.log(event.stream);
-    audioContainer.srcObject = event.stream;
+    console.log(event.streams);
+    // Assign the event stream to the remote audio
+    audioContainer.srcObject = event.streams[0];
     //remoteAudio.srcObject = event.streams[0];
-    remoteStream = event.stream;
+    //remoteStream = event.stream;
 
     divConsultingRoom.appendChild(audioContainer);
+    if(!isFirefox){
+        // Todo get all stats
     var repeatInterval = 2000;
     rtcPeerConnection.getStats().then(function (stats) {
         // document.getElementById("audio-packetsLost").innerHTML =
@@ -159,6 +181,9 @@ function onAddStream(event) {
             }
         });
     }, repeatInterval);
+    }
+    
+
     // getStats Code
     var repeatInterval = 2000; // 2000 ms == 2 seconds
     getStats(rtcPeerConnection, function (result) {
@@ -253,7 +278,7 @@ socket.on("full", function (message) {
 function hangup() {
     console.log('Ending call');
     localStream.getAudioTracks()[0].stop();
-    remoteStream.getAudioTracks()[0].stop();
+    audioContainer.getAudioTracks()[0].stop();
     hangupButton.disabled = true;
 }
 
