@@ -1,7 +1,7 @@
 'use strict';
 
 const localAudio = document.querySelector('audio#local-audio');
-const remoteAudio = document.querySelector('audio#remote-audio');
+//const remoteAudio = document.querySelector('audio#remote-audio');
 const callButton = document.querySelector('button#callButton');
 const hangupButton = document.querySelector('button#hangupButton');
 const codecSelector = document.querySelector('select#codec');
@@ -27,14 +27,18 @@ let latencyArray = [];
 let audioContainer;
 let socket = io();
 
-let isFirefox = false;
+let recorder1;
+let recorder2;
+let recordedChunks = [];
+
+let isFirefox1 = false;
 
 let rtcPeerConnection = new RTCPeerConnection(iceServers);
 
 console.log("firefox", navigator.userAgent.includes("Firefox"));
 
-if(navigator.userAgent.includes("Firefox")){
-    isFirefox = true;
+if (navigator.userAgent.includes("Firefox")) {
+    isFirefox1 = true;
 }
 
 // Room code
@@ -53,24 +57,24 @@ btnGoRoom.onclick = function () {
 
 // on creating the room
 socket.on("created", function (room) {
-    if(isFirefox){
+    if (isFirefox1) {
         document.getElementById('table-stats').style.display = 'none';
     }
     navigator.mediaDevices.getUserMedia(
         streamConstraints).then(
-        (stream) =>  {
-            localStream = stream;
-            localAudio.srcObject = stream;
-            isCaller = true;
-            // for (const track of localStream.getTracks()) {
-            //     console.log("inside local stream", track); 
-            //     rtcPeerConnection.addTrack(track, localStream);
-            // }
-            socket.emit("ready", roomNumber);
-            console.log("room created, track added local");
-        }).catch((error) => { 
-            console.log(`An error occured when accessing media devices`, error);
-        });
+            (stream) => {
+                localStream = stream;
+                localAudio.srcObject = stream;
+                isCaller = true;
+                // for (const track of localStream.getTracks()) {
+                //     console.log("inside local stream", track); 
+                //     rtcPeerConnection.addTrack(track, localStream);
+                // }
+                socket.emit("ready", roomNumber);
+                console.log("room created, track added local");
+            }).catch((error) => {
+                console.log(`An error occured when accessing media devices`, error);
+            });
 });
 
 // when someone joins
@@ -79,20 +83,20 @@ socket.on("joined", function (room) {
     console.log("someone joined");
     navigator.mediaDevices.getUserMedia(
         streamConstraints).then(
-        (stream) =>  {
-            console.log("inside joined", stream);
+            (stream) => {
+                console.log("inside joined", stream);
 
-            localStream = stream;
-            localAudio.srcObject = stream;
-            // for (const track of localStream.getTracks()) {
-            //     rtcPeerConnection.addTrack(track, localStream);
-            // }
-            console.log("room joined, track added local");
-            socket.emit("ready", roomNumber);
-        }).catch((error) => { 
-            console.log(`An error occured when accessing media devices`, error);
-        });
-           // socket.emit("ready", roomNumber);
+                localStream = stream;
+                localAudio.srcObject = stream;
+                // for (const track of localStream.getTracks()) {
+                //     rtcPeerConnection.addTrack(track, localStream);
+                // }
+                console.log("room joined, track added local");
+                socket.emit("ready", roomNumber);
+            }).catch((error) => {
+                console.log(`An error occured when accessing media devices`, error);
+            });
+    // socket.emit("ready", roomNumber);
 });
 
 // on emit ready
@@ -107,8 +111,8 @@ socket.on("ready", function () {
         console.log("local audio", localStream);
 
         for (const track of localStream.getTracks()) {
-          rtcPeerConnection.addTrack(track, localStream);
-      }
+            rtcPeerConnection.addTrack(track, localStream);
+        }
 
         rtcPeerConnection.createOffer(setLocalOffer, function (e) {
             console.log(e);
@@ -125,9 +129,14 @@ socket.on("offer", function (event) {
         rtcPeerConnection.ontrack = onAddStream;
 
         for (const track of localStream.getTracks()) {
-          rtcPeerConnection.addTrack(track, localStream);
-      }
+            rtcPeerConnection.addTrack(track, localStream);
+        }
 
+
+        // recorder1 = new RecordRTC(localStream, {
+        //     type: 'audio',
+        // });
+        // recorder1.startRecording();
         rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(event));
 
         rtcPeerConnection.createAnswer(setLocalAnswer, function (e) {
@@ -166,23 +175,27 @@ function onAddStream(event) {
     //remoteStream = event.stream;
 
     divConsultingRoom.appendChild(audioContainer);
-    if(!isFirefox){
+    console.log(audioContainer);
+    recording(localStream);
+    console.log("local stream", localStream);
+
+
+    if (!isFirefox1) {
         // Todo get all stats
-    var repeatInterval = 2000;
-    rtcPeerConnection.getStats().then(function (stats) {
-        // document.getElementById("audio-packetsLost").innerHTML =
-        //         stats.packetsLost;
-        console.log(stats);
-        var s = "";
-        stats.forEach(stat => {
-            if (stat.type == "outbound-rtp" && !stat.isRemote) {
-                s += "<h4>Sender side</h4>" + dumpStats(stat);
-                console.log("asdasdasdas", stat);
-            }
-        });
-    }, repeatInterval);
+        var repeatInterval = 2000;
+        rtcPeerConnection.getStats().then(function (stats) {
+            // document.getElementById("audio-packetsLost").innerHTML =
+            //         stats.packetsLost;
+            console.log(stats);
+            var s = "";
+            stats.forEach(stat => {
+                if (stat.type == "outbound-rtp" && !stat.isRemote) {
+                    s += "<h4>Sender side</h4>" + dumpStats(stat);
+                    console.log("asdasdasdas", stat);
+                }
+            });
+        }, repeatInterval);
     }
-    
 
     // getStats Code
     var repeatInterval = 2000; // 2000 ms == 2 seconds
@@ -277,9 +290,53 @@ socket.on("full", function (message) {
 
 function hangup() {
     console.log('Ending call');
+    // recorder1.stopRecording();
+    // let blob = recorder1.getBlob();
+    // let file = new File([blob], "record1", {
+    //     type: 'audio/webm'
+    // });
+    // invokeSaveAsDialog(file);
+
+    recorder1.stop();
+    download();
+    console.log(recorder1.state);
+    console.log("recorder stopped");
+
     localStream.getAudioTracks()[0].stop();
-    audioContainer.getAudioTracks()[0].stop();
+    audioContainer.pause();
     hangupButton.disabled = true;
+}
+
+function recording(stream) {
+    recorder1 = new MediaRecorder(stream);
+    recorder1.start();
+    console.log(recorder1.state);
+    console.log("recorder started");
+
+    recorder1.ondataavailable = function (e) {
+        if(e.data.size > 0){
+        recordedChunks.push(e.data);
+        console.log("chunks recorded",recordedChunks);
+        }else{
+            console.log("no data available");
+        }
+    }
+}
+
+function download() {
+    console.log("inside download recordedChunks", recordedChunks);
+    var blob = new Blob(recordedChunks, {
+      type: "audio/webm"
+    });
+    console.log("blob", blob);
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    document.body.appendChild(a);
+    a.style = "display: none";
+    a.href = url;
+    a.download = "test.wav";
+    a.click();
+    window.URL.revokeObjectURL(url);
 }
 
 function dumpStats(o) {

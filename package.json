@@ -8,6 +8,7 @@
     "getstats": "^1.2.0",
     "nodemon": "^2.0.2",
     "npm": "^6.13.7",
+    "recordrtc": "^5.5.8",
     "socket.io": "^2.3.0"
   },
   "devDependencies": {},
