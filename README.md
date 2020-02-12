@@ -6,7 +6,7 @@ Make sure you have [Node.js](http://nodejs.org/) installed.
 
 ```sh
 git clone https://gitlab.tubit.tu-berlin.de/pavanct/conversation-tests-with-webrtc.git # or clone your own fork
-cd master-thesis-conversation-tests-with-webrtc
+cd conversation-tests-with-webrtc
 npm install
 npm start
 ```
@@ -19,7 +19,7 @@ Make sure you have [Docker](https://docs.docker.com/install/) installed and have
 
 ```sh
 git clone https://gitlab.tubit.tu-berlin.de/pavanct/conversation-tests-with-webrtc.git # or clone your own fork
-cd master-thesis-conversation-tests-with-webrtc
-docker build . t "webrtc-conversation-tests"
-docker run -d -p 3000:3000 webrtc-conversation-tests
+cd conversation-tests-with-webrtc
+docker build . t "conversation-tests-with-webrtc"
+docker run -d -p 3000:3000 conversation-tests-with-webrtc
 ```
