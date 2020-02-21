@@ -1,5 +1,3 @@
-'use strict';
-
 const localAudio = document.querySelector('audio#local-audio');
 //const remoteAudio = document.querySelector('audio#remote-audio');
 const callButton = document.querySelector('button#callButton');
@@ -34,6 +32,7 @@ let recordedChunks = [];
 let isFirefox1 = false;
 
 let rtcPeerConnection = new RTCPeerConnection(iceServers);
+var context = new AudioContext();
 
 console.log("firefox", navigator.userAgent.includes("Firefox"));
 
@@ -77,28 +76,55 @@ socket.on("created", function (room) {
             });
 });
 
-// when someone joins
+// when someone joins -- remote stream
 socket.on("joined", function (room) {
     //rtcPeerConnection = new RTCPeerConnection(iceServers);
-    console.log("someone joined");
-    navigator.mediaDevices.getUserMedia(
-        streamConstraints).then(
-            (stream) => {
-                console.log("inside joined", stream);
+    console.log("someone joined", roomNumber);
+    if (roomNumber == 2) {
+        console.log("roomnumber 2", roomNumber);
+        navigator.mediaDevices.getUserMedia(streamConstraints).then((stream) => {
+            console.log("gotaudio stream", stream);
+            var microphone = context.createMediaStreamSource(stream);
+            var backgroundMusic = context.createMediaElementSource(document.getElementById("back"));
+            var analyser = context.createAnalyser();
+            var mixedOutput = context.createMediaStreamDestination();
+            microphone.connect(mixedOutput);
+            backgroundMusic.connect(mixedOutput);
+            // requestAnimationFrame(drawAnimation);
+            console.log("mixedouput", mixedOutput);
+            localStream = stream;
+            localAudio.srcObject = stream;
+            // rtcPeerConnection.addStream(mixedOutput.stream);
+            for (const track of mixedOutput.stream.getTracks()) {
+                rtcPeerConnection.addTrack(track, mixedOutput.stream);
+            }
 
-                localStream = stream;
-                localAudio.srcObject = stream;
-                // for (const track of localStream.getTracks()) {
-                //     rtcPeerConnection.addTrack(track, localStream);
-                // }
-                console.log("room joined, track added local");
-                socket.emit("ready", roomNumber);
-            }).catch((error) => {
-                console.log(`An error occured when accessing media devices`, error);
-            });
-    // socket.emit("ready", roomNumber);
+            microphone.disconnect(mixedOutput);
+            const msgStream = document.getElementById("back");
+           // console.log();
+            const msgSource = context.createMediaStreamSource(msgStream);
+            microphone.connect(mixedOutput);
+            console.log("room joined, track added local", roomNumber);
+            socket.emit("ready", roomNumber);
+        });
+    } else {
+        navigator.mediaDevices.getUserMedia(
+            streamConstraints).then(
+                (stream) => {
+                    console.log("inside joined", stream);
+
+                    localStream = stream;
+                    localAudio.srcObject = stream;
+                    // for (const track of localStream.getTracks()) {
+                    //     rtcPeerConnection.addTrack(track, localStream);
+                    // }
+                    console.log("room joined, track added local");
+                    socket.emit("ready", roomNumber);
+                }).catch((error) => {
+                    console.log(`An error occured when accessing media devices`, error);
+                });
+    } // socket.emit("ready", roomNumber);
 });
-
 // on emit ready
 socket.on("ready", function () {
     if (isCaller) {
@@ -180,22 +206,22 @@ function onAddStream(event) {
     console.log("local stream", localStream);
 
 
-    if (!isFirefox1) {
-        // Todo get all stats
-        var repeatInterval = 2000;
-        rtcPeerConnection.getStats().then(function (stats) {
-            // document.getElementById("audio-packetsLost").innerHTML =
-            //         stats.packetsLost;
-            console.log(stats);
-            var s = "";
-            stats.forEach(stat => {
-                if (stat.type == "outbound-rtp" && !stat.isRemote) {
-                    s += "<h4>Sender side</h4>" + dumpStats(stat);
-                    console.log("asdasdasdas", stat);
-                }
-            });
-        }, repeatInterval);
-    }
+    // if (!isFirefox1) {
+    //     // Todo get all stats
+    //     var repeatInterval = 2000;
+    //     rtcPeerConnection.getStats().then(function (stats) {
+    //         // document.getElementById("audio-packetsLost").innerHTML =
+    //         //         stats.packetsLost;
+    //         console.log(stats);
+    //         var s = "";
+    //         stats.forEach(stat => {
+    //             if (stat.type == "outbound-rtp" && !stat.isRemote) {
+    //                 s += "<h4>Sender side</h4>" + dumpStats(stat);
+    //                 console.log("asdasdasdas", stat);
+    //             }
+    //         });
+    //     }, repeatInterval);
+    // }
 
     // getStats Code
     var repeatInterval = 2000; // 2000 ms == 2 seconds
@@ -297,10 +323,10 @@ function hangup() {
     // });
     // invokeSaveAsDialog(file);
 
-    recorder1.stop();
-    download();
-    console.log(recorder1.state);
-    console.log("recorder stopped");
+    // recorder1.stop();
+    // download();
+    // console.log(recorder1.state);
+    // console.log("recorder stopped");
 
     localStream.getAudioTracks()[0].stop();
     audioContainer.pause();
@@ -314,10 +340,10 @@ function recording(stream) {
     console.log("recorder started");
 
     recorder1.ondataavailable = function (e) {
-        if(e.data.size > 0){
-        recordedChunks.push(e.data);
-        console.log("chunks recorded",recordedChunks);
-        }else{
+        if (e.data.size > 0) {
+            recordedChunks.push(e.data);
+            console.log("chunks recorded", recordedChunks);
+        } else {
             console.log("no data available");
         }
     }
@@ -326,7 +352,7 @@ function recording(stream) {
 function download() {
     console.log("inside download recordedChunks", recordedChunks);
     var blob = new Blob(recordedChunks, {
-      type: "audio/webm"
+        type: "audio/webm"
     });
     console.log("blob", blob);
     var url = URL.createObjectURL(blob);
@@ -337,51 +363,6 @@ function download() {
     a.download = "test.wav";
     a.click();
     window.URL.revokeObjectURL(url);
-}
-
-function dumpStats(o) {
-    var s = "";
-    if (o.mozAvSyncDelay !== undefined || o.mozJitterBufferDelay !== undefined) {
-        if (o.mozAvSyncDelay !== undefined) s += "A/V sync: " + o.mozAvSyncDelay + " ms";
-        if (o.mozJitterBufferDelay !== undefined) {
-            s += " Jitter buffer delay: " + o.mozJitterBufferDelay + " ms";
-        }
-        s += "<br>";
-    }
-    s += "Timestamp: " + new Date(o.timestamp).toTimeString() + " Type: " + o.type + "<br>";
-    if (o.ssrc !== undefined) s += "SSRC: " + o.ssrc + " ";
-    if (o.packetsReceived !== undefined) {
-        s += "Recvd: " + o.packetsReceived + " packets";
-        if (o.bytesReceived !== undefined) {
-            s += " (" + (o.bytesReceived / 1024000).toFixed(2) + " MB)";
-        }
-        if (o.packetsLost !== undefined) s += " Lost: " + o.packetsLost;
-    } else if (o.packetsSent !== undefined) {
-        s += "Sent: " + o.packetsSent + " packets";
-        if (o.bytesSent !== undefined) s += " (" + (o.bytesSent / 1024000).toFixed(2) + " MB)";
-    } else {
-        s += "<br><br>";
-    }
-    s += "<br>";
-    if (o.bitrateMean !== undefined) {
-        s += " Avg. bitrate: " + (o.bitrateMean / 1000000).toFixed(2) + " Mbps";
-        if (o.bitrateStdDev !== undefined) {
-            s += " (" + (o.bitrateStdDev / 1000000).toFixed(2) + " StdDev)";
-        }
-        if (o.discardedPackets !== undefined) {
-            s += " Discarded packts: " + o.discardedPackets;
-        }
-    }
-    s += "<br>";
-    if (o.framerateMean !== undefined) {
-        s += " Avg. framerate: " + (o.framerateMean).toFixed(2) + " fps";
-        if (o.framerateStdDev !== undefined) {
-            s += " (" + o.framerateStdDev.toFixed(2) + " StdDev)";
-        }
-    }
-    if (o.droppedFrames !== undefined) s += " Dropped frames: " + o.droppedFrames;
-    if (o.jitter !== undefined) s += " Jitter: " + o.jitter;
-    return s;
 }
 
 
