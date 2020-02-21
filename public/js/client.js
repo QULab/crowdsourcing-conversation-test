@@ -224,7 +224,7 @@ function onAddStream(event) {
     // }
 
     // getStats Code
-    var repeatInterval = 2000; // 2000 ms == 2 seconds
+/*     var repeatInterval = 2000; // 2000 ms == 2 seconds
     getStats(rtcPeerConnection, function (result) {
         console.log(result.audio);
         console.log(result.audio.packetsLost);
@@ -260,7 +260,22 @@ function onAddStream(event) {
                 console.log('MediaStream track type', item.mediaType);
             }
         });
-    }, repeatInterval);
+    }, repeatInterval); */
+
+    // getStats using webrtc peerConnection.getstats()
+
+    setInterval(() => {
+    event.getStats(null).then( showStats, err =>
+        console.log(err)
+     );
+    }, 10000)
+
+    function showStats(results){
+        results.forEach(element => {
+            console.log(element)
+        });
+    }
+
 }
 
 function onIceCandidate(event) {
@@ -330,6 +345,7 @@ function hangup() {
 
     localStream.getAudioTracks()[0].stop();
     audioContainer.pause();
+    rtcPeerConnection.close();
     hangupButton.disabled = true;
 }
 
