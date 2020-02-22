@@ -56,9 +56,7 @@ btnGoRoom.onclick = function () {
 
 // on creating the room
 socket.on("created", function (room) {
-    if (isFirefox1) {
-        document.getElementById('table-stats').style.display = 'none';
-    }
+    console.log("Local User");
     navigator.mediaDevices.getUserMedia(
         streamConstraints).then(
             (stream) => {
@@ -78,35 +76,26 @@ socket.on("created", function (room) {
 
 // when someone joins -- remote stream
 socket.on("joined", function (room) {
+    console.log("Remote User");
     //rtcPeerConnection = new RTCPeerConnection(iceServers);
-    console.log("someone joined", roomNumber);
     if (roomNumber == 2) {
         console.log("roomnumber 2", roomNumber);
-        navigator.mediaDevices.getUserMedia(streamConstraints).then((stream) => {
-            console.log("gotaudio stream", stream);
-            var microphone = context.createMediaStreamSource(stream);
-            var backgroundMusic = context.createMediaElementSource(document.getElementById("back"));
-            var analyser = context.createAnalyser();
-            var mixedOutput = context.createMediaStreamDestination();
-            microphone.connect(mixedOutput);
-            backgroundMusic.connect(mixedOutput);
-            // requestAnimationFrame(drawAnimation);
-            console.log("mixedouput", mixedOutput);
-            localStream = stream;
-            localAudio.srcObject = stream;
-            // rtcPeerConnection.addStream(mixedOutput.stream);
-            for (const track of mixedOutput.stream.getTracks()) {
-                rtcPeerConnection.addTrack(track, mixedOutput.stream);
-            }
+        navigator.mediaDevices.getUserMedia(streamConstraints).then(
+            (stream) => {
+                console.log("remote stream", stream);
+                console.log("switching stream to audio file");
+                // TODO switch stream from microphone to local file
+                localStream = stream;
+                localAudio.srcObject = stream;
 
-            microphone.disconnect(mixedOutput);
-            const msgStream = document.getElementById("back");
-           // console.log();
-            const msgSource = context.createMediaStreamSource(msgStream);
-            microphone.connect(mixedOutput);
-            console.log("room joined, track added local", roomNumber);
-            socket.emit("ready", roomNumber);
-        });
+                // for (const track of stream.getTracks()) {
+                //     rtcPeerConnection.addTrack(track, localStream);
+                // }
+                socket.emit("ready", roomNumber);
+            }
+        );
+        console.log("room joined, track added local", roomNumber);
+        
     } else {
         navigator.mediaDevices.getUserMedia(
             streamConstraints).then(
@@ -196,7 +185,12 @@ function onAddStream(event) {
     audioContainer.setAttribute("autoplay", true);
     console.log(event.streams);
     // Assign the event stream to the remote audio
-    audioContainer.srcObject = event.streams[0];
+    // audioContainer.srcObject = event.streams[0];
+    audiofile = new Audio("http://localhost:8080");
+    audiofile.play();
+    console.log("audio file", audiofile);
+    audioContainer.srcObject = audiofile.stream;
+    console.log(audiofile.stream);
     //remoteAudio.srcObject = event.streams[0];
     //remoteStream = event.stream;
 
@@ -224,55 +218,68 @@ function onAddStream(event) {
     // }
 
     // getStats Code
-/*     var repeatInterval = 2000; // 2000 ms == 2 seconds
-    getStats(rtcPeerConnection, function (result) {
-        console.log(result.audio);
-        console.log(result.audio.packetsLost);
-        console.log(result.audio.latency);
-
-        // bandwidth download speed (bytes per second))
-        result.connectionType.remote.ipAddress
-        result.connectionType.remote.candidateType
-        result.connectionType.transport
-
-        result.bandwidth.speed // bandwidth download speed (bytes per second)
-        document.getElementById('audio-latency').innerHTML = result.audio.latency + ' ms';
-
-        document.getElementById('audio-packetsLost').innerHTML = result.audio.packetsLost;
-
-        latencyArray.push(parseInt(result.audio.latency));
-        console.log(latencyArray);
-        let averageArray = arr => arr.reduce((prev, curr) => prev + curr) / arr.length;
-        let averageLatency = Math.round(averageArray(latencyArray) * 100 + Number.EPSILON) / 100;
-        console.log(averageLatency);
-        document.getElementById('audio-averageLatency').innerHTML = averageLatency + ' ms';
-        // to access native "results" array
-        result.results.forEach(function (item) {
-            if (item.type === 'ssrc' && item.transportId === 'Channel-audio-1') {
-                var packetsLost = item.packetsLost;
-                var packetsSent = item.packetsSent;
-                var audioInputLevel = item.audioInputLevel;
-                var trackId = item.googTrackId; // media stream track id
-                var isAudio = item.mediaType === 'audio'; // audio or video
-                var isSending = item.id.indexOf('_send') !== -1; // sender or receiver
-
-                console.log('SendRecv type', item.id.split('_send').pop());
-                console.log('MediaStream track type', item.mediaType);
-            }
-        });
-    }, repeatInterval); */
+    /*     var repeatInterval = 2000; // 2000 ms == 2 seconds
+        getStats(rtcPeerConnection, function (result) {
+            console.log(result.audio);
+            console.log(result.audio.packetsLost);
+            console.log(result.audio.latency);
+    
+            // bandwidth download speed (bytes per second))
+            result.connectionType.remote.ipAddress
+            result.connectionType.remote.candidateType
+            result.connectionType.transport
+    
+            result.bandwidth.speed // bandwidth download speed (bytes per second)
+            document.getElementById('audio-latency').innerHTML = result.audio.latency + ' ms';
+    
+            document.getElementById('audio-packetsLost').innerHTML = result.audio.packetsLost;
+    
+            latencyArray.push(parseInt(result.audio.latency));
+            console.log(latencyArray);
+            let averageArray = arr => arr.reduce((prev, curr) => prev + curr) / arr.length;
+            let averageLatency = Math.round(averageArray(latencyArray) * 100 + Number.EPSILON) / 100;
+            console.log(averageLatency);
+            document.getElementById('audio-averageLatency').innerHTML = averageLatency + ' ms';
+            // to access native "results" array
+            result.results.forEach(function (item) {
+                if (item.type === 'ssrc' && item.transportId === 'Channel-audio-1') {
+                    var packetsLost = item.packetsLost;
+                    var packetsSent = item.packetsSent;
+                    var audioInputLevel = item.audioInputLevel;
+                    var trackId = item.googTrackId; // media stream track id
+                    var isAudio = item.mediaType === 'audio'; // audio or video
+                    var isSending = item.id.indexOf('_send') !== -1; // sender or receiver
+    
+                    console.log('SendRecv type', item.id.split('_send').pop());
+                    console.log('MediaStream track type', item.mediaType);
+                }
+            });
+        }, repeatInterval); */
 
     // getStats using webrtc peerConnection.getstats()
-
+    let rttArr = [];
+    let resultArr = [];
     setInterval(() => {
-    event.getStats(null).then( showStats, err =>
-        console.log(err)
-     );
-    }, 10000)
+        rtcPeerConnection.getStats(null).then(showStats, err =>
+            console.log(err)
+        );
+    }, 100000)
 
-    function showStats(results){
+    function showStats(results) {
         results.forEach(element => {
-            console.log(element)
+            console.log(element);
+            resultArr.push(element);
+            console.log(resultArr);
+            if (element.type == 'remote-inbound-rtp') {
+                console.table(element);
+                rttArr.push(parseInt(element.roundTripTime));
+                document.getElementById('audio-latency').innerHTML = element.roundTripTime + ' ms';
+                document.getElementById('audio-packetsLost').innerHTML = element.packetsLost;
+                let averageArray = arr => arr.reduce((prev, curr) => prev + curr) / arr.length;
+                let averageLatency = Math.round(averageArray(rttArr) * 100 + Number.EPSILON) / 100;
+                console.log(averageLatency);
+                document.getElementById('audio-averageLatency').innerHTML = averageLatency + ' ms';
+            }
         });
     }
 

@@ -23,7 +23,7 @@
             <div id="consulting-room" style="display: none;">
                 <div class="label">Local Audio</div>
                 <audio id="local-audio" controls autoplay muted></audio>
-                <audio src="./assets/StarWars60.wav" id="back"></audio>
+                <audio id="switch-audio"></audio>
             </div>
             <!-- <div>
                 <div class="label">Remote Audio</div>
@@ -50,7 +50,7 @@
         <table id="table-stats">
             <tbody>
                 <tr>
-                    <td>Current latency: </td>
+                    <td>Round Trip Time: </td>
                     <td>
                         <span id="audio-latency"></span><br>
                     </td>
@@ -64,7 +64,7 @@
                 </tr>
 
                 <tr>
-                    <td>Average Latency: </td>
+                    <td>Average Round Trip Time: </td>
                     <td>
                         <span id="audio-averageLatency"></span><br>
                     </td>
