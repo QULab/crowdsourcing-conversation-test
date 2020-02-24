@@ -32,7 +32,6 @@ let recordedChunks = [];
 let isFirefox1 = false;
 
 let rtcPeerConnection = new RTCPeerConnection(iceServers);
-var context = new AudioContext();
 
 console.log("firefox", navigator.userAgent.includes("Firefox"));
 
@@ -78,6 +77,8 @@ socket.on("created", function (room) {
 socket.on("joined", function (room) {
     console.log("Remote User");
     //rtcPeerConnection = new RTCPeerConnection(iceServers);
+
+    // play from file if room number is 2
     if (roomNumber == 2) {
         console.log("roomnumber 2", roomNumber);
         navigator.mediaDevices.getUserMedia(streamConstraints).then(
@@ -87,7 +88,9 @@ socket.on("joined", function (room) {
                 // TODO switch stream from microphone to local file
                 localStream = stream;
                 localAudio.srcObject = stream;
-
+                setupLocalMediaStreamsFromFile('./assets/test_file.mp3');
+                // Handles remote MediaStream success by adding it as the remoteVideo src.
+    
                 // for (const track of stream.getTracks()) {
                 //     rtcPeerConnection.addTrack(track, localStream);
                 // }
@@ -180,24 +183,59 @@ socket.on("candidate", function (event) {
 
 // on adding the stream
 function onAddStream(event) {
-    audioContainer = document.createElement("audio");
-    audioContainer.setAttribute("width", "max-content");
-    audioContainer.setAttribute("autoplay", true);
     console.log(event.streams);
     // Assign the event stream to the remote audio
-    // audioContainer.srcObject = event.streams[0];
-    audiofile = new Audio("http://localhost:8080");
-    audiofile.play();
-    console.log("audio file", audiofile);
-    audioContainer.srcObject = audiofile.stream;
-    console.log(audiofile.stream);
-    //remoteAudio.srcObject = event.streams[0];
-    //remoteStream = event.stream;
 
-    divConsultingRoom.appendChild(audioContainer);
-    console.log(audioContainer);
-    recording(localStream);
-    console.log("local stream", localStream);
+    if(roomNumber == 2){
+            this.remoteStream = event.streams[0];
+    
+            let audioTracks = this.remoteStream.getAudioTracks();
+    
+            // Make sure we actually have audio tracks
+            if (audioTracks.length > 0) {
+                // The MediaStream node doesn't produce audio until an HTML audio element is attached to the stream
+                // Pause and remove the element after loading since we only need it to trigger the stream
+                // See https://stackoverflow.com/questions/24287054/chrome-wont-play-webaudio-getusermedia-via-webrtc-peer-js
+                // and https://bugs.chromium.org/p/chromium/issues/detail?id=121673#c121
+                let audioElem = new Audio();
+                audioElem.autoplay = true;
+                audioElem.controls = true;
+                audioElem.muted = true;
+                audioElem.srcObject = this.remoteStream;
+                audioElem.addEventListener('canplaythrough', () => {
+                    audioElem.pause();
+                    audioElem = null;
+                });
+    
+                // Gain node for this stream only
+                // Connected to gain node for all remote streams
+                this.gainNode = context.createGain();
+                this.gainNode.connect(incomingRemoteGainNode);
+    
+                this.audioNode = context.createMediaStreamSource(this.remoteStream);
+                this.audioNode.connect(this.gainNode);
+        
+                // AudioContext gets suspended if created before
+                // a user interaction https://goo.gl/7K7WLu
+                context.resume();
+            }
+    
+            console.log(`Received remote stream from`);
+        } else {
+            audioContainer = document.createElement("audio");
+            audioContainer.setAttribute("width", "max-content");
+            audioContainer.setAttribute("autoplay", true);
+            audioContainer.srcObject = event.streams[0];
+            //remoteAudio.srcObject = event.streams[0];
+            //remoteStream = event.stream;
+        
+            divConsultingRoom.appendChild(audioContainer);
+            console.log(audioContainer);
+            recording(localStream);
+            console.log("local stream", localStream);
+        }
+
+   
 
 
     // if (!isFirefox1) {
@@ -351,7 +389,7 @@ function hangup() {
     // console.log("recorder stopped");
 
     localStream.getAudioTracks()[0].stop();
-    audioContainer.pause();
+    audioContainer = null;
     rtcPeerConnection.close();
     hangupButton.disabled = true;
 }
