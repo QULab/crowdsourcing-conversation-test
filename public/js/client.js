@@ -14,6 +14,7 @@ hangupButton.onclick = hangup;
 
 let roomNumber;
 let localStream;
+let localStreamNode;
 let remoteStream;
 
 let iceServers = iceServers1;
@@ -32,6 +33,9 @@ let recordedChunks = [];
 let isFirefox1 = false;
 
 let rtcPeerConnection = new RTCPeerConnection(iceServers);
+
+let pc1 = new RTCPeerConnection(iceServers);
+let pc2 = new RTCPeerConnection(iceServers);
 
 console.log("firefox", navigator.userAgent.includes("Firefox"));
 
@@ -54,8 +58,9 @@ btnGoRoom.onclick = function () {
 };
 
 // on creating the room
+// call initiator
 socket.on("created", function (room) {
-    console.log("Local User");
+    console.log("Local User -- Caller");
     navigator.mediaDevices.getUserMedia(
         streamConstraints).then(
             (stream) => {
@@ -73,9 +78,11 @@ socket.on("created", function (room) {
             });
 });
 
-// when someone joins -- remote stream
+// when someone joins
+// remote stream
+// call reciever
 socket.on("joined", function (room) {
-    console.log("Remote User");
+    console.log("Remote User - Callee");
     //rtcPeerConnection = new RTCPeerConnection(iceServers);
 
     // play from file if room number is 2
@@ -83,14 +90,15 @@ socket.on("joined", function (room) {
         console.log("roomnumber 2", roomNumber);
         navigator.mediaDevices.getUserMedia(streamConstraints).then(
             (stream) => {
-                console.log("remote stream", stream);
+                console.log("stream inside socket joined", stream);
                 console.log("switching stream to audio file");
                 // TODO switch stream from microphone to local file
                 localStream = stream;
                 localAudio.srcObject = stream;
-                setupLocalMediaStreamsFromFile('./assets/test_file.mp3');
+                gotLocalMediaStream(localStream);
+                // setupLocalMediaStreamsFromFile('./assets/test_file.mp3');
                 // Handles remote MediaStream success by adding it as the remoteVideo src.
-    
+
                 // for (const track of stream.getTracks()) {
                 //     rtcPeerConnection.addTrack(track, localStream);
                 // }
@@ -98,7 +106,7 @@ socket.on("joined", function (room) {
             }
         );
         console.log("room joined, track added local", roomNumber);
-        
+
     } else {
         navigator.mediaDevices.getUserMedia(
             streamConstraints).then(
@@ -117,6 +125,8 @@ socket.on("joined", function (room) {
                 });
     } // socket.emit("ready", roomNumber);
 });
+
+// for caller
 // on emit ready
 socket.on("ready", function () {
     if (isCaller) {
@@ -125,8 +135,7 @@ socket.on("ready", function () {
         rtcPeerConnection.onicecandidate = onIceCandidate;
         rtcPeerConnection.ontrack = onAddStream;
 
-        console.log("not screwd up yet");
-        console.log("local audio", localStream);
+        console.log("local audio - local", localStream);
 
         for (const track of localStream.getTracks()) {
             rtcPeerConnection.addTrack(track, localStream);
@@ -138,13 +147,16 @@ socket.on("ready", function () {
     }
 });
 
+// for callee
 // on offer 
 socket.on("offer", function (event) {
     if (!isCaller) {
         //rtcPeerConnection = new RTCPeerConnection(iceServers);
 
         rtcPeerConnection.onicecandidate = onIceCandidate;
-        rtcPeerConnection.ontrack = onAddStream;
+        // rtcPeerConnection.ontrack = onAddStream;
+        rtcPeerConnection.ontrack = onOfferAddStream;
+        console.log("Callee stream", localStream);
 
         for (const track of localStream.getTracks()) {
             rtcPeerConnection.addTrack(track, localStream);
@@ -179,120 +191,61 @@ socket.on("candidate", function (event) {
 
 });
 
-// TODO subistitute event stream with web audio
+// TODO substitute event stream with web audio
 
 // on adding the stream
 function onAddStream(event) {
-    console.log(event.streams);
+    console.log("ondAddStream - remote stream", event.streams);
     // Assign the event stream to the remote audio
 
-    if(roomNumber == 2){
-            this.remoteStream = event.streams[0];
-    
-            let audioTracks = this.remoteStream.getAudioTracks();
-    
-            // Make sure we actually have audio tracks
-            if (audioTracks.length > 0) {
-                // The MediaStream node doesn't produce audio until an HTML audio element is attached to the stream
-                // Pause and remove the element after loading since we only need it to trigger the stream
-                // See https://stackoverflow.com/questions/24287054/chrome-wont-play-webaudio-getusermedia-via-webrtc-peer-js
-                // and https://bugs.chromium.org/p/chromium/issues/detail?id=121673#c121
-                let audioElem = new Audio();
-                audioElem.autoplay = true;
-                audioElem.controls = true;
-                audioElem.muted = true;
-                audioElem.srcObject = this.remoteStream;
-                audioElem.addEventListener('canplaythrough', () => {
-                    audioElem.pause();
-                    audioElem = null;
-                });
-    
-                // Gain node for this stream only
-                // Connected to gain node for all remote streams
-                this.gainNode = context.createGain();
-                this.gainNode.connect(incomingRemoteGainNode);
-    
-                this.audioNode = context.createMediaStreamSource(this.remoteStream);
-                this.audioNode.connect(this.gainNode);
-        
-                // AudioContext gets suspended if created before
-                // a user interaction https://goo.gl/7K7WLu
-                context.resume();
-            }
-    
-            console.log(`Received remote stream from`);
-        } else {
-            audioContainer = document.createElement("audio");
-            audioContainer.setAttribute("width", "max-content");
-            audioContainer.setAttribute("autoplay", true);
-            audioContainer.srcObject = event.streams[0];
-            //remoteAudio.srcObject = event.streams[0];
-            //remoteStream = event.stream;
-        
-            divConsultingRoom.appendChild(audioContainer);
-            console.log(audioContainer);
-            recording(localStream);
-            console.log("local stream", localStream);
+/*     if (roomNumber == 2) {
+
+        this.remoteStream = event.streams[0];
+
+        let audioTracks = this.remoteStream.getAudioTracks();
+
+        // Make sure we actually have audio tracks
+        if (audioTracks.length > 0) {
+            // The MediaStream node doesn't produce audio until an HTML audio element is attached to the stream
+            // Pause and remove the element after loading since we only need it to trigger the stream
+            // See https://stackoverflow.com/questions/24287054/chrome-wont-play-webaudio-getusermedia-via-webrtc-peer-js
+            // and https://bugs.chromium.org/p/chromium/issues/detail?id=121673#c121
+            let audioElem = new Audio();
+            audioElem.autoplay = true;
+            audioElem.controls = true;
+            audioElem.muted = true;
+            audioElem.srcObject = this.remoteStream;
+            audioElem.addEventListener('canplaythrough', () => {
+                audioElem.pause();
+                audioElem = null;
+            });
+
+            // Gain node for this stream only
+            // Connected to gain node for all remote streams
+            this.gainNode = context.createGain();
+            this.gainNode.connect(incomingRemoteGainNode);
+
+            this.audioNode = context.createMediaStreamSource(this.remoteStream);
+            this.audioNode.connect(this.gainNode);
+
+            // AudioContext gets suspended if created before
+            // a user interaction https://goo.gl/7K7WLu
+            context.resume();
         }
 
-   
+        // console.log(`Received remote stream from`);
+    } */ 
+        audioContainer = document.createElement("audio");
+        audioContainer.setAttribute("width", "max-content");
+        audioContainer.setAttribute("autoplay", true);
+        audioContainer.srcObject = event.streams[0];
+        //remoteAudio.srcObject = event.streams[0];
+        //remoteStream = event.stream;
 
-
-    // if (!isFirefox1) {
-    //     // Todo get all stats
-    //     var repeatInterval = 2000;
-    //     rtcPeerConnection.getStats().then(function (stats) {
-    //         // document.getElementById("audio-packetsLost").innerHTML =
-    //         //         stats.packetsLost;
-    //         console.log(stats);
-    //         var s = "";
-    //         stats.forEach(stat => {
-    //             if (stat.type == "outbound-rtp" && !stat.isRemote) {
-    //                 s += "<h4>Sender side</h4>" + dumpStats(stat);
-    //                 console.log("asdasdasdas", stat);
-    //             }
-    //         });
-    //     }, repeatInterval);
-    // }
-
-    // getStats Code
-    /*     var repeatInterval = 2000; // 2000 ms == 2 seconds
-        getStats(rtcPeerConnection, function (result) {
-            console.log(result.audio);
-            console.log(result.audio.packetsLost);
-            console.log(result.audio.latency);
-    
-            // bandwidth download speed (bytes per second))
-            result.connectionType.remote.ipAddress
-            result.connectionType.remote.candidateType
-            result.connectionType.transport
-    
-            result.bandwidth.speed // bandwidth download speed (bytes per second)
-            document.getElementById('audio-latency').innerHTML = result.audio.latency + ' ms';
-    
-            document.getElementById('audio-packetsLost').innerHTML = result.audio.packetsLost;
-    
-            latencyArray.push(parseInt(result.audio.latency));
-            console.log(latencyArray);
-            let averageArray = arr => arr.reduce((prev, curr) => prev + curr) / arr.length;
-            let averageLatency = Math.round(averageArray(latencyArray) * 100 + Number.EPSILON) / 100;
-            console.log(averageLatency);
-            document.getElementById('audio-averageLatency').innerHTML = averageLatency + ' ms';
-            // to access native "results" array
-            result.results.forEach(function (item) {
-                if (item.type === 'ssrc' && item.transportId === 'Channel-audio-1') {
-                    var packetsLost = item.packetsLost;
-                    var packetsSent = item.packetsSent;
-                    var audioInputLevel = item.audioInputLevel;
-                    var trackId = item.googTrackId; // media stream track id
-                    var isAudio = item.mediaType === 'audio'; // audio or video
-                    var isSending = item.id.indexOf('_send') !== -1; // sender or receiver
-    
-                    console.log('SendRecv type', item.id.split('_send').pop());
-                    console.log('MediaStream track type', item.mediaType);
-                }
-            });
-        }, repeatInterval); */
+        divConsultingRoom.appendChild(audioContainer);
+        console.log(audioContainer);
+        // recording(localStream);
+        console.log("local stream", localStream);
 
     // getStats using webrtc peerConnection.getstats()
     let rttArr = [];
@@ -301,27 +254,112 @@ function onAddStream(event) {
         rtcPeerConnection.getStats(null).then(showStats, err =>
             console.log(err)
         );
-    }, 100000)
+    }, 1000)
 
     function showStats(results) {
         results.forEach(element => {
-            console.log(element);
+            //console.log(element);
             resultArr.push(element);
-            console.log(resultArr);
+            //console.log(resultArr);
             if (element.type == 'remote-inbound-rtp') {
-                console.table(element);
+                //console.table(element);
                 rttArr.push(parseInt(element.roundTripTime));
                 document.getElementById('audio-latency').innerHTML = element.roundTripTime + ' ms';
                 document.getElementById('audio-packetsLost').innerHTML = element.packetsLost;
                 let averageArray = arr => arr.reduce((prev, curr) => prev + curr) / arr.length;
                 let averageLatency = Math.round(averageArray(rttArr) * 100 + Number.EPSILON) / 100;
-                console.log(averageLatency);
+                //console.log(averageLatency);
                 document.getElementById('audio-averageLatency').innerHTML = averageLatency + ' ms';
             }
         });
     }
 
 }
+
+// Socket on offer
+// For Callee
+function onOfferAddStream(event) {
+    console.log("onOfferAddStream - remote stream", event.streams);
+    // Assign the event stream to the remote audio
+    if (roomNumber == 2) {
+        
+        this.remoteStream = event.streams[0];
+
+        let audioTracks = this.remoteStream.getAudioTracks();
+
+        // Make sure we actually have audio tracks
+        if (audioTracks.length > 0) {
+
+            setupLocalMediaStreamsFromFile('./assets/test_file.mp3');
+            /* // The MediaStream node doesn't produce audio until an HTML audio element is attached to the stream
+            // Pause and remove the element after loading since we only need it to trigger the stream
+            let audioElem = new Audio();
+            audioElem.autoplay = true;
+            audioElem.controls = true;
+            audioElem.muted = true;
+            audioElem.srcObject = this.remoteStream;
+            audioElem.addEventListener('canplaythrough', () => {
+                audioElem.pause();
+                audioElem = null;
+            });
+
+            // Gain node for this stream only
+            // Connected to gain node for all remote streams
+            this.gainNode = context.createGain();
+            this.gainNode.connect(incomingRemoteGainNode);
+
+            this.audioNode = context.createMediaStreamSource(this.remoteStream);
+            this.audioNode.connect(this.gainNode);
+
+            // AudioContext gets suspended if created before
+            // a user interaction https://goo.gl/7K7WLu
+            context.resume(); */
+        }
+
+    } else {
+
+        audioContainer = document.createElement("audio");
+        audioContainer.setAttribute("width", "max-content");
+        audioContainer.setAttribute("autoplay", true);
+        audioContainer.srcObject = event.streams[0];
+        //remoteAudio.srcObject = event.streams[0];
+        //remoteStream = event.stream;
+
+        divConsultingRoom.appendChild(audioContainer);
+        console.log(audioContainer);
+        // recording(localStream);
+        console.log("callee stream", localStream);
+
+        // getStats using webrtc peerConnection.getstats()
+        let rttArr = [];
+        let resultArr = [];
+        setInterval(() => {
+            rtcPeerConnection.getStats(null).then(showStats, err =>
+                console.log(err)
+            );
+        }, 1000)
+
+        function showStats(results) {
+            results.forEach(element => {
+                //console.log(element);
+                resultArr.push(element);
+                //console.log(resultArr);
+                if (element.type == 'remote-inbound-rtp') {
+                    //console.table(element);
+                    rttArr.push(parseInt(element.roundTripTime));
+                    document.getElementById('audio-latency').innerHTML = element.roundTripTime + ' ms';
+                    document.getElementById('audio-packetsLost').innerHTML = element.packetsLost;
+                    let averageArray = arr => arr.reduce((prev, curr) => prev + curr) / arr.length;
+                    let averageLatency = Math.round(averageArray(rttArr) * 100 + Number.EPSILON) / 100;
+                    //console.log(averageLatency);
+                    document.getElementById('audio-averageLatency').innerHTML = averageLatency + ' ms';
+                }
+            });
+        }
+    }
+}
+
+
 
 function onIceCandidate(event) {
     if (event.candidate) {
@@ -424,6 +462,100 @@ function download() {
     a.download = "test.wav";
     a.click();
     window.URL.revokeObjectURL(url);
+}
+
+// Setup Web Audio components
+window.AudioContext = (window.AudioContext || window.webkitAudioContext);
+let context = new AudioContext();
+let incomingRemoteStreamNode;
+let outgoingRemoteStreamNode = context.createMediaStreamDestination();
+let incomingRemoteGainNode = context.createGain();
+let outgoingRemoteGainNode = context.createGain();
+
+incomingRemoteGainNode.connect(context.destination);
+outgoingRemoteGainNode.connect(outgoingRemoteStreamNode);
+
+async function setupLocalMediaStreamsFromFile(filepath) {
+    return new Promise(async (resolve, reject) => {
+        // AudioContext gets suspended if created before
+        // a user interaction https://goo.gl/7K7WLu
+        context.resume();
+
+        // Create media source
+        // This is attached to the HTML audio element and can be fed arbitrary buffers of audio
+        // TODO: Make sure we can support MIME other than audio/mpeg
+        let mediaSource = new MediaSource();
+        console.log('Created MediaSource.');
+        console.dir(mediaSource);
+
+        // Can't call addSourceBuffer until it's open
+        mediaSource.addEventListener('sourceopen', async () => {
+            console.log('MediaSource open.');
+
+            // Corner case for file:// protocol since fetch won't like it
+
+            let buffer = mediaSource.addSourceBuffer('audio/mpeg');
+
+            console.log('Fetching data...');
+            let data;
+            let resp = await fetch(filepath);
+            console.log("filepath", filepath);
+            data = await resp.arrayBuffer();
+            console.dir(data);
+            buffer.appendBuffer(data);
+            console.log('Data loaded.');
+
+        });
+
+        // We need a media stream for WebRTC 
+        // so run our MediaSource through a muted HTML audio element
+        // and grab its stream via captureStream()
+        audioContainer = document.createElement("audio");
+        audioContainer.setAttribute("width", "max-content");
+        audioContainer.setAttribute("autoplay", true);
+
+        let audiofile = new Audio();
+        audiofile.autoplay = true;
+        audiofile.muted = false;
+
+        // Only grab stream after it has loaded; won't have tracks if grabbed too early
+        audiofile.addEventListener('canplaythrough', () => {
+            try {
+                let localStream = audiofile.captureStream();
+                console.log("localStream inside cantplaythrough", localStream);
+                gotLocalMediaStream(localStream);
+            } catch (e) {
+                console.warn(`Failed to captureStream() on audio elem. Assuming unsupported. Switching to receiver only.`, e);
+            }
+            resolve();
+        });
+
+
+        audioContainer.appendChild(audiofile);
+
+        // srcObject doesn't work here ?
+        audiofile.src = URL.createObjectURL(mediaSource);
+        audiofile.load();
+        console.log("inside the setup func", audioContainer); 
+        console.log(audiofile);
+    });
+}
+
+function gotLocalMediaStream(mediaStream) {
+    // Disconnect our old one if we get a new one
+    // and a different audio source
+
+    console.log("localStreamNode",localStreamNode);
+
+    if (localStreamNode) {
+        localStreamNode.disconnect();
+    }
+    console.log("web audio",mediaStream);
+    
+    localStreamNode = context.createMediaStreamSource(mediaStream);
+    localStreamNode.connect(outgoingRemoteGainNode);
+
+    console.log('Connected localStreamNode.');
 }
 
 

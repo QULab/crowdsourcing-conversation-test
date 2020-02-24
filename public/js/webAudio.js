@@ -42,8 +42,8 @@ async function setupLocalMediaStreamsFromFile(filepath) {
 
         });
 
-        // We need a media stream for WebRTC, so run
-        // our MediaSource through a muted HTML audio element
+        // We need a media stream for WebRTC 
+        // so run our MediaSource through a muted HTML audio element
         // and grab its stream via captureStream()
         audioContainer = document.createElement("audio");
         audioContainer.setAttribute("width", "max-content");
@@ -51,12 +51,13 @@ async function setupLocalMediaStreamsFromFile(filepath) {
 
         let audiofile = new Audio();
         audiofile.autoplay = true;
-        audiofile.muted = false;
+        audiofile.muted = true;
 
         // Only grab stream after it has loaded; won't have tracks if grabbed too early
         audiofile.addEventListener('canplaythrough', () => {
             try {
                 let localStream = audiofile.captureStream();
+                console.log("localStream inside cantplaythrough", localStream);
                 gotLocalMediaStream(localStream);
             } catch (e) {
                 console.warn(`Failed to captureStream() on audio elem. Assuming unsupported. Switching to receiver only.`, e);
@@ -70,13 +71,17 @@ async function setupLocalMediaStreamsFromFile(filepath) {
         // srcObject doesn't work here ?
         audiofile.src = URL.createObjectURL(mediaSource);
         audiofile.load();
-        console.log("inside the setup func", audioContainer, audiofile, )
+        console.log("inside the setup func", audioContainer); 
+        console.log(audiofile);
     });
 }
 
 function gotLocalMediaStream(mediaStream) {
     // Disconnect our old one if we get a new one
     // and a different audio source
+
+    console.log("localStreamNode",localStreamNode);
+
     if (localStreamNode) {
         localStreamNode.disconnect();
     }
