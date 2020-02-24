@@ -8,6 +8,8 @@
     "getstats": "^1.2.0",
     "nodemon": "^2.0.2",
     "npm": "^6.13.7",
+    "puppeteer": "^2.1.1",
+    "recordrtc": "^5.5.8",
     "socket.io": "^2.3.0"
   },
   "devDependencies": {},
@@ -19,6 +21,6 @@
     "type": "git",
     "url": "https://gitlab.tubit.tu-berlin.de/pavanct/conversation-tests-with-webrtc.git"
   },
-  "author": "Pavan Chitradurga Thammana\u001b[Dna",
+  "author": "Pavan Chitradurga Thammana",
   "license": "ISC"
 }

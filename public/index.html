@@ -46,16 +46,16 @@
         <div id="statediv"></div></td>
         <td><div id="div"></div><br><div id="statsdiv"></div></td>
         </tr>
-        <table>
+        <table id="table-stats">
             <tbody>
-                <tr class="firefox-not-allowed chrome-allowed">
-                    <td>Current latency: </td>
+                <tr>
+                    <td>Round Trip Time: </td>
                     <td>
                         <span id="audio-latency"></span><br>
                     </td>
                 </tr>
 
-                <tr class="firefox-not-allowed chrome-allowed">
+                <tr>
                     <td>packetsLost: </td>
                     <td>
                         <span id="audio-packetsLost"></span><br>
@@ -63,7 +63,7 @@
                 </tr>
 
                 <tr>
-                    <td>Average Latency: </td>
+                    <td>Average Round Trip Time: </td>
                     <td>
                         <span id="audio-averageLatency"></span><br>
                     </td>
@@ -73,9 +73,12 @@
         </table>
 
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/7.3.0/adapter.js"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <script src="https://cdn.webrtc-experiment.com/getStats.js"></script>
+    <!-- <script src="https://cdn.webrtc-experiment.com/getStats.js"></script> -->
+    <!-- <script src="js/webAudio.js"></script> -->
     <script src="js/icecandidates.js"></script>
+    <!-- <script src="js/RecordRTC.js"></script> -->
     <script src="js/client.js"></script>
 </body>
 
