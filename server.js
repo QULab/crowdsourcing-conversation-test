@@ -33,7 +33,7 @@ io.on("connection", function(socket) {
     if (numClients === 0) {
       socket.join(room);
       socket.emit("created", room);
-
+      
       rooms.push(room);
     } else if (numClients === 1) {
       socket.join(room);
