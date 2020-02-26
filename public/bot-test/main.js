@@ -16,6 +16,13 @@ var context = new AudioContext();
 let outgoingRemoteStreamNode = context.createMediaStreamDestination();
 let outgoingRemoteGainNode = context.createGain();
 
+let buffer;
+let isFireFox1 = false;
+
+if (navigator.userAgent.includes("Firefox")) {
+  isFireFox1 = true;
+}
+
 const offerOptions = {
   offerToReceiveAudio: 1,
   offerToReceiveVideo: 0,
@@ -89,6 +96,7 @@ function hangup() {
   pc2.close();
   pc1 = null;
   pc2 = null;
+  audio2.src = null;
   hangupButton.disabled = true;
   callButton.disabled = false;
 }
@@ -98,7 +106,11 @@ function gotRemoteStream(e) {
     console.log("Remote stream", e.streams[0]);
     console.log("switch stream to web audio");
     let remoteStream;
+    if(!isFireFox1){
+      setupLocalMediaStreamsFromFile('./test.mp4');
+    }else{
     setupLocalMediaStreamsFromFile('./test_file.mp3');
+    }
     //audio2.srcObject = e.streams[0];
     console.log('Received remote stream');
   }
@@ -151,9 +163,12 @@ async function setupLocalMediaStreamsFromFile(filepath) {
             console.log('MediaSource open.');
 
             // Corner case for file:// protocol since fetch won't like it
-
-            let buffer = mediaSource.addSourceBuffer('audio/mpeg');
-
+            if(!isFireFox1){
+              buffer = mediaSource.addSourceBuffer('audio/mp4;codecs="opus"');
+            }
+            else{  
+              buffer = mediaSource.addSourceBuffer('audio/mpeg');
+            }  
             console.log('Fetching data...');
             let data;
             let resp = await fetch(filepath);
@@ -185,7 +200,7 @@ async function setupLocalMediaStreamsFromFile(filepath) {
 
         // srcObject doesn't work here ?
         audio2.src = URL.createObjectURL(mediaSource);
-        // audiofile.load();
+        audio2.load();
         // console.log("inside the setup func", audioContainer);
         // console.log(audiofile);
     });
