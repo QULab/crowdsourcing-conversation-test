@@ -17,6 +17,8 @@ const port = process.env.PORT || 3000;
 
 app.use(express.static(path.join(__dirname, "public")));
 
+app.use('/audio', express.static('public/bot-test'));
+
 let rooms = [];
 
 io.on("connection", function(socket) {

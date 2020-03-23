@@ -7,7 +7,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta id="theme-color" name="theme-color" content="#ffffff">
 
-    <title>Peer connection: audio bot only</title>
+    <title>WebRTC connection: audio bot only</title>
     <link rel="stylesheet" href="main.css"/>
 
 </head>
@@ -66,6 +66,31 @@
         <td>Tested in Chrome, Not tested in Opera, Firefox, Safari, Edge</td>
     </tr>
 </table> -->
+<table id="table-stats">
+    <tbody>
+        <tr>
+            <td>Round Trip Time: </td>
+            <td>
+                <span id="audio-latency"></span><br>
+            </td>
+        </tr>
+
+        <tr>
+            <td>packetsLost: </td>
+            <td>
+                <span id="audio-packetsLost"></span><br>
+            </td>
+        </tr>
+
+        <tr>
+            <td>Average Round Trip Time: </td>
+            <td>
+                <span id="audio-averageLatency"></span><br>
+            </td>
+        </tr>
+    </tbody>
+
+</table>
 <hr>
 <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
 <script src="main.js"></script>

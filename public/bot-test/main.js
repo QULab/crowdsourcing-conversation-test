@@ -12,6 +12,7 @@ let pc2;
 let localStream;
 
 let localStreamNode;
+const AudioContext = window.AudioContext || window.webkitAudioContext;
 var context = new AudioContext();
 let outgoingRemoteStreamNode = context.createMediaStreamDestination();
 let outgoingRemoteGainNode = context.createGain();
@@ -46,7 +47,7 @@ function gotStream(stream) {
 }
 
 function onCreateSessionDescriptionError(error) {
-  console.log(`Failed to create session description: ${error.toString()}`);
+  // console.log(`Failed to create session description: ${error.toString()}`);
 }
 
 function call() {
@@ -73,7 +74,7 @@ function call() {
 }
 
 function gotDescription1(desc) {
-  console.log(`Offer from pc1\n${desc.sdp}`);
+  // console.log(`Offer from pc1\n${desc.sdp}`);
   pc1.setLocalDescription(desc)
       .then(() => {
         pc2.setRemoteDescription(desc).then(() => {
@@ -83,7 +84,7 @@ function gotDescription1(desc) {
 }
 
 function gotDescription2(desc) {
-  console.log(`Answer from pc2\n${desc.sdp}`);
+  // console.log(`Answer from pc2\n${desc.sdp}`);
   pc2.setLocalDescription(desc).then(() => {
     pc1.setRemoteDescription(desc).then(() => {}, onSetSessionDescriptionError);
   }, onSetSessionDescriptionError);
@@ -106,13 +107,18 @@ function gotRemoteStream(e) {
     console.log("Remote stream", e.streams[0]);
     console.log("switch stream to web audio");
     let remoteStream;
-    if(!isFireFox1){
-      setupLocalMediaStreamsFromFile('./test.mp4');
+    if(isFireFox1){
+      setupLocalMediaStreamsFromFile('./test_file.mp3');
     }else{
     setupLocalMediaStreamsFromFile('./test_file.mp3');
     }
     //audio2.srcObject = e.streams[0];
     console.log('Received remote stream');
+    setInterval(() => {
+      pc2.getStats(null).then(showStats, err =>
+          console.log(err)
+      );
+  }, 1000)
   }
 }
 
@@ -130,19 +136,19 @@ function onIceCandidate(pc, event) {
           () => onAddIceCandidateSuccess(pc),
           err => onAddIceCandidateError(pc, err)
       );
-  console.log(`${getName(pc)} ICE candidate:\n${event.candidate ? event.candidate.candidate : '(null)'}`);
+  // console.log(`${getName(pc)} ICE candidate:\n${event.candidate ? event.candidate.candidate : '(null)'}`);
 }
 
 function onAddIceCandidateSuccess() {
-  console.log('AddIceCandidate success.');
+  // console.log('AddIceCandidate success.');
 }
 
 function onAddIceCandidateError(error) {
-  console.log(`Failed to add ICE Candidate: ${error.toString()}`);
+  // console.log(`Failed to add ICE Candidate: ${error.toString()}`);
 }
 
 function onSetSessionDescriptionError(error) {
-  console.log(`Failed to set session description: ${error.toString()}`);
+  // console.log(`Failed to set session description: ${error.toString()}`);
 }
 
 async function setupLocalMediaStreamsFromFile(filepath) {
@@ -157,14 +163,15 @@ async function setupLocalMediaStreamsFromFile(filepath) {
         let mediaSource = new MediaSource();
         console.log('Created MediaSource.');
         console.dir(mediaSource);
+        audio2.src = URL.createObjectURL(mediaSource);
 
         // Can't call addSourceBuffer until it's open
         mediaSource.addEventListener('sourceopen', async () => {
             console.log('MediaSource open.');
 
             // Corner case for file:// protocol since fetch won't like it
-            if(!isFireFox1){
-              buffer = mediaSource.addSourceBuffer('audio/mp4;codecs="opus"');
+            if(isFireFox1){
+              buffer = mediaSource.addSourceBuffer('audio/webm;codecs=opus');
             }
             else{  
               buffer = mediaSource.addSourceBuffer('audio/mpeg');
@@ -175,23 +182,32 @@ async function setupLocalMediaStreamsFromFile(filepath) {
             console.log("filepath", filepath);
             data = await resp.arrayBuffer();
             console.dir(data);
+            buffer.addEventListener('updateend', async () => {
+              mediaSource.endOfStream();
+              console.log(mediaSource);
+              //audio2.play();
+              //console.log(mediaSource.readyState); // ended
+            });
+
             buffer.appendBuffer(data);
             console.log('Data loaded.');
-
         });
 
         // We need a media stream for WebRTC 
         // so run our MediaSource through a muted HTML audio element
         // and grab its stream via captureStream()
        // Only grab stream after it has loaded; won't have tracks if grabbed too early
+       console.log(audio2);
         audio2.addEventListener('canplaythrough', () => {
             try {
                 let localStream = audio2.captureStream();
                 console.log("localStream inside cantplaythrough", localStream);
                 gotLocalMediaStream(localStream);
+
             } catch (e) {
                 console.warn(`Failed to captureStream() on audio elem. Assuming unsupported. Switching to receiver only.`, e);
             }
+            console.log("before reolve", audio2);
             resolve();
         });
 
@@ -199,10 +215,12 @@ async function setupLocalMediaStreamsFromFile(filepath) {
         // audioContainer.appendChild(audiofile);
 
         // srcObject doesn't work here ?
-        audio2.src = URL.createObjectURL(mediaSource);
-        audio2.load();
+        
+        // audio2.load();
+        // console.log(audio2);
+        // audio2.play();
         // console.log("inside the setup func", audioContainer);
-        // console.log(audiofile);
+        
     });
 }
 
@@ -219,6 +237,28 @@ function gotLocalMediaStream(mediaStream) {
 
     localStreamNode = context.createMediaStreamSource(mediaStream);
     localStreamNode.connect(outgoingRemoteGainNode);
-
     console.log('Connected localStreamNode.');
+}
+
+// getStats using webrtc peerConnection.getstats()
+function showStats(results) {
+  // console.log(results);
+  
+  let rttArr = [];
+  let resultArr = [];
+  results.forEach(element => {
+      //console.log(element);
+      resultArr.push(element);
+      console.log(resultArr);
+      if (element.type == 'inbound-rtp') {
+          //console.table(element);
+          rttArr.push(parseInt(element.roundTripTime * 1000));
+          document.getElementById('audio-latency').innerHTML = element.roundTripTime * 1000 + ' ms';
+          document.getElementById('audio-packetsLost').innerHTML = element.packetsLost;
+          let averageArray = arr => arr.reduce((prev, curr) => prev + curr) / arr.length;
+          let averageLatency = Math.round(averageArray(rttArr) * 100 + Number.EPSILON) / 100;
+          //console.log(averageLatency);
+          document.getElementById('audio-averageLatency').innerHTML = averageLatency + ' ms';
+      }
+  });
 }

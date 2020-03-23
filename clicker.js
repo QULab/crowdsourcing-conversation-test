@@ -2,12 +2,12 @@ const puppeteer = require('puppeteer');
 
 (async () => {
 
-    const browser = await puppeteer.launch({ headless:true });
+    const browser = await puppeteer.launch({ headless:false });
 
     const context = browser.defaultBrowserContext();
-    await context.overridePermissions('https://webrtc-audio.herokuapp.com', ['microphone']);
+    await context.overridePermissions('http://localhost:3000', ['microphone']);
     const page = await browser.newPage();
-    await page.goto('https://webrtc-audio.herokuapp.com');
+    await page.goto('http://localhost:3000');
     
     
     console.log(await page.content());

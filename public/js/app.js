@@ -197,11 +197,11 @@ function onAddStream(event) {
     divConsultingRoom.appendChild(audioContainer);
     console.log("local stream", localStream);
 
-    setInterval(() => {
-        rtcPeerConnection.getStats(null).then(showStats, err =>
-            console.log(err)
-        );
-    }, 1000)
+        setInterval(() => {
+            rtcPeerConnection.getStats(null).then(showStats, err =>
+                console.log(err)
+            );
+        }, 1000)
 
 }
 
@@ -215,8 +215,8 @@ function showStats(results) {
         //console.log(resultArr);
         if (element.type == 'remote-inbound-rtp') {
             //console.table(element);
-            rttArr.push(parseInt(element.roundTripTime));
-            document.getElementById('audio-latency').innerHTML = element.roundTripTime + ' ms';
+            rttArr.push(parseInt(element.roundTripTime * 1000));
+            document.getElementById('audio-latency').innerHTML = element.roundTripTime * 1000 + ' ms';
             document.getElementById('audio-packetsLost').innerHTML = element.packetsLost;
             let averageArray = arr => arr.reduce((prev, curr) => prev + curr) / arr.length;
             let averageLatency = Math.round(averageArray(rttArr) * 100 + Number.EPSILON) / 100;
@@ -325,3 +325,5 @@ function gotLocalMediaStream(mediaStream) {
 
     console.log('Connected localStreamNode.');
 }
+
+// Recording
