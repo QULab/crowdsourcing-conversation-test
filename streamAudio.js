@@ -1,7 +1,7 @@
 const fs = require('fs');
 const http = require('http');
 
-let filePath = './public/assets/StarWars60.wav';
+let filePath = './public/bot-test/test.mp4';
 let stat = fs.statSync(filePath);
 
 //const musicStream = fs.createReadStream(process.argv[2]);
