@@ -107,11 +107,8 @@ function gotRemoteStream(e) {
     console.log("Remote stream", e.streams[0]);
     console.log("switch stream to web audio");
     let remoteStream;
-    if(isFireFox1){
-      setupLocalMediaStreamsFromFile('./test_file.mp3');
-    }else{
-    setupLocalMediaStreamsFromFile('./test_file.mp3');
-    }
+    context.resume();
+    audio2.src = "http://localhost:8080";
     //audio2.srcObject = e.streams[0];
     console.log('Received remote stream');
     setInterval(() => {
@@ -171,7 +168,7 @@ async function setupLocalMediaStreamsFromFile(filepath) {
 
             // Corner case for file:// protocol since fetch won't like it
             if(isFireFox1){
-              buffer = mediaSource.addSourceBuffer('audio/webm;codecs=opus');
+              buffer = mediaSource.addSourceBuffer('audio/mpeg;codecs=opus');
             }
             else{  
               buffer = mediaSource.addSourceBuffer('audio/mpeg');
