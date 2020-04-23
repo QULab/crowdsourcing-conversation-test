@@ -214,14 +214,17 @@ function showStats(results) {
         resultArr.push(element);
         //console.log(resultArr);
         if (element.type == 'remote-inbound-rtp') {
-            //console.table(element);
+            console.log(element);
+            if(element.roundTripTime){
             rttArr.push(parseInt(element.roundTripTime * 1000));
             document.getElementById('audio-latency').innerHTML = element.roundTripTime * 1000 + ' ms';
-            document.getElementById('audio-packetsLost').innerHTML = element.packetsLost;
             let averageArray = arr => arr.reduce((prev, curr) => prev + curr) / arr.length;
             let averageLatency = Math.round(averageArray(rttArr) * 100 + Number.EPSILON) / 100;
             //console.log(averageLatency);
             document.getElementById('audio-averageLatency').innerHTML = averageLatency + ' ms';
+            }
+            document.getElementById('audio-packetsLost').innerHTML = element.packetsLost;
+           
         }
     });
 }
