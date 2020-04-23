@@ -2,7 +2,6 @@ const fs = require('fs');
 const http = require('http');
 
 let filePath = './public/bot-test/StarWars60.wav';
-let stat = fs.statSync(filePath);
 
 http
   .createServer((request, response) => {
