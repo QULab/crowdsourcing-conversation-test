@@ -57,7 +57,7 @@ socket.on("created", function (room) {
                 isCaller = true;
                 gotLocalMediaStream(stream);
                 socket.emit("ready", roomNumber);
-
+                hangupButton.disabled = false;
                 console.log("room created, track added local");
             }).catch((error) => {
                 console.log(`An error occured when accessing media devices`, error);
