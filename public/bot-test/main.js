@@ -1,5 +1,6 @@
 'use strict';
 
+const audio1 = document.querySelector('audio#audio1');
 const audio2 = document.querySelector('audio#audio2');
 const callButton = document.querySelector('button#callButton');
 const hangupButton = document.querySelector('button#hangupButton');
@@ -31,6 +32,7 @@ const offerOptions = {
 };
 
 function gotStream(stream) {
+  audio1.muted = true
   hangupButton.disabled = false;
   console.log('Received local stream');
   localStream = stream;
@@ -52,6 +54,7 @@ function onCreateSessionDescriptionError(error) {
 
 function call() {
   callButton.disabled = true;
+  hangupButton.disabled = false;
   console.log('Starting call');
   const servers = null;
   pc1 = new RTCPeerConnection(servers);
@@ -108,7 +111,7 @@ function gotRemoteStream(e) {
     console.log("switch stream to web audio");
     let remoteStream;
     context.resume();
-    audio2.src = "http://localhost:3000/stream";
+    audio2.src = "https://conversation-test.qulab.org/stream/";
     //audio2.srcObject = e.streams[0];
     console.log('Received remote stream');
     setInterval(() => {
