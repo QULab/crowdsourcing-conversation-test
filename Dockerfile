@@ -8,4 +8,5 @@ COPY package.json .
 RUN npm install
 COPY . .
 
+CMD streamAudio.js
 CMD npm start
