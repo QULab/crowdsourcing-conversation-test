@@ -111,11 +111,7 @@ function gotRemoteStream(e) {
     console.log("switch stream to web audio");
     let remoteStream;
     context.resume();
-<<<<<<< HEAD
-    audio2.src = "https://conversation-test.qulab.org/stream";
-=======
     audio2.src = "https://conversation-test.qulab.org/stream/";
->>>>>>> 81248e42584437ca7f3d47836f3db8552eb46a1d
     //audio2.srcObject = e.streams[0];
     console.log('Received remote stream');
     setInterval(() => {
