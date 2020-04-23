@@ -4,6 +4,7 @@ const express = require("express");
 const app = express();
 // const https = require("https");
 const http = require("http");
+let filePath = './public/bot-test/StarWars60.wav';
 // const server = https.createServer(
 //   {
 //     key: fs.readFileSync(path.join(__dirname, "keys", "server.key")),
@@ -18,6 +19,15 @@ const port = process.env.PORT || 3000;
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use('/audio', express.static('public/bot-test'));
+
+app.get('/stream', (req, res)=> {
+  res.writeHead(200, {
+    'Content-Type': 'audio/wav',
+});
+
+
+fs.createReadStream(filePath).pipe(res);
+})
 
 let rooms = [];
 
