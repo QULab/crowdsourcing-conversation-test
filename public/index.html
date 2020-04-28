@@ -14,11 +14,15 @@
     <div id="container">
         <h1>WebRTC Audio Call</h1>
 
-        <div id="select-room">
-            <label for="">Type room number. Maximum for 2 people</label>
-            <input id="room-number" type="text" />
-            <button id="go-room">Go</button>
-        </div>
+        <div id="select-room" style="display: inline-block;">
+            <label>Type room number. Maximum for 2 people</label>
+            <!-- <input id="room-number" type="text"  class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" />
+            <button id="go-room" class="btn btn-outline-primary" >Go</button> -->
+            <div class="input-group input-group-sm mb-3">
+                <input id="room-number" type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
+              </div>
+              <button id="go-room" class="btn btn-outline-primary btn-sm" >Go</button>
+            </div>
 
         <div id="audio">
             <div id="consulting-room" style="display: none;">
@@ -43,7 +47,7 @@
             </select>
 
         </div>
-        <button id="hangupButton">Hang Up</button>
+        <button id="hangupButton" class="btn btn-outline-danger" >Hang Up</button>
         <div id="statediv"></div></td>
         <td><div id="div"></div><br><div id="statsdiv"></div></td>
         </tr>

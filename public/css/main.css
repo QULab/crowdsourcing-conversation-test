@@ -1,5 +1,9 @@
-h1{
-    text-align: center;
+body{
+  margin: 10pt;
+}
+
+.form-control{
+  display: inline-block;
 }
 
 audio {
@@ -11,7 +15,11 @@ audio {
   
   button {
     margin: 0 20px 0 0;
-    width: 120px;
+    width: fit-content;
+  }
+
+  #room-number{
+    width: 100px;
   }
   
   div#audio {
