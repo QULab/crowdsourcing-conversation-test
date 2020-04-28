@@ -8,7 +8,8 @@ hangupButton.disabled = true;
 callButton.onclick = call;
 hangupButton.onclick = hangup;
 
-
+let pc1;
+let pc2;
 let localStream;
 
 let localStreamNode;
@@ -16,7 +17,6 @@ const AudioContext = window.AudioContext || window.webkitAudioContext;
 var context = new AudioContext();
 let outgoingRemoteStreamNode = context.createMediaStreamDestination();
 let outgoingRemoteGainNode = context.createGain();
-let rtcPeerConnection = new RTCPeerConnection();
 
 let buffer;
 let isFireFox1 = false;
@@ -41,10 +41,10 @@ function gotStream(stream) {
   if (audioTracks.length > 0) {
     console.log(`Using Audio device: ${audioTracks[0].label}`);
   }
-  localStream.getTracks().forEach(track => rtcPeerConnection.addTrack(track, localStream));
+  localStream.getTracks().forEach(track => pc1.addTrack(track, localStream));
   console.log('Adding Local Stream to peer connection');
 
-  rtcPeerConnection.createOffer(offerOptions)
+  pc1.createOffer(offerOptions)
       .then(gotDescription1, onCreateSessionDescriptionError);
 }
 
@@ -57,14 +57,13 @@ function call() {
   hangupButton.disabled = false;
   console.log('Starting call');
   const servers = null;
-  rtcPeerConnection = new RTCPeerConnection(servers);
-  console.log('Created local peer connection object rtcPeerConnection');
-  rtcPeerConnection.onicecandidate = e => onIceCandidate(rtcPeerConnection, e);
-  rtcPeerConnection = new RTCPeerConnection(servers);
-  //let rtcPeerConnection = new RTCPeerConnection(servers);
-  console.log('Created remote peer connection object rtcPeerConnection');
-  rtcPeerConnection.onicecandidate = e => onIceCandidate(rtcPeerConnection, e);
-  rtcPeerConnection.ontrack = gotRemoteStream;
+  pc1 = new RTCPeerConnection(servers);
+  console.log('Created local peer connection object pc1');
+  pc1.onicecandidate = e => onIceCandidate(pc1, e);
+  pc2 = new RTCPeerConnection(servers);
+  console.log('Created remote peer connection object pc2');
+  pc2.onicecandidate = e => onIceCandidate(pc2, e);
+  pc2.ontrack = gotRemoteStream;
   console.log('Requesting local stream');
   navigator.mediaDevices
       .getUserMedia({
@@ -78,29 +77,29 @@ function call() {
 }
 
 function gotDescription1(desc) {
-  // console.log(`Offer from rtcPeerConnection\n${desc.sdp}`);
-  rtcPeerConnection.setLocalDescription(desc)
+  // console.log(`Offer from pc1\n${desc.sdp}`);
+  pc1.setLocalDescription(desc)
       .then(() => {
-        rtcPeerConnection.setRemoteDescription(desc).then(() => {
-          return rtcPeerConnection.createAnswer().then(gotDescription2, onCreateSessionDescriptionError);
+        pc2.setRemoteDescription(desc).then(() => {
+          return pc2.createAnswer().then(gotDescription2, onCreateSessionDescriptionError);
         }, onSetSessionDescriptionError);
       }, onSetSessionDescriptionError);
 }
 
 function gotDescription2(desc) {
-  // console.log(`Answer from rtcPeerConnection\n${desc.sdp}`);
-  rtcPeerConnection.setLocalDescription(desc).then(() => {
-    rtcPeerConnection.setRemoteDescription(desc).then(() => {}, onSetSessionDescriptionError);
+  // console.log(`Answer from pc2\n${desc.sdp}`);
+  pc2.setLocalDescription(desc).then(() => {
+    pc1.setRemoteDescription(desc).then(() => {}, onSetSessionDescriptionError);
   }, onSetSessionDescriptionError);
 }
 
 function hangup() {
   console.log('Ending call');
   localStream.getTracks().forEach(track => track.stop());
-  rtcPeerConnection.close();
-  rtcPeerConnection.close();
-  rtcPeerConnection = null;
-  rtcPeerConnection = null;
+  pc1.close();
+  pc2.close();
+  pc1 = null;
+  pc2 = null;
   audio2.src = null;
   hangupButton.disabled = true;
   callButton.disabled = false;
@@ -116,7 +115,7 @@ function gotRemoteStream(e) {
     //audio2.srcObject = e.streams[0];
     console.log('Received remote stream');
     setInterval(() => {
-      rtcPeerConnection.getStats(null).then(showStats, err =>
+      pc1.getStats(null).then(showStats, err =>
           console.log(err)
       );
   }, 1000)
@@ -124,11 +123,11 @@ function gotRemoteStream(e) {
 }
 
 function getOtherPc(pc) {
-  return (pc === rtcPeerConnection) ? rtcPeerConnection : rtcPeerConnection;
+  return (pc === pc1) ? pc2 : pc1;
 }
 
 function getName(pc) {
-  return (pc === rtcPeerConnection) ? 'rtcPeerConnection' : 'rtcPeerConnection';
+  return (pc === pc1) ? 'pc1' : 'pc2';
 }
 
 function onIceCandidate(pc, event) {
@@ -250,16 +249,19 @@ function showStats(results) {
   results.forEach(element => {
       //console.log(element);
       resultArr.push(element);
-      console.log(resultArr);
-      if (element.type == 'inbound-rtp') {
+      //console.log(resultArr);
+      if (element.type == 'remote-inbound-rtp') {
           //console.table(element);
+          if(element.roundTripTime){
           rttArr.push(parseInt(element.roundTripTime * 1000));
           document.getElementById('audio-latency').innerHTML = element.roundTripTime * 1000 + ' ms';
+          
           document.getElementById('audio-packetsLost').innerHTML = element.packetsLost;
           let averageArray = arr => arr.reduce((prev, curr) => prev + curr) / arr.length;
           let averageLatency = Math.round(averageArray(rttArr) * 100 + Number.EPSILON) / 100;
           //console.log(averageLatency);
           document.getElementById('audio-averageLatency').innerHTML = averageLatency + ' ms';
+          }
       }
   });
 }
