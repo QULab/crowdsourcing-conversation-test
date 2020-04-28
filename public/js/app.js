@@ -36,6 +36,7 @@ let averageArray;
 let rttArr = [];
 let resultArr = [];
 let packetsLost;
+let packetLossArray = [];
 let averagePacktLoss;
 
 // Room code
@@ -226,12 +227,16 @@ function showStats(results) {
                 document.getElementById('audio-latency').innerHTML = element.roundTripTime * 1000 + ' ms';
                 averageArray = arr => arr.reduce((prev, curr) => prev + curr) / arr.length;
                 averageLatency = Math.round(averageArray(rttArr) * 100 + Number.EPSILON) / 100;
+                // TODO Standard deviation
                 //console.log(averageLatency);
                 document.getElementById('audio-averageLatency').innerHTML = averageLatency + ' ms';
             }
             document.getElementById('audio-packetsLost').innerHTML = element.packetsLost;
-            // WIP packet loss array and average
-            packetsLost = element.packetsLost;
+            // TODO packet loss array and average, standard deviation
+            // packetsLost = element.packetsLost;
+            packetLossArray.push(element.packetsLost);
+            averageArray = arr => arr.reduce((prev, curr) => prev + curr) / arr.length;
+            averagePacktLoss = averageArray(packetLossArray);
         }
     });
 }
@@ -246,7 +251,7 @@ function hangup() {
     hangupButton.disabled = true;
 
     // post data to backend after hangup
-    const data = { verificationCode: "dasdad4wd13a1w3dawd" ,statistics: {AverageTotalTripTime: averageLatency, rttArr: rttArr }};
+    const data = { verificationCode: "dasdad4wd13a1w3dawd" ,statistics: {AverageTotalTripTime: averageLatency, rttArr: rttArr, averagePacktLoss: averagePacktLoss }};
     console.log("data sent", data);
     fetch('http://localhost:3000/postStats', {
         method: 'POST', // or 'PUT'

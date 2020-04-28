@@ -2,6 +2,7 @@ const path = require("path");
 const fs = require("fs");
 const express = require("express");
 const app = express();
+const session = require('express-session');
 // const https = require("https");
 const http = require("http");
 const bodyParser = require('body-parser');
@@ -18,7 +19,7 @@ let filePath = './public/bot-test/StarWars60.wav';
 const server = http.createServer(app);
 const io = require("socket.io")(server);
 const port = process.env.PORT || 3000;
-
+// TODO session management
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.raw());
