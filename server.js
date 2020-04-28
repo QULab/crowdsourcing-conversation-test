@@ -26,7 +26,7 @@ app.use(bodyParser.raw());
 
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use('/audio', express.static('public/bot-test'));
+app.use('/audio', express.static('public/user-test'));
 
 app.get('/stream', (req, res) => {
   res.writeHead(200, {
