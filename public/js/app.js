@@ -246,8 +246,8 @@ function hangup() {
     hangupButton.disabled = true;
 
     // post data to backend after hangup
-    const data = { AverageTotalTripTime: averageLatency, rttArr: rttArr };
-
+    const data = { verificationCode: "dasdad4wd13a1w3dawd" ,statistics: {AverageTotalTripTime: averageLatency, rttArr: rttArr }};
+    console.log("data sent", data);
     fetch('http://localhost:3000/postStats', {
         method: 'POST', // or 'PUT'
         headers: {
