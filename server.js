@@ -2,13 +2,14 @@ const path = require("path");
 const fs = require("fs");
 const express = require("express");
 const app = express();
+const cors = require('cors');
 const session = require('express-session');
 // const https = require("https");
 const http = require("http");
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const DeviceDetector = require("device-detector-js");
-let filePath = './public/bot-test/StarWars60.wav';
+let filePath = './public/user-test/StarWars60.wav';
 // const server = https.createServer(
 //   {
 //     key: fs.readFileSync(path.join(__dirname, "keys", "server.key")),
@@ -20,6 +21,7 @@ const server = http.createServer(app);
 const io = require("socket.io")(server);
 const port = process.env.PORT || 3000;
 // TODO session management
+app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.raw());
@@ -37,7 +39,8 @@ app.get('/stream', (req, res) => {
   fs.createReadStream(filePath).pipe(res);
 })
 
-mongoose.connect('mongodb://localhost:27017/webrtc', {
+// change for server docker
+mongoose.connect('mongodb://mongo:27017/webrtc', {
   useNewUrlParser: true
 });
 
@@ -49,6 +52,7 @@ let statSchema = new schema({
   timestamp: { type: Date, default: Date.now },
   browser: { type: JSON },
   statistics: {type: JSON, required: true},
+  type: { type: String, required: true },
 });
 
 // let statSchema = new mongoose.Schema({},

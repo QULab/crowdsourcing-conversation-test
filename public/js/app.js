@@ -251,9 +251,17 @@ function hangup() {
     hangupButton.disabled = true;
 
     // post data to backend after hangup
-    const data = { verificationCode: "dasdad4wd13a1w3dawd" ,statistics: {AverageTotalTripTime: averageLatency, rttArr: rttArr, averagePacktLoss: averagePacktLoss }};
+    const data = {
+        verificationCode: "dasdad4wd13a1w3dawd",
+        statistics: {
+            AverageTotalTripTime: averageLatency,
+            rttArr: rttArr,
+            averagePacktLoss: averagePacktLoss
+        },
+        type: "USER2USER",
+    };
     console.log("data sent", data);
-    fetch('http://localhost:3000/postStats', {
+    fetch('https://conversation-test.qulab.org/postStats', {
         method: 'POST', // or 'PUT'
         headers: {
             'Content-Type': 'application/json',
