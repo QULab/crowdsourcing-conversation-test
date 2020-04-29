@@ -115,7 +115,7 @@ function gotRemoteStream(e) {
     //audio2.srcObject = e.streams[0];
     console.log('Received remote stream');
     setInterval(() => {
-      pc2.getStats(null).then(showStats, err =>
+      pc1.getStats(null).then(showStats, err =>
           console.log(err)
       );
   }, 1000)
@@ -249,16 +249,19 @@ function showStats(results) {
   results.forEach(element => {
       //console.log(element);
       resultArr.push(element);
-      console.log(resultArr);
-      if (element.type == 'inbound-rtp') {
+      //console.log(resultArr);
+      if (element.type == 'remote-inbound-rtp') {
           //console.table(element);
+          if(element.roundTripTime){
           rttArr.push(parseInt(element.roundTripTime * 1000));
           document.getElementById('audio-latency').innerHTML = element.roundTripTime * 1000 + ' ms';
+          
           document.getElementById('audio-packetsLost').innerHTML = element.packetsLost;
           let averageArray = arr => arr.reduce((prev, curr) => prev + curr) / arr.length;
           let averageLatency = Math.round(averageArray(rttArr) * 100 + Number.EPSILON) / 100;
           //console.log(averageLatency);
           document.getElementById('audio-averageLatency').innerHTML = averageLatency + ' ms';
+          }
       }
   });
 }

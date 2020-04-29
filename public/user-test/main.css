@@ -1,3 +1,7 @@
+body{
+  margin: 10pt;
+}
+
 audio {
     display: inline-block;
     position: relative;
@@ -9,6 +13,7 @@ audio {
     margin: 0 20px 0 0;
     width: 96px;
   }
+
   
   table {
     border-collapse: collapse;
@@ -16,6 +21,8 @@ audio {
   
   th, td {
     border: 1px solid black;
+    width: max-content;
+    padding: 10pt;
   }
   
   tr:hover {

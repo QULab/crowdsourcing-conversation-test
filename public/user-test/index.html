@@ -8,6 +8,7 @@
     <meta id="theme-color" name="theme-color" content="#ffffff">
 
     <title>WebRTC connection: audio bot only</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="main.css"/>
 
 </head>
@@ -15,7 +16,7 @@
 <body>
 
 <div id="container">
-
+    <h1>WebRTC connection: audio bot only</h1>
     <div id="audio">
         <div style="display: none">
             <div class="label">Local audio:</div>
@@ -37,8 +38,8 @@
             <option value="G722">G722</option>
             <option value="PCMU">PCMU</option>
         </select> -->
-        <button id="callButton">Call</button>
-        <button id="hangupButton">Hang Up</button>
+        <button id="callButton" class="btn btn-outline-success">Call</button>
+        <button id="hangupButton" class="btn btn-outline-danger">Hang Up</button>
     </div>
     <!-- <div class="graph-container" id="bitrateGraph">
         <div>Bitrate</div>
@@ -66,7 +67,7 @@
         <td>Tested in Chrome, Not tested in Opera, Firefox, Safari, Edge</td>
     </tr>
 </table> -->
-<table id="table-stats">
+<table id="table-stats" style="margin-top: 20pt;">
     <tbody>
         <tr>
             <td>Round Trip Time: </td>
@@ -92,6 +93,11 @@
 
 </table>
 <hr>
+ <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
 <script src="main.js"></script>
 </body>

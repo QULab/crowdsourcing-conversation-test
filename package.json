@@ -4,9 +4,13 @@
   "description": "",
   "main": "server.js",
   "dependencies": {
+    "body-parser": "^1.19.0",
     "cors": "^2.8.5",
+    "device-detector-js": "^2.2.1",
     "express": "^4.17.1",
+    "express-session": "^1.17.1",
     "getstats": "^1.2.0",
+    "mongoose": "^5.9.10",
     "nodemon": "^2.0.2",
     "npm": "^6.13.7",
     "puppeteer": "^2.1.1",

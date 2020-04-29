@@ -31,6 +31,14 @@ var context = new AudioContext();
 let outgoingRemoteStreamNode = context.createMediaStreamDestination();
 let outgoingRemoteGainNode = context.createGain();
 
+let averageLatency;
+let averageArray;
+let rttArr = [];
+let resultArr = [];
+let packetsLost;
+let packetLossArray = [];
+let averagePacktLoss;
+
 // Room code
 btnGoRoom.onclick = function () {
     if (inputRoomNumber.value === "") {
@@ -197,34 +205,38 @@ function onAddStream(event) {
     divConsultingRoom.appendChild(audioContainer);
     console.log("local stream", localStream);
 
-        setInterval(() => {
-            rtcPeerConnection.getStats(null).then(showStats, err =>
-                console.log(err)
-            );
-        }, 1000)
+    setInterval(() => {
+        rtcPeerConnection.getStats(null).then(showStats, err =>
+            console.log(err)
+        );
+    }, 1000)
 
 }
 
 // getStats using webrtc peerConnection.getstats()
 function showStats(results) {
-    let rttArr = [];
-    let resultArr = [];
+
     results.forEach(element => {
         //console.log(element);
         resultArr.push(element);
         //console.log(resultArr);
         if (element.type == 'remote-inbound-rtp') {
             console.log(element);
-            if(element.roundTripTime){
-            rttArr.push(parseInt(element.roundTripTime * 1000));
-            document.getElementById('audio-latency').innerHTML = element.roundTripTime * 1000 + ' ms';
-            let averageArray = arr => arr.reduce((prev, curr) => prev + curr) / arr.length;
-            let averageLatency = Math.round(averageArray(rttArr) * 100 + Number.EPSILON) / 100;
-            //console.log(averageLatency);
-            document.getElementById('audio-averageLatency').innerHTML = averageLatency + ' ms';
+            if (element.roundTripTime) {
+                rttArr.push(parseInt(element.roundTripTime * 1000));
+                document.getElementById('audio-latency').innerHTML = element.roundTripTime * 1000 + ' ms';
+                averageArray = arr => arr.reduce((prev, curr) => prev + curr) / arr.length;
+                averageLatency = Math.round(averageArray(rttArr) * 100 + Number.EPSILON) / 100;
+                // TODO Standard deviation
+                //console.log(averageLatency);
+                document.getElementById('audio-averageLatency').innerHTML = averageLatency + ' ms';
             }
             document.getElementById('audio-packetsLost').innerHTML = element.packetsLost;
-           
+            // TODO packet loss array and average, standard deviation
+            // packetsLost = element.packetsLost;
+            packetLossArray.push(element.packetsLost);
+            averageArray = arr => arr.reduce((prev, curr) => prev + curr) / arr.length;
+            averagePacktLoss = averageArray(packetLossArray);
         }
     });
 }
@@ -237,6 +249,24 @@ function hangup() {
     localAudio.srcObject = null;
     rtcPeerConnection.close();
     hangupButton.disabled = true;
+
+    // post data to backend after hangup
+    const data = { verificationCode: "dasdad4wd13a1w3dawd" ,statistics: {AverageTotalTripTime: averageLatency, rttArr: rttArr, averagePacktLoss: averagePacktLoss }};
+    console.log("data sent", data);
+    fetch('http://localhost:3000/postStats', {
+        method: 'POST', // or 'PUT'
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            console.log('Success:', data);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
 }
 
 // gotremotestream -- roomnumber 2

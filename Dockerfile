@@ -1,4 +1,4 @@
-FROM node:10.9-alpine
+FROM node:lts-alpine
 
 ENV PORT 3000
 EXPOSE 3000
