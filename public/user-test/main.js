@@ -101,6 +101,34 @@ function gotDescription2(desc) {
   }, onSetSessionDescriptionError);
 }
 
+// getStats using webrtc peerConnection.getstats()
+function showStats(results) {
+
+  results.forEach(element => {
+    //console.log(element);
+    resultArr.push(element);
+    //console.log(resultArr);
+    if (element.type == 'remote-inbound-rtp') {
+      console.log(element);
+      if (element.roundTripTime) {
+        rttArr.push(parseInt(element.roundTripTime * 1000));
+        document.getElementById('audio-latency').innerHTML = element.roundTripTime * 1000 + ' ms';
+        averageArray = arr => arr.reduce((prev, curr) => prev + curr) / arr.length;
+        averageLatency = Math.round(averageArray(rttArr) * 100 + Number.EPSILON) / 100;
+        // TODO Standard deviation
+        //console.log(averageLatency);
+        document.getElementById('audio-averageLatency').innerHTML = averageLatency + ' ms';
+      }
+      document.getElementById('audio-packetsLost').innerHTML = element.packetsLost;
+      // TODO packet loss array and average, standard deviation
+      // packetsLost = element.packetsLost;
+      packetLossArray.push(element.packetsLost);
+      averageArray = arr => arr.reduce((prev, curr) => prev + curr) / arr.length;
+      averagePacktLoss = averageArray(packetLossArray);
+    }
+  });
+}
+
 function hangup() {
   console.log('Ending call');
   localStream.getTracks().forEach(track => track.stop());
@@ -123,7 +151,7 @@ function hangup() {
     type: "USER2FILE",
   };
   console.log("data sent", data);
-  fetch('https://conversation-test.qulab.org/postStats', {
+  fetch('http://localhost:3000/stats', {
     method: 'POST', // or 'PUT'
     headers: {
       'Content-Type': 'application/json',
@@ -275,30 +303,4 @@ function gotLocalMediaStream(mediaStream) {
   console.log('Connected localStreamNode.');
 }
 
-// getStats using webrtc peerConnection.getstats()
-function showStats(results) {
 
-  results.forEach(element => {
-    //console.log(element);
-    resultArr.push(element);
-    //console.log(resultArr);
-    if (element.type == 'remote-inbound-rtp') {
-      console.log(element);
-      if (element.roundTripTime) {
-        rttArr.push(parseInt(element.roundTripTime * 1000));
-        document.getElementById('audio-latency').innerHTML = element.roundTripTime * 1000 + ' ms';
-        averageArray = arr => arr.reduce((prev, curr) => prev + curr) / arr.length;
-        averageLatency = Math.round(averageArray(rttArr) * 100 + Number.EPSILON) / 100;
-        // TODO Standard deviation
-        //console.log(averageLatency);
-        document.getElementById('audio-averageLatency').innerHTML = averageLatency + ' ms';
-      }
-      document.getElementById('audio-packetsLost').innerHTML = element.packetsLost;
-      // TODO packet loss array and average, standard deviation
-      // packetsLost = element.packetsLost;
-      packetLossArray.push(element.packetsLost);
-      averageArray = arr => arr.reduce((prev, curr) => prev + curr) / arr.length;
-      averagePacktLoss = averageArray(packetLossArray);
-    }
-  });
-}

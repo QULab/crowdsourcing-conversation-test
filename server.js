@@ -19,6 +19,7 @@ let filePath = './public/user-test/StarWars60.wav';
 // );
 const server = http.createServer(app);
 const io = require("socket.io")(server);
+const basicAuth = require('express-basic-auth')
 const port = process.env.PORT || 3000;
 // TODO session management
 app.use(cors());
@@ -40,7 +41,7 @@ app.get('/stream', (req, res) => {
 })
 
 // change for server docker
-mongoose.connect('mongodb://mongo:27017/webrtc', {
+mongoose.connect('mongodb://localhost:27017/webrtc', {
   useNewUrlParser: true
 });
 
@@ -61,9 +62,9 @@ let statSchema = new schema({
 
 let statModel = mongoose.model("stats", statSchema);
 
+// post to mongodb
 
-
-app.post('/postStats', async (req, res) => {
+app.post('/stats', async (req, res) => {
 
   let browserType = req.get('user-agent');
   console.log('Got body:', req.body);
@@ -84,6 +85,23 @@ app.post('/postStats', async (req, res) => {
   // console.log(req.headers);
   // console.log(req.get('user-agent'));
 });
+
+// get from mongodb
+
+app.get('/stats', basicAuth({
+  challenge: true,
+  users: { 'admin': 'supersecret' }
+}) ,async (req, res) => {
+   // console.log(device);
+   try {
+    statModel.find({}, function(err, data){
+      res.send(data);
+    })
+    //res.send(stats);
+  } catch (err) {
+    res.status(500).send(err);
+  }
+})
 
 let rooms = [];
 

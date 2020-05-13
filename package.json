@@ -8,6 +8,7 @@
     "cors": "^2.8.5",
     "device-detector-js": "^2.2.1",
     "express": "^4.17.1",
+    "express-basic-auth": "^1.2.0",
     "express-session": "^1.17.1",
     "getstats": "^1.2.0",
     "mongoose": "^5.9.10",

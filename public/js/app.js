@@ -261,7 +261,7 @@ function hangup() {
         type: "USER2USER",
     };
     console.log("data sent", data);
-    fetch('https://conversation-test.qulab.org/postStats', {
+    fetch('http://localhost:3000/stats', {   // always change to listen to server specific before docker build
         method: 'POST', // or 'PUT'
         headers: {
             'Content-Type': 'application/json',
