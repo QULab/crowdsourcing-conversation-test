@@ -28,9 +28,13 @@ app.use(bodyParser.json());
 app.use(bodyParser.raw());
 
 
-app.use(express.static(path.join(__dirname, "public")));
+//app.use(express.static(path.join(__dirname, "public")));
 
 app.use('/audio', express.static('public/user-test'));
+
+app.use('/newapp', express.static('public/restructure-html'));
+
+app.use('/user-user', express.static('public/user-user'));
 
 app.get('/stream', (req, res) => {
   res.writeHead(200, {
@@ -111,8 +115,8 @@ io.on("connection", function (socket) {
   socket.on("create or join", function (room) {
     console.log("create or join to room ", room);
 
-    var myRoom = io.sockets.adapter.rooms[room] || { length: 0 };
-    var numClients = myRoom.length;
+    let myRoom = io.sockets.adapter.rooms[room] || { length: 0 };
+    let numClients = myRoom.length;
 
     console.log(room, " has ", numClients, " clients");
 
