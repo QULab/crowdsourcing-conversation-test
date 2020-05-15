@@ -113,7 +113,7 @@ function showStats(results) {
     resultArr.push(element);
     //console.log(resultArr);
     if (element.type == 'remote-inbound-rtp') {
-      console.log(element);
+      //console.log(element);
       if (element.roundTripTime) {
         rttArr.push(parseInt(element.roundTripTime * 1000));
         document.getElementById('audio-latency').innerHTML = element.roundTripTime * 1000 + ' ms';

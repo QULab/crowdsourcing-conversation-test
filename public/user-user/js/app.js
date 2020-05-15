@@ -263,6 +263,9 @@ function hangup() {
 function sendData() {
     // show the thank you message
     var hash = CryptoJS.MD5("Message").toString();
+    $('#modalBodyMessage').html("Please copy verification code: " + "<div style='color: #0275d8;'> " + hash + "</div>");
+    //$('#modalBodyVerificationCode').html(hash);
+    $('#exampleModal').modal('show');
     if(rttArr.length){
         // post data to backend after hangup
         const data = {
