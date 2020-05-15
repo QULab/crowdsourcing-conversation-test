@@ -42,7 +42,9 @@ let browser = (function (agent) {
   }
 })(window.navigator.userAgent.toLowerCase());
 console.log(window.navigator.userAgent.toLowerCase() + "\n" + browser);
-
+browser = browser.toString();
+var browserString = browser;
+console.log(browserString);
 let os = "Unknown OS";
 if (navigator.userAgent.indexOf("Win") != -1) os =
   "Windows OS";
@@ -53,10 +55,10 @@ if (navigator.userAgent.indexOf("Linux") != -1) os =
 if (navigator.userAgent.indexOf("Android") != -1) os =
   "Android OS";
 if (navigator.userAgent.indexOf("like Mac") != -1) os =
-  "iOS"; 
+  "iOS";
 
 const url = window.location.href;
-console.log("url", url); 
+console.log("url", url);
 
 if (navigator.userAgent.includes("Firefox")) {
   isFireFox1 = true;
@@ -190,8 +192,12 @@ function sendData() {
         averagePacktLoss: averagePacktLoss
       },
       type: "USER2FILE",
+      os: os,
+      browser: browserString.toString(),
     };
     console.log("data sent", data);
+    console.log("browser string", browserString);
+    
     fetch('https://conversation-test.qulab.org/stats', {
       method: 'POST', // or 'PUT'
       headers: {
@@ -209,7 +215,7 @@ function sendData() {
 
     document.getElementById("modalButton").onclick = function () {
       location.href = "../index.html";
-    }; 
+    };
   }
 }
 

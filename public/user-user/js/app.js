@@ -55,6 +55,7 @@ let browser = (function (agent) {
     }
 })(window.navigator.userAgent.toLowerCase());
 console.log(window.navigator.userAgent.toLowerCase() + "\n" + browser);
+browser = browser.toString();
 
 let os = "Unknown OS"; 
 if (navigator.userAgent.indexOf("Win") != -1) os =
@@ -67,6 +68,7 @@ if (navigator.userAgent.indexOf("Android") != -1) os =
     "Android OS";
 if (navigator.userAgent.indexOf("like Mac") != -1) os =
     "iOS"; 
+os = os.toString();  
 
 // Room code
 // btnGoRoom.onclick = function () {
@@ -307,14 +309,14 @@ function sendData() {
         const data = {
             verificationCode: hash,
             statistics: {
-                url: url,
-                roomNumber: roomNumber,
                 AverageTotalTripTime: averageLatency,
                 rttArr: rttArr,
                 averagePacktLoss: averagePacktLoss,
-                browser: browser,
-                os: os
             },
+            url: url,
+            roomNumber: roomNumber,
+            browser: browser,
+            os: os,
             type: "USER2USER",
         };
         console.log("data sent", data);
