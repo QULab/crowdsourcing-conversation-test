@@ -29,6 +29,9 @@ let packetsLost;
 let packetLossArray = [];
 let averagePacktLoss;
 
+const url = window.location.href;
+console.log("url", url); 
+
 if (navigator.userAgent.includes("Firefox")) {
   isFireFox1 = true;
 }
@@ -153,6 +156,7 @@ function sendData() {
 
     // post data to backend after hangup
     const data = {
+      url: url,
       verificationCode: hash,
       statistics: {
         AverageTotalTripTime: averageLatency,
@@ -189,6 +193,7 @@ function gotRemoteStream(e) {
     console.log("switch stream to web audio");
     let remoteStream;
     context.resume();
+    // audio2.src = "http://localhost:3000/stream";
     audio2.src = "https://conversation-test.qulab.org/stream/";
     //audio2.srcObject = e.streams[0];
     console.log('Received remote stream');

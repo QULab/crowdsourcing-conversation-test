@@ -13,7 +13,7 @@ const DeviceDetector = require("device-detector-js");
 const server = http.createServer(app);
 const io = require("socket.io")(server);
 const basicAuth = require('express-basic-auth');
-let filePath = './public/user-test/StarWars60.wav';
+let filePath = './public/assets/call-about-the-job.mp3';
 
 
 const port = process.env.PORT || 3000;
@@ -44,14 +44,21 @@ app.get('/stream', (req, res) => {
 
 
 // change for server docker
-mongoose.connect('mongodb://mongo:27017/webrtc', {
+// mongoose.connect('mongodb://mongo:27017/webrtc', {
+//   useNewUrlParser: true
+// });
+
+mongoose.connect('mongodb://localhost:27017/webrtc', {
   useNewUrlParser: true
 });
+
 
 // mongodb connection
 const schema = mongoose.Schema;
 
 let statSchema = new schema({
+  url: { type: String },
+  roomNumber: { type: Number },
   verificationCode: { type: String, required: true },
   timestamp: { type: Date, default: Date.now },
   browser: { type: JSON },

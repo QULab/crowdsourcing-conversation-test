@@ -38,14 +38,26 @@
                                 <td><%= element.timestamp %></td>
                             </tr>
                             <tr class="p">
-                                <td colspan="6" class="hiddenRow">
+                                <td class="hiddenRow">
                                     <div class="accordian-body collapse p-3" id="collapse<%=index%>" data-parent="#accordionExample">
-                                        <p>Statistics :</p>
-                                        <p>Avergae Total Trip Time: 
+                                        <!-- <p>Statistics :</p> -->
+                                        <p>Average Total Trip Time: 
                                             <span><%= element.statistics.AverageTotalTripTime %></span>
                                         </p>
-                                        <p>Avergae Packet Loss:
+                                        <p>Average Packet Loss:
                                             <span><%= element.statistics.averagePacktLoss %></span>
+                                        </p>
+                                        <% if(element.url) {%>
+                                        <p>
+                                            Url:
+                                            <span><%= element.url %></span>
+                                        </p>
+                                        <%}%>
+                                        <p> Browser: 
+                                          <span><%= element.browser.client.name %></span>
+                                        </p>
+                                        <p> Operating System:
+                                            <span><%= element.browser.os.name %>&nbsp;<%= element.browser.os.version %></span>
                                         </p>
                                     </div>
                                 </td>
@@ -60,8 +72,8 @@
 
     <script>
         $('.accordion-toggle').click(function () {
-            $('.hiddenRow').hide();
-            $(this).next('tr').find('.hiddenRow').show();
+            $('.hiddenRow').hide(1000);
+            $(this).next('tr').find('.hiddenRow').show(1000);
         });
     </script>
     <!-- Optional JavaScript -->

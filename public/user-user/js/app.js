@@ -1,9 +1,9 @@
 const localAudio = document.querySelector('audio#local-audio');
 const hangupButton = document.querySelector('button#hangupButton');
-const divSelectRoom = document.getElementById("select-room");
+//const divSelectRoom = document.getElementById("select-room");
 const divConsultingRoom = document.getElementById("consulting-room");
-const inputRoomNumber = document.getElementById("room-number");
-const btnGoRoom = document.getElementById("go-room");
+// const inputRoomNumber = document.getElementById("room-number");
+// const btnGoRoom = document.getElementById("go-room");
 const table = document.getElementById("table-stats");
 
 table.style.visibility = 'hidden';
@@ -43,19 +43,29 @@ let packetLossArray = [];
 let averagePacktLoss;
 
 // Room code
-btnGoRoom.onclick = function () {
-    if (inputRoomNumber.value === "") {
-        alert("Please enter a room number");
-    } else {
-        roomNumber = inputRoomNumber.value;
+// btnGoRoom.onclick = function () {
+//     if (inputRoomNumber.value === "") {
+//         alert("Please enter a room number");
+//     } else {
+//         roomNumber = inputRoomNumber.value;
 
-        socket.emit("create or join", roomNumber);
+//         socket.emit("create or join", roomNumber);
 
-        divSelectRoom.style = "display: none";
-        divConsultingRoom.style = "display: block";
-    }
-};
-
+//         divSelectRoom.style = "display: none";
+//         divConsultingRoom.style = "display: block";
+//     }
+// };
+const url = window.location.href;
+console.log("url", url); 
+const queryString = window.location.search;
+console.log("queryString", queryString);
+const urlParams = new URLSearchParams(queryString);
+roomNumber = urlParams.get('room');
+console.log(roomNumber);
+if(roomNumber != null){
+    socket.emit("create or join", roomNumber);
+    divConsultingRoom.style = "display: block";
+}
 
 // on creating the room - call initiator 
 socket.on("created", function (room) {
@@ -271,6 +281,8 @@ function sendData() {
         const data = {
             verificationCode: hash,
             statistics: {
+                url: url,
+                roomNumber: roomNumber,
                 AverageTotalTripTime: averageLatency,
                 rttArr: rttArr,
                 averagePacktLoss: averagePacktLoss
