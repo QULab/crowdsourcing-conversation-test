@@ -18,6 +18,7 @@ let filePath = './public/user-test/StarWars60.wav';
 
 const port = process.env.PORT || 3000;
 // TODO session management
+app.set('view engine', 'ejs');
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -38,7 +39,9 @@ app.get('/stream', (req, res) => {
   });
 
   fs.createReadStream(filePath).pipe(res);
-})
+});
+
+
 
 // change for server docker
 mongoose.connect('mongodb://localhost:27017/webrtc', {
@@ -52,7 +55,7 @@ let statSchema = new schema({
   verificationCode: { type: String, required: true },
   timestamp: { type: Date, default: Date.now },
   browser: { type: JSON },
-  statistics: {type: JSON, required: true},
+  statistics: { type: JSON, required: true },
   type: { type: String, required: true },
 });
 
@@ -91,17 +94,14 @@ app.post('/stats', async (req, res) => {
 app.get('/stats', basicAuth({
   challenge: true,
   users: { 'admin': 'supersecret' }
-}) ,async (req, res) => {
-   // console.log(device);
-   try {
-    statModel.find({}, function(err, data){
-      res.send(data);
-    })
-    //res.send(stats);
-  } catch (err) {
-    res.status(500).send(err);
-  }
-})
+}), async (req, res) => {
+  // console.log(device);
+
+  statModel.find().then(data => {
+    let dataArray = [];
+    res.render('index.ejs', { data: data });
+  }).catch(res.status(500));
+});
 
 let rooms = [];
 

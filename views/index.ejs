@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+    <title>Conversation Test</title>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 p-0">
+                <div class="jumbotron min-vh-100 text-center m-0 bg-light d-flex flex-column">
+                    <h1>Conversation Test Statistics</h1>
+                    <!-- <%= data %> -->
+                    <table class="table table-hover" style="border-collapse:collapse; margin-top: 30px;">
+                        <thead>
+                            <tr>
+                                <!-- <th scope="col">id</th> -->
+                                <th scope="col">VerificationCode</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">TimeStamp</th>
+                            </tr>
+                        </thead>
+                        <tbody id="accordionExample">
+                            <% data.forEach(function(element, index) { %>
+                            <tr data-toggle="collapse" data-target="#collapse<%=index%>" class="accordion-toggle">
+                                <!-- <td><%= element.id %></td> -->
+                                <td><%= element.verificationCode %></td>
+                                <td><%= element.type %></td>
+                                <td><%= element.timestamp %></td>
+                            </tr>
+                            <tr class="p">
+                                <td colspan="6" class="hiddenRow">
+                                    <div class="accordian-body collapse p-3" id="collapse<%=index%>" data-parent="#accordionExample">
+                                        <p>Statistics :</p>
+                                        <p>Avergae Total Trip Time: 
+                                            <span><%= element.statistics.AverageTotalTripTime %></span>
+                                        </p>
+                                        <p>Avergae Packet Loss:
+                                            <span><%= element.statistics.averagePacktLoss %></span>
+                                        </p>
+                                    </div>
+                                </td>
+                            </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $('.accordion-toggle').click(function () {
+            $('.hiddenRow').hide();
+            $(this).next('tr').find('.hiddenRow').show();
+        });
+    </script>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
