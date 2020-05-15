@@ -2,24 +2,20 @@ const path = require("path");
 const fs = require("fs");
 const express = require("express");
 const app = express();
+
 const cors = require('cors');
 const session = require('express-session');
-// const https = require("https");
 const http = require("http");
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const DeviceDetector = require("device-detector-js");
-let filePath = './public/user-test/StarWars60.wav';
-// const server = https.createServer(
-//   {
-//     key: fs.readFileSync(path.join(__dirname, "keys", "server.key")),
-//     cert: fs.readFileSync(path.join(__dirname, "keys", "server.cert"))
-//   },
-//   app
-// );
+
 const server = http.createServer(app);
 const io = require("socket.io")(server);
-const basicAuth = require('express-basic-auth')
+const basicAuth = require('express-basic-auth');
+let filePath = './public/user-test/StarWars60.wav';
+
+
 const port = process.env.PORT || 3000;
 // TODO session management
 app.use(cors());
@@ -28,11 +24,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.raw());
 
 
-//app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "public")));
 
 app.use('/audio', express.static('public/user-test'));
 
-app.use('/newapp', express.static('public/restructure-html'));
+//app.use('/newapp', express.static('public/restructure-html'));
 
 app.use('/user-user', express.static('public/user-user'));
 

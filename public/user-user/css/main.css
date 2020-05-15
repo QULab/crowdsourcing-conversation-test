@@ -1,7 +1,3 @@
-body{
-  margin: 10pt;
-}
-
 .form-control{
   display: inline-block;
 }
@@ -14,7 +10,6 @@ audio {
   }
   
   button {
-    margin: 0 20px 0 0;
     width: fit-content;
   }
 
@@ -39,3 +34,6 @@ audio {
   a#viewSource {
     clear: both;
   }
+  
+
+ 

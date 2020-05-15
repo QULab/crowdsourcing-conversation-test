@@ -39,6 +39,10 @@ const offerOptions = {
   voiceActivityDetection: false
 };
 
+document.getElementById("modalButton").onclick = function () {
+  location.href = "../index.html";
+};
+
 function gotStream(stream) {
   audio1.muted = true
   hangupButton.disabled = false;
@@ -139,10 +143,21 @@ function hangup() {
   audio2.src = null;
   hangupButton.disabled = true;
   callButton.disabled = false;
+  sendData();
+}
+
+function sendData(){
+ 
+  var hash = CryptoJS.MD5("Message");
+  //alert(hash);
+  // $('#myModalTitle').html(myTitle);
+  $('#modalBodyMessage').html("Please copy verification code: " + "<div style='color: #0275d8;'> " + hash + "</div>");
+  //$('#modalBodyVerificationCode').html(hash);
+  $('#exampleModal').modal('show');
 
   // post data to backend after hangup
   const data = {
-    verificationCode: "dasdad4wd13a1w3dawd",
+    verificationCode: hash,
     statistics: {
       AverageTotalTripTime: averageLatency,
       rttArr: rttArr,
@@ -151,7 +166,7 @@ function hangup() {
     type: "USER2FILE",
   };
   console.log("data sent", data);
-  fetch('http://localhost:3000/stats', {
+  fetch('http://conversation-test.qulab.org/stats', {
     method: 'POST', // or 'PUT'
     headers: {
       'Content-Type': 'application/json',
@@ -165,7 +180,6 @@ function hangup() {
     .catch((error) => {
       console.error('Error:', error);
     });
-
 }
 
 function gotRemoteStream(e) {
