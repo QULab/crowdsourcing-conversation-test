@@ -4,7 +4,9 @@ const divSelectRoom = document.getElementById("select-room");
 const divConsultingRoom = document.getElementById("consulting-room");
 const inputRoomNumber = document.getElementById("room-number");
 const btnGoRoom = document.getElementById("go-room");
+const table = document.getElementById("table-stats");
 
+table.style.visibility = 'hidden';
 
 // for call hangup
 hangupButton.disabled = true;
@@ -66,6 +68,7 @@ socket.on("created", function (room) {
                 isCaller = true;
                 gotLocalMediaStream(stream);
                 socket.emit("ready", roomNumber);
+                table.style.visibility = 'visible';
                 hangupButton.style.visibility = 'visible';
                 hangupButton.disabled = false;
                 console.log("room created, track added local");
@@ -173,6 +176,7 @@ function onIceCandidate(event) {
             candidate: event.candidate.candidate,
             room: roomNumber
         });
+        table.style.visibility = 'visible';
         hangupButton.style.visibility = 'visible';
         hangupButton.disabled = false;
     }
@@ -252,12 +256,13 @@ function hangup() {
     localAudio.srcObject = null;
     rtcPeerConnection.close();
     hangupButton.disabled = true;
+    table.style.visibility = 'hidden';
     sendData();
 }
 
 function sendData() {
     // show the thank you message
-    var hash = CryptoJS.MD5("Message");
+    var hash = CryptoJS.MD5("Message").toString();
     if(rttArr.length){
         // post data to backend after hangup
         const data = {

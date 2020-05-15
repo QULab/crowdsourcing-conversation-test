@@ -146,40 +146,41 @@ function hangup() {
   sendData();
 }
 
-function sendData(){
- 
-  var hash = CryptoJS.MD5("Message");
-  //alert(hash);
-  // $('#myModalTitle').html(myTitle);
-  $('#modalBodyMessage').html("Please copy verification code: " + "<div style='color: #0275d8;'> " + hash + "</div>");
-  //$('#modalBodyVerificationCode').html(hash);
-  $('#exampleModal').modal('show');
+function sendData() {
+  if (rttArr.length) {
+    var hash = CryptoJS.MD5("Message").toString();
+    //alert(hash);
+    // $('#myModalTitle').html(myTitle);
+    $('#modalBodyMessage').html("Please copy verification code: " + "<div style='color: #0275d8;'> " + hash + "</div>");
+    //$('#modalBodyVerificationCode').html(hash);
+    $('#exampleModal').modal('show');
 
-  // post data to backend after hangup
-  const data = {
-    verificationCode: hash,
-    statistics: {
-      AverageTotalTripTime: averageLatency,
-      rttArr: rttArr,
-      averagePacktLoss: averagePacktLoss
-    },
-    type: "USER2FILE",
-  };
-  console.log("data sent", data);
-  fetch('http://conversation-test.qulab.org/stats', {
-    method: 'POST', // or 'PUT'
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log('Success:', data);
+    // post data to backend after hangup
+    const data = {
+      verificationCode: hash,
+      statistics: {
+        AverageTotalTripTime: averageLatency,
+        rttArr: rttArr,
+        averagePacktLoss: averagePacktLoss
+      },
+      type: "USER2FILE",
+    };
+    console.log("data sent", data);
+    fetch('https://conversation-test.qulab.org/stats', {
+      method: 'POST', // or 'PUT'
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
     })
-    .catch((error) => {
-      console.error('Error:', error);
-    });
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('Success:', data);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  }
 }
 
 function gotRemoteStream(e) {
