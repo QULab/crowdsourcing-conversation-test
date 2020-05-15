@@ -44,7 +44,7 @@ app.get('/stream', (req, res) => {
 
 
 // change for server docker
-mongoose.connect('mongodb://localhost:27017/webrtc', {
+mongoose.connect('mongodb://mongo:27017/webrtc', {
   useNewUrlParser: true
 });
 
