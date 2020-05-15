@@ -8,6 +8,7 @@ const btnGoRoom = document.getElementById("go-room");
 
 // for call hangup
 hangupButton.disabled = true;
+hangupButton.style.visibility = 'hidden';
 hangupButton.onclick = hangup;
 
 let roomNumber;
@@ -65,6 +66,7 @@ socket.on("created", function (room) {
                 isCaller = true;
                 gotLocalMediaStream(stream);
                 socket.emit("ready", roomNumber);
+                hangupButton.style.visibility = 'visible';
                 hangupButton.disabled = false;
                 console.log("room created, track added local");
             }).catch((error) => {
@@ -171,6 +173,7 @@ function onIceCandidate(event) {
             candidate: event.candidate.candidate,
             room: roomNumber
         });
+        hangupButton.style.visibility = 'visible';
         hangupButton.disabled = false;
     }
 }
@@ -249,32 +252,39 @@ function hangup() {
     localAudio.srcObject = null;
     rtcPeerConnection.close();
     hangupButton.disabled = true;
+    sendData();
+}
 
-    // post data to backend after hangup
-    const data = {
-        verificationCode: "dasdad4wd13a1w3dawd",
-        statistics: {
-            AverageTotalTripTime: averageLatency,
-            rttArr: rttArr,
-            averagePacktLoss: averagePacktLoss
-        },
-        type: "USER2USER",
-    };
-    console.log("data sent", data);
-    fetch('http://localhost:3000/stats', {   // always change to listen to server specific before docker build
-        method: 'POST', // or 'PUT'
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-    })
-        .then((response) => response.json())
-        .then((data) => {
-            console.log('Success:', data);
+function sendData() {
+    // show the thank you message
+    var hash = CryptoJS.MD5("Message");
+    if(rttArr.length){
+        // post data to backend after hangup
+        const data = {
+            verificationCode: hash,
+            statistics: {
+                AverageTotalTripTime: averageLatency,
+                rttArr: rttArr,
+                averagePacktLoss: averagePacktLoss
+            },
+            type: "USER2USER",
+        };
+        console.log("data sent", data);
+        fetch('https://conversation-test.qulab.org/stats', {   // always change to listen to server specific before docker build
+            method: 'POST', // or 'PUT'
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
         })
-        .catch((error) => {
-            console.error('Error:', error);
-        });
+            .then((response) => response.json())
+            .then((data) => {
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }  
 }
 
 // gotremotestream -- roomnumber 2
