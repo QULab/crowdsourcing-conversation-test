@@ -292,6 +292,10 @@ function sendData() {
             .catch((error) => {
                 console.error('Error:', error);
             });
+        
+        document.getElementById("modalButton").onclick = function () {
+            location.href = "../index.html";
+        };    
     }  
 }
 

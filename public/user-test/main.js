@@ -39,10 +39,6 @@ const offerOptions = {
   voiceActivityDetection: false
 };
 
-document.getElementById("modalButton").onclick = function () {
-  location.href = "../index.html";
-};
-
 function gotStream(stream) {
   audio1.muted = true
   hangupButton.disabled = false;
@@ -180,6 +176,10 @@ function sendData() {
       .catch((error) => {
         console.error('Error:', error);
       });
+
+    document.getElementById("modalButton").onclick = function () {
+      location.href = "../index.html";
+    }; 
   }
 }
 
