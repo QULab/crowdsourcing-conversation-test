@@ -42,6 +42,32 @@ let packetsLost;
 let packetLossArray = [];
 let averagePacktLoss;
 
+let browser = (function (agent) {
+    switch (true) {
+        case agent.indexOf("edge") > -1: return "edge";
+        case agent.indexOf("edg") > -1: return "chromium based edge (dev or canary)";
+        case agent.indexOf("opr") > -1 && !!window.opr: return "opera";
+        case agent.indexOf("chrome") > -1 && !!window.chrome: return "chrome";
+        case agent.indexOf("trident") > -1: return "ie";
+        case agent.indexOf("firefox") > -1: return "firefox";
+        case agent.indexOf("safari") > -1: return "safari";
+        default: return "other";
+    }
+})(window.navigator.userAgent.toLowerCase());
+console.log(window.navigator.userAgent.toLowerCase() + "\n" + browser);
+
+let os = "Unknown OS"; 
+if (navigator.userAgent.indexOf("Win") != -1) os =
+    "Windows OS";
+if (navigator.userAgent.indexOf("Mac") != -1) os =
+    "Macintosh";
+if (navigator.userAgent.indexOf("Linux") != -1) os =
+    "Linux OS";
+if (navigator.userAgent.indexOf("Android") != -1) os =
+    "Android OS";
+if (navigator.userAgent.indexOf("like Mac") != -1) os =
+    "iOS"; 
+
 // Room code
 // btnGoRoom.onclick = function () {
 //     if (inputRoomNumber.value === "") {
@@ -285,7 +311,9 @@ function sendData() {
                 roomNumber: roomNumber,
                 AverageTotalTripTime: averageLatency,
                 rttArr: rttArr,
-                averagePacktLoss: averagePacktLoss
+                averagePacktLoss: averagePacktLoss,
+                browser: browser,
+                os: os
             },
             type: "USER2USER",
         };

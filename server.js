@@ -14,6 +14,9 @@ const server = http.createServer(app);
 const io = require("socket.io")(server);
 const basicAuth = require('express-basic-auth');
 let filePath = './public/assets/call-about-the-job.mp3';
+const deviceDetector = new DeviceDetector();
+const userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.122 Safari/537.36";
+let device;
 
 
 const port = process.env.PORT || 3000;
@@ -61,7 +64,8 @@ let statSchema = new schema({
   roomNumber: { type: Number },
   verificationCode: { type: String, required: true },
   timestamp: { type: Date, default: Date.now },
-  browser: { type: JSON },
+  browser: { type: String },
+  os: { type: String },
   statistics: { type: JSON, required: true },
   type: { type: String, required: true },
 });
@@ -80,11 +84,7 @@ app.post('/stats', async (req, res) => {
   console.log('Got body:', req.body);
   let body = req.body;
   const stats = new statModel(req.body);
-  const deviceDetector = new DeviceDetector();
-  const userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.122 Safari/537.36";
-  const device = deviceDetector.parse(userAgent);
-
-  // console.log(device);
+  
   try {
     stats.browser = device;
     await stats.save();
