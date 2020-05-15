@@ -8,16 +8,12 @@ const session = require('express-session');
 const http = require("http");
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const DeviceDetector = require("device-detector-js");
 
 const server = http.createServer(app);
 const io = require("socket.io")(server);
 const basicAuth = require('express-basic-auth');
 let filePath = './public/assets/call-about-the-job.mp3';
-const deviceDetector = new DeviceDetector();
 const userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.122 Safari/537.36";
-let device;
-
 
 const port = process.env.PORT || 3000;
 // TODO session management
@@ -86,7 +82,7 @@ app.post('/stats', async (req, res) => {
   const stats = new statModel(req.body);
   
   try {
-    stats.browser = device;
+    //stats.browser = device;
     await stats.save();
     res.send(stats);
   } catch (err) {
