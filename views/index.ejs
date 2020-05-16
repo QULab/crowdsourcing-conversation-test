@@ -35,7 +35,7 @@
                                 <!-- <td><%= element.id %></td> -->
                                 <td><%= element.verificationCode %></td>
                                 <td><%= element.type %></td>
-                                <td><%= element.timestamp %></td>
+                                <td><%= moment(element.timestamp).format('MMMM Do YYYY, h:mm:ss') %></td>
                             </tr>
                             <tr class="p">
                                 <td class="hiddenRow">
@@ -53,12 +53,23 @@
                                             <span><%= element.url %></span>
                                         </p>
                                         <%}%>
+                                        <p> Room number:
+                                            <span><%= element.roomNumber %></span>
+                                        </p>
+                                        <p> Rating:
+                                            <span><%= element.rating %></span>
+                                        </p>
                                         <p> Browser: 
                                           <span><%= element.browser %></span>
                                         </p>
                                         <p> Operating System:
                                             <span><%= element.os %></span>
                                         </p>
+                                        <% if(element.type == 'USER2FILE'){ %>
+                                            <p> Audio sample:
+                                                <span><%= element.fileName  %></span>
+                                            </p>
+                                        <% }%>
                                     </div>
                                 </td>
                             </tr>
@@ -87,6 +98,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
         integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
         crossorigin="anonymous"></script>
+    <script src="../public/assets/moment.min.js"></script>    
 </body>
 
 </html>

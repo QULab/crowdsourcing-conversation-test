@@ -31,6 +31,11 @@ let resultArr = [];
 let packetsLost;
 let packetLossArray = [];
 let averagePacktLoss;
+let reducer = (accumulator, currentValue) => accumulator + currentValue;
+let sumOfRTT = 0;
+let sumOfPacketLoss = 0;
+let measurements = 0;
+let interval;
 
 /* globals MediaRecorder */
 
@@ -162,6 +167,7 @@ function showStats(results) {
         // TODO Standard deviation
         //console.log(averageLatency);
         // document.getElementById('audio-averageLatency').innerHTML = averageLatency + ' ms';
+        measurements = measurements+1;
       }
       // document.getElementById('audio-packetsLost').innerHTML = element.packetsLost;
       // TODO packet loss array and average, standard deviation
@@ -171,10 +177,13 @@ function showStats(results) {
       averagePacktLoss = averageArray(packetLossArray);
     }
   });
+  sumOfRTT = rttArr.reduce(reducer);
+  sumOfPacketLoss = packetLossArray.reduce(reducer);
 }
 
 function hangup() {
   console.log('Ending call');
+  clearInterval(interval);
   localStream.getTracks().forEach(track => track.stop());
   pc1.close();
   pc2.close();
@@ -259,7 +268,10 @@ function sendData(answer) {
       statistics: {
         AverageTotalTripTime: averageLatency,
         rttArr: rttArr,
-        averagePacktLoss: averagePacktLoss
+        averagePacktLoss: averagePacktLoss,
+        sumOfRTT: sumOfRTT,
+        sumOfPacketLoss: sumOfPacketLoss,
+        measurements: measurements,
       },
       type: "USER2FILE",
       os: os,
@@ -279,6 +291,7 @@ function sendData(answer) {
       .then((response) => response.json())
       .then((data) => {
         console.log('Success:', data);
+        measurements = 0;
       })
       .catch((error) => {
         console.error('Error:', error);
@@ -310,7 +323,7 @@ function gotRemoteStream(e) {
         // show('question');
     });
     
-    setInterval(() => {
+    interval = setInterval(() => {
       pc1.getStats(null).then(showStats, err =>
         console.log(err)
       );

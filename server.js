@@ -14,8 +14,9 @@ const io = require("socket.io")(server);
 const basicAuth = require('express-basic-auth');
 let filePath = './public/assets/sup23_selected_1min/01_2.wav';
 const userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.122 Safari/537.36";
-
+const moment = require('moment');
 const port = process.env.PORT || 3000;
+let ipAdress;
 // TODO session management
 app.set('view engine', 'ejs');
 app.use(cors());
@@ -43,13 +44,13 @@ app.get('/stream', (req, res) => {
 
 
 // change for server docker
-mongoose.connect('mongodb://mongo:27017/webrtc', {
-  useNewUrlParser: true
-});
-
-// mongoose.connect('mongodb://localhost:27017/webrtc', {
+// mongoose.connect('mongodb://mongo:27017/webrtc', {
 //   useNewUrlParser: true
 // });
+
+mongoose.connect('mongodb://localhost:27017/webrtc', {
+  useNewUrlParser: true
+});
 
 
 // mongodb connection
@@ -65,6 +66,9 @@ let statSchema = new schema({
   statistics: { type: JSON, required: true },
   type: { type: String, required: true },
   rating: { type: String },
+  fileName: { type: String },
+  ipAdress: { type: Number },
+  testDuration: { type: Number }
 });
 
 // let statSchema = new mongoose.Schema({},
@@ -76,6 +80,8 @@ let statModel = mongoose.model("stats", statSchema);
 // post to mongodb
 
 app.post('/stats', async (req, res) => {
+
+  ipAdress = req.connection.remoteAddress;
 
   let browserType = req.get('user-agent');
   console.log('Got body:', req.body);
@@ -101,9 +107,8 @@ app.get('/stats', basicAuth({
 }), async (req, res) => {
   // console.log(device);
 
-  statModel.find().then(data => {
-    let dataArray = [];
-    res.render('index.ejs', { data: data });
+  statModel.find().sort({ timestamp: 'desc' }).then(data => {
+    res.render('index.ejs', { data: data, moment: moment });
   }).catch(res.status(500));
 });
 

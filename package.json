@@ -12,6 +12,7 @@
     "express-basic-auth": "^1.2.0",
     "express-session": "^1.17.1",
     "getstats": "^1.2.0",
+    "moment": "^2.25.3",
     "mongoose": "^5.9.10",
     "nodemon": "^2.0.2",
     "npm": "^6.13.7",
