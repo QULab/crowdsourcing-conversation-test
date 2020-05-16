@@ -3,10 +3,10 @@
 const audio1 = document.querySelector('audio#audio1');
 const audio2 = document.querySelector('audio#audio2');
 const callButton = document.querySelector('button#callButton');
-const hangupButton = document.querySelector('button#hangupButton');
-hangupButton.disabled = true;
+// const hangupButton = document.querySelector('button#hangupButton');
+// hangupButton.disabled = true;
 callButton.onclick = call;
-hangupButton.onclick = hangup;
+// hangupButton.onclick = hangup;
 
 let pc1;
 let pc2;
@@ -74,7 +74,7 @@ const offerOptions = {
 
 function gotStream(stream) {
   audio1.muted = true
-  hangupButton.disabled = false;
+  // hangupButton.disabled = false;
   console.log('Received local stream');
   localStream = stream;
   gotLocalMediaStream(localStream);
@@ -95,7 +95,7 @@ function onCreateSessionDescriptionError(error) {
 
 function call() {
   callButton.disabled = true;
-  hangupButton.disabled = false;
+  // hangupButton.disabled = false;
   console.log('Starting call');
   const servers = null;
   pc1 = new RTCPeerConnection(servers);
@@ -145,14 +145,14 @@ function showStats(results) {
       //console.log(element);
       if (element.roundTripTime) {
         rttArr.push(parseInt(element.roundTripTime * 1000));
-        document.getElementById('audio-latency').innerHTML = element.roundTripTime * 1000 + ' ms';
+        // document.getElementById('audio-latency').innerHTML = element.roundTripTime * 1000 + ' ms';
         averageArray = arr => arr.reduce((prev, curr) => prev + curr) / arr.length;
         averageLatency = Math.round(averageArray(rttArr) * 100 + Number.EPSILON) / 100;
         // TODO Standard deviation
         //console.log(averageLatency);
-        document.getElementById('audio-averageLatency').innerHTML = averageLatency + ' ms';
+        // document.getElementById('audio-averageLatency').innerHTML = averageLatency + ' ms';
       }
-      document.getElementById('audio-packetsLost').innerHTML = element.packetsLost;
+      // document.getElementById('audio-packetsLost').innerHTML = element.packetsLost;
       // TODO packet loss array and average, standard deviation
       // packetsLost = element.packetsLost;
       packetLossArray.push(element.packetsLost);
@@ -170,7 +170,7 @@ function hangup() {
   pc1 = null;
   pc2 = null;
   audio2.src = null;
-  hangupButton.disabled = true;
+  // hangupButton.disabled = true;
   callButton.disabled = false;
   sendData();
 }
@@ -278,6 +278,12 @@ function gotRemoteStream(e) {
     audio2.src = "https://conversation-test.qulab.org/stream/";
     //audio2.srcObject = e.streams[0];
     console.log('Received remote stream');
+    audio2.addEventListener('ended', (event) => {
+      console.log('audio stopped either because 1) it was over, ' +
+        'or 2) no further data is available.');
+        hangup();
+    });
+    
     setInterval(() => {
       pc1.getStats(null).then(showStats, err =>
         console.log(err)
