@@ -214,9 +214,9 @@ function sendData() {
     var clipboard = new ClipboardJS('#copy');
 
     clipboard.on('success', function (e) {
-      console.info('Action:', e.action);
-      console.info('Text:', e.text);
-      console.info('Trigger:', e.trigger);
+      //console.info('Action:', e.action);
+      //console.info('Text:', e.text);
+      //console.info('Trigger:', e.trigger);
       var btn = $(e.trigger);
       setTooltip(btn, 'Copied!');
 
@@ -245,7 +245,7 @@ function sendData() {
       browser: browserString.toString(),
     };
     console.log("data sent", data);
-    console.log("browser string", browserString);
+    // console.log("browser string", browserString);
     
     fetch('https://conversation-test.qulab.org/stats', {
       method: 'POST', // or 'PUT'
@@ -271,7 +271,7 @@ function sendData() {
 function gotRemoteStream(e) {
   if (audio2.srcObject !== e.streams[0]) {
     console.log("Remote stream", e.streams[0]);
-    console.log("switch stream to web audio");
+    // console.log("switch stream to web audio");
     let remoteStream;
     context.resume();
     // audio2.src = "http://localhost:3000/stream";
@@ -281,6 +281,7 @@ function gotRemoteStream(e) {
     audio2.addEventListener('ended', (event) => {
       console.log('audio stopped either because 1) it was over, ' +
         'or 2) no further data is available.');
+        // hangup and send data
         hangup();
     });
     
@@ -367,17 +368,17 @@ async function setupLocalMediaStreamsFromFile(filepath) {
     // so run our MediaSource through a muted HTML audio element
     // and grab its stream via captureStream()
     // Only grab stream after it has loaded; won't have tracks if grabbed too early
-    console.log(audio2);
+    // console.log(audio2);
     audio2.addEventListener('canplaythrough', () => {
       try {
         let localStream = audio2.captureStream();
-        console.log("localStream inside cantplaythrough", localStream);
+        // console.log("localStream inside cantplaythrough", localStream);
         gotLocalMediaStream(localStream);
 
       } catch (e) {
         console.warn(`Failed to captureStream() on audio elem. Assuming unsupported. Switching to receiver only.`, e);
       }
-      console.log("before reolve", audio2);
+      // console.log("before reolve", audio2);
       resolve();
     });
 
@@ -403,11 +404,11 @@ function gotLocalMediaStream(mediaStream) {
   if (localStreamNode) {
     localStreamNode.disconnect();
   }
-  console.log("web audio", mediaStream);
+  // console.log("web audio", mediaStream);
 
   localStreamNode = context.createMediaStreamSource(mediaStream);
   localStreamNode.connect(outgoingRemoteGainNode);
-  console.log('Connected localStreamNode.');
+  // console.log('Connected localStreamNode.');
 }
 
 
