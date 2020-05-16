@@ -3,9 +3,12 @@
 const audio1 = document.querySelector('audio#audio1');
 const audio2 = document.querySelector('audio#audio2');
 const callButton = document.querySelector('button#callButton');
+const question = document.getElementsByClassName('.question');
+const answerButton = document.getElementById('answerButton');
 // const hangupButton = document.querySelector('button#hangupButton');
 // hangupButton.disabled = true;
 callButton.onclick = call;
+answerButton.disabled = true;
 // hangupButton.onclick = hangup;
 
 let pc1;
@@ -64,6 +67,14 @@ console.log("url", url);
 
 if (navigator.userAgent.includes("Firefox")) {
   isFireFox1 = true;
+}
+
+function hide(div) {
+  $("." + div).hide();
+}
+
+function show(div){
+  $("." + div ).show();
 }
 
 const offerOptions = {
@@ -172,10 +183,20 @@ function hangup() {
   audio2.src = null;
   // hangupButton.disabled = true;
   callButton.disabled = false;
-  sendData();
 }
 
-function sendData() {
+function answer(){
+  var form = document.getElementById('question');
+  form.onsubmit = function (event) { 
+    event.preventDefault();
+    console.log("answer", form.elements["rating"].value);
+    var answer = form.elements["rating"].value;
+    sendData(answer);
+   }
+  
+}
+
+function sendData(answer) {
   if (rttArr.length) {
     var hash = CryptoJS.MD5("Message").toString();
     //alert(hash);
@@ -243,6 +264,7 @@ function sendData() {
       type: "USER2FILE",
       os: os,
       browser: browserString.toString(),
+      rating: answer,
     };
     console.log("data sent", data);
     // console.log("browser string", browserString);
@@ -281,8 +303,11 @@ function gotRemoteStream(e) {
     audio2.addEventListener('ended', (event) => {
       console.log('audio stopped either because 1) it was over, ' +
         'or 2) no further data is available.');
+        setTimeout(2000);
         // hangup and send data
+        answerButton.disabled = false;
         hangup();
+        // show('question');
     });
     
     setInterval(() => {

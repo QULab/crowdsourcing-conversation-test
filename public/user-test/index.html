@@ -23,50 +23,54 @@
     <div id="container" class="container">
         <div class="row h-100">
             <div class="col-sm-12 my-auto">
-                <h1>Conversation Test</h1>
+                <h1 class="text-center">Conversation Test</h1>
                 <div class="instructions">
                     <div class="card border-dark mb-3 description" style="margin-top: 30px">
                         <div class="card-body text-dark">
-                            <h5 class="card-title text-center">Instructions</h5>
-                            <p class="text-center">
+                            <h5 class="card-title text-center"><b>Instructions</b></h5>
+                            <p class="">
                                 The Test requires media permissions from browser,
                                 so please allow microphone settings when prompted by the browser.<br />
                                 For the research purposes, your audio maybe recorded and used to determine
                                 quality of the audio conversation.
                             </p>
-                            <p class="text-center">
-                                Please click the start button and listen to the audio played carefully.
-                                After the audio is completely played, please answer the question about the quality
-                                of the audio and click submit answer button. After answer is submitted you will be
-                                provided with a verification code, please copy and paste it to Amazon Mechanical Turk.
+                            <p class="">
+                                Please click the <b>Start button</b> and listen to the audio played carefully.
+                                After the audio is completely played, please select the rating for question about the
+                                quality of the audio and click submit answer button. After answer is submitted you will
+                                be provided with a <b>Verification code</b>, please copy the code and paste it to
+                                <b>Amazon Mechanical Turk</b>.
                             </p>
                         </div>
                     </div>
                 </div>
-                <div id="audio">
-                    <div style="display: none">
-                        <div class="label">Local audio:</div>
-                        <audio id="audio1" autoplay controls muted></audio>
+                <div class="card border-light mb-3">
+                    <div id="audio" class="card-body text-dark">
+                        <div style="display: none">
+                            <div class="label">Local audio:</div>
+                            <audio id="audio1" autoplay controls muted></audio>
+                        </div>
+                        <div>
+                            <!-- <div class="label">Remote audio:</div> -->
+                            <audio id="audio2" autoplay controls></audio>
+                        </div>
                     </div>
-                    <div>
-                        <div class="label">Remote audio:</div>
-                        <audio id="audio2" autoplay controls></audio>
+
+                    <div id="buttons">
+                        <!-- <select id="codec"> -->
+                        <!-- Codec values are matched with how they appear in the SDP.
+                                                                                For instance, opus matches opus/48000/2 in Chrome, and ISAC/16000
+                                                                                matches 16K iSAC (but not 32K iSAC). -->
+                        <!-- <option value="opus">Opus</option>
+                                                                                <option value="ISAC">iSAC 16K</option>
+                                                                                <option value="G722">G722</option>
+                                                                                <option value="PCMU">PCMU</option>
+                                                                            </select> -->
+                        <button id="callButton" class="btn btn-outline-success text-center">Start</button>
+                        <!-- <button id="hangupButton" class="btn btn-outline-danger">Hang Up</button> -->
                     </div>
                 </div>
 
-                <div id="buttons">
-                    <!-- <select id="codec"> -->
-                    <!-- Codec values are matched with how they appear in the SDP.
-                                            For instance, opus matches opus/48000/2 in Chrome, and ISAC/16000
-                                            matches 16K iSAC (but not 32K iSAC). -->
-                    <!-- <option value="opus">Opus</option>
-                                            <option value="ISAC">iSAC 16K</option>
-                                            <option value="G722">G722</option>
-                                            <option value="PCMU">PCMU</option>
-                                        </select> -->
-                    <button id="callButton" class="btn btn-outline-success">Start</button>
-                    <!-- <button id="hangupButton" class="btn btn-outline-danger">Hang Up</button> -->
-                </div>
                 <!-- <div class="graph-container" id="bitrateGraph">
                                         <div>Bitrate</div>
                                         <canvas id="bitrateCanvas"></canvas>
@@ -149,46 +153,56 @@
                     </div>
                 </div>
 
-                <div class="question">
-                    <form>
-                        <p>1. How do you rate the <b>overall quality</b> of the speech sample played?</p>
-                        <table class="table table-borderless">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Quality of the Speech</th>
-                                    <th scope="col">Score</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><input type="radio" name="rating" id="">
-                                      <label for="text">Excellent</label></td>
-                                    <td>5</td>
-                                </tr>
-                                <tr>
-                                    <td><input type="radio" name="rating" id="">
-                                    <label for="text">Good</label> </td>
-                                    <td>4</td>
-                                </tr>
-                                <tr>
-                                    <td><input type="radio" name="rating" id="">
-                                        <label for="text">Fair</label></td>
-                                    <td>3</td>
-                                </tr>
-                                <tr>
-                                    <td><input type="radio" name="rating" id="">
-                                        <label for="text">Poor</label></td>
-                                    <td>2</td>
-                                </tr>
-                                <tr>
-                                    <td><input type="radio" name="rating" id="">
-                                    <label for="text">Bad</label></td>
-                                    <td>1</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <button type="submit" class="btn btn-outline-success">Submit</button>
-                    </form>
+                <div class="question card border-light mb-3">
+                    <div class="card-body text-dark">
+                        <form id="question">
+                            <h6 class="card-title">1. How do you rate the <b>overall quality</b> of the speech sample
+                                played?</h6>
+                            <table class="table table-borderless">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Quality of the Speech</th>
+                                        <th scope="col">Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <label for="Excellent"><input type="radio" name="rating" id=""
+                                                    value="Excellent" required>
+                                                Excellent</label></td>
+                                        <td>5</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label for="Good"><input type="radio" name="rating" id="" value="Good">
+                                                Good</label> </td>
+                                        <td>4</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label for="Fair"><input type="radio" name="rating" id="" value="Fair">
+                                                Fair</label></td>
+                                        <td>3</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label for="Poor"><input type="radio" name="rating" id="" value="Poor">
+                                                Poor</label></td>
+                                        <td>2</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label for="Poor"><input type="radio" name="rating" id="" value="Bad">
+                                                Bad</label></td>
+                                        <td>1</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <button type="submit" id="answerButton" class="btn btn-outline-success"
+                                onclick="answer()">Submit</button>
+                        </form>
+                    </div>
                 </div>
 
             </div>

@@ -12,7 +12,7 @@ const mongoose = require('mongoose');
 const server = http.createServer(app);
 const io = require("socket.io")(server);
 const basicAuth = require('express-basic-auth');
-let filePath = './public/assets/call-about-the-job.mp3';
+let filePath = './public/assets/sup23_selected_1min/01_2.wav';
 const userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.122 Safari/537.36";
 
 const port = process.env.PORT || 3000;
@@ -43,13 +43,13 @@ app.get('/stream', (req, res) => {
 
 
 // change for server docker
-// mongoose.connect('mongodb://mongo:27017/webrtc', {
-//   useNewUrlParser: true
-// });
-
-mongoose.connect('mongodb://localhost:27017/webrtc', {
+mongoose.connect('mongodb://mongo:27017/webrtc', {
   useNewUrlParser: true
 });
+
+// mongoose.connect('mongodb://localhost:27017/webrtc', {
+//   useNewUrlParser: true
+// });
 
 
 // mongodb connection
@@ -64,6 +64,7 @@ let statSchema = new schema({
   os: { type: String },
   statistics: { type: JSON, required: true },
   type: { type: String, required: true },
+  rating: { type: String },
 });
 
 // let statSchema = new mongoose.Schema({},
