@@ -4,9 +4,9 @@ const hangupButton = document.querySelector('button#hangupButton');
 const divConsultingRoom = document.getElementById("consulting-room");
 // const inputRoomNumber = document.getElementById("room-number");
 // const btnGoRoom = document.getElementById("go-room");
-const table = document.getElementById("table-stats");
+// const table = document.getElementById("table-stats");
 
-table.style.visibility = 'hidden';
+// table.style.visibility = 'hidden';
 
 // for call hangup
 hangupButton.disabled = true;
@@ -88,7 +88,7 @@ console.log("url", url);
 const queryString = window.location.search;
 console.log("queryString", queryString);
 const urlParams = new URLSearchParams(queryString);
-roomNumber = urlParams.get('room');
+roomNumber = urlParams.get('roomNumber');
 console.log(roomNumber);
 if(roomNumber != null){
     socket.emit("create or join", roomNumber);
@@ -106,7 +106,7 @@ socket.on("created", function (room) {
                 isCaller = true;
                 gotLocalMediaStream(stream);
                 socket.emit("ready", roomNumber);
-                table.style.visibility = 'visible';
+                // table.style.visibility = 'visible';
                 hangupButton.style.visibility = 'visible';
                 hangupButton.disabled = false;
                 console.log("room created, track added local");
@@ -214,7 +214,7 @@ function onIceCandidate(event) {
             candidate: event.candidate.candidate,
             room: roomNumber
         });
-        table.style.visibility = 'visible';
+        //table.style.visibility = 'visible';
         hangupButton.style.visibility = 'visible';
         hangupButton.disabled = false;
     }
@@ -269,14 +269,14 @@ function showStats(results) {
             console.log(element);
             if (element.roundTripTime) {
                 rttArr.push(parseInt(element.roundTripTime * 1000));
-                document.getElementById('audio-latency').innerHTML = element.roundTripTime * 1000 + ' ms';
+                // document.getElementById('audio-latency').innerHTML = element.roundTripTime * 1000 + ' ms';
                 averageArray = arr => arr.reduce((prev, curr) => prev + curr) / arr.length;
                 averageLatency = Math.round(averageArray(rttArr) * 100 + Number.EPSILON) / 100;
                 // TODO Standard deviation
                 //console.log(averageLatency);
-                document.getElementById('audio-averageLatency').innerHTML = averageLatency + ' ms';
+                // document.getElementById('audio-averageLatency').innerHTML = averageLatency + ' ms';
             }
-            document.getElementById('audio-packetsLost').innerHTML = element.packetsLost;
+            // document.getElementById('audio-packetsLost').innerHTML = element.packetsLost;
             // TODO packet loss array and average, standard deviation
             // packetsLost = element.packetsLost;
             packetLossArray.push(element.packetsLost);
@@ -294,7 +294,7 @@ function hangup() {
     localAudio.srcObject = null;
     rtcPeerConnection.close();
     hangupButton.disabled = true;
-    table.style.visibility = 'hidden';
+    //table.style.visibility = 'hidden';
     sendData();
 }
 
