@@ -41,8 +41,28 @@
                         </div>
                         <button id="go-room" class="btn btn-outline-primary btn-sm">Go</button>
                     </div> -->
-
-                    <div id="audio">
+                    <div class="instructions">
+                        <div class="card border-dark mb-3" style="margin-top: 30px">
+                            <div class="card-body text-dark">
+                                <h5 class="card-title text-center"><b>Instructions</b></h5>
+                                <p class="">
+                                    The Test requires media permissions from browser,
+                                    so please allow microphone settings when prompted by the browser.<br />
+                                    For the research purposes, your audio maybe recorded and used to determine
+                                    quality of the audio conversation.
+                                </p>
+                                <p class="">
+                                    Please click the <b>Start button</b> and listen to the audio played carefully.
+                                    After the audio is completely played, please select the rating for question about the
+                                    quality of the audio and click submit answer button. After answer is submitted you will
+                                    be provided with a <b>Verification code</b>, please copy the code and paste it to
+                                    <b>Amazon Mechanical Turk</b>.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card border-light mb-3">
+                    <div id="audio" class="card-body text-dark">
                         <div id="consulting-room" style="display: none;">
                             <div class="label">Local Audio</div>
                             <audio id="local-audio" controls autoplay muted></audio>
@@ -52,6 +72,7 @@
                                     <audio id="remote-audio" controls autoplay></audio>
                                 </div> 
                              </div> -->
+                    </div>
                     </div>
                     <div id="buttons" style="display: none;">
                         <select id="codec">
@@ -73,7 +94,7 @@
                         <div id="statsdiv"></div>
                     </td>
                     </tr>
-                    <table id="table-stats">
+                    <!-- <table id="table-stats">
                         <tbody>
                             <tr>
                                 <td>Round Trip Time: </td>
@@ -97,7 +118,7 @@
                             </tr>
                         </tbody>
 
-                    </table>
+                    </table> -->
                 </div>
                 <!-- Modal verification code -->
                 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
