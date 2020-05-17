@@ -292,7 +292,7 @@ function sendData(answer) {
     let localPost = 'http://localhost:3000/stats';
     let serverPost = 'https://conversation-test.qulab.org/stats';
     
-    fetch(localPost , {
+    fetch(serverPost , {
       method: 'POST', // or 'PUT'
       headers: {
         'Content-Type': 'application/json',
@@ -320,8 +320,8 @@ function gotRemoteStream(e) {
     // console.log("switch stream to web audio");
     let remoteStream;
     context.resume();
-    audio2.src = "http://localhost:3000/stream" + "?fileName=" + fileName.toString();
-    //audio2.src = "https://conversation-test.qulab.org/stream/";
+    // audio2.src = "http://localhost:3000/stream" + "?fileName=" + fileName.toString();
+    audio2.src = "https://conversation-test.qulab.org/stream/" + "?fileName=" + fileName.toString();
     //audio2.srcObject = e.streams[0];
     console.log('Received remote stream');
     audio2.addEventListener('ended', (event) => {

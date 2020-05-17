@@ -71,13 +71,13 @@ function streamSwitcher(fileName) {
 }
 
 // change for server docker
-// mongoose.connect('mongodb://mongo:27017/webrtc', {
-//   useNewUrlParser: true
-// });
-
-mongoose.connect('mongodb://localhost:27017/webrtc', {
+mongoose.connect('mongodb://mongo:27017/webrtc', {
   useNewUrlParser: true
 });
+
+// mongoose.connect('mongodb://localhost:27017/webrtc', {
+//   useNewUrlParser: true
+// });
 
 
 // mongodb connection
