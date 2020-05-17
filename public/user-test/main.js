@@ -36,6 +36,13 @@ let sumOfRTT = 0;
 let sumOfPacketLoss = 0;
 let measurements = 0;
 let interval;
+let fileName;
+
+const queryString = window.location.search;
+console.log("queryString", queryString);
+const urlParams = new URLSearchParams(queryString);
+fileName = urlParams.get('fileName');
+console.log(fileName);
 
 /* globals MediaRecorder */
 
@@ -277,11 +284,15 @@ function sendData(answer) {
       os: os,
       browser: browserString.toString(),
       rating: answer,
+      fileName: fileName
     };
     console.log("data sent", data);
     // console.log("browser string", browserString);
     
-    fetch('https://conversation-test.qulab.org/stats', {
+    let localPost = 'http://localhost:3000/stats';
+    let serverPost = 'https://conversation-test.qulab.org/stats';
+    
+    fetch(localPost , {
       method: 'POST', // or 'PUT'
       headers: {
         'Content-Type': 'application/json',
@@ -309,8 +320,8 @@ function gotRemoteStream(e) {
     // console.log("switch stream to web audio");
     let remoteStream;
     context.resume();
-    // audio2.src = "http://localhost:3000/stream";
-    audio2.src = "https://conversation-test.qulab.org/stream/";
+    audio2.src = "http://localhost:3000/stream" + "?fileName=" + fileName.toString();
+    //audio2.src = "https://conversation-test.qulab.org/stream/";
     //audio2.srcObject = e.streams[0];
     console.log('Received remote stream');
     audio2.addEventListener('ended', (event) => {

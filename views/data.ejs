@@ -20,6 +20,8 @@
                 <div class="jumbotron min-vh-100 text-center m-0 bg-light d-flex flex-column">
                     <h1>Conversation Test Statistics</h1>
                     <!-- <%= data %> -->
+                    <a href='/exporttocsv' type="button" id="download" class="btn btn-primary btn-sm"
+                        style="width: 200px;">Export to CSV</a>
                     <table class="table table-hover" style="border-collapse:collapse; margin-top: 30px;">
                         <thead>
                             <tr>
@@ -39,14 +41,9 @@
                             </tr>
                             <tr class="p">
                                 <td class="hiddenRow">
-                                    <div class="accordian-body collapse p-3" id="collapse<%=index%>" data-parent="#accordionExample">
+                                    <div class="accordian-body collapse p-3" id="collapse<%=index%>"
+                                        data-parent="#accordionExample">
                                         <!-- <p>Statistics :</p> -->
-                                        <p>Average Total Trip Time: 
-                                            <span><%= element.statistics.AverageTotalTripTime %></span>
-                                        </p>
-                                        <p>Average Packet Loss:
-                                            <span><%= element.statistics.averagePacktLoss %></span>
-                                        </p>
                                         <% if(element.url) {%>
                                         <p>
                                             Url:
@@ -59,17 +56,32 @@
                                         <p> Rating:
                                             <span><%= element.rating %></span>
                                         </p>
-                                        <p> Browser: 
-                                          <span><%= element.browser %></span>
+                                        <p> Browser:
+                                            <span><%= element.browser %></span>
                                         </p>
                                         <p> Operating System:
                                             <span><%= element.os %></span>
                                         </p>
                                         <% if(element.type == 'USER2FILE'){ %>
-                                            <p> Audio sample:
-                                                <span><%= element.fileName  %></span>
-                                            </p>
+                                        <p> Audio sample:
+                                            <span><%= element.fileName  %></span>
+                                        </p>
                                         <% }%>
+                                        <p>Average Total Trip Time:
+                                            <span><%= element.statistics.AverageTotalTripTime %></span>
+                                        </p>
+                                        <p>Average Packet Loss:
+                                            <span><%= element.statistics.averagePacktLoss %></span>
+                                        </p>
+                                        <p>Sum Total Trip Time:
+                                            <span><%= element.statistics.sumOfRTT %></span>
+                                        </p>
+                                        <p>Sum Packet Loss:
+                                            <span><%= element.statistics.sumOfPacketLoss %></span>
+                                        </p>
+                                        <p>Number of Measurements:
+                                            <span><%= element.statistics.measurements %></span>
+                                        </p>
                                     </div>
                                 </td>
                             </tr>
@@ -98,7 +110,6 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
         integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
         crossorigin="anonymous"></script>
-    <script src="../public/assets/moment.min.js"></script>    
 </body>
 
 </html>
