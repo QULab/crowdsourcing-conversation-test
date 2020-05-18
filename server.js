@@ -71,13 +71,13 @@ function streamSwitcher(fileName) {
 }
 
 // change for server docker
-mongoose.connect('mongodb://mongo:27017/webrtc', {
-  useNewUrlParser: true
-});
-
-// mongoose.connect('mongodb://localhost:27017/webrtc', {
+// mongoose.connect('mongodb://mongo:27017/webrtc', {
 //   useNewUrlParser: true
 // });
+
+mongoose.connect('mongodb://localhost:27017/webrtc', {
+  useNewUrlParser: true
+});
 
 
 // mongodb connection
@@ -116,7 +116,7 @@ app.post('/stats', async (req, res) => {
   const stats = new statModel(req.body);
 
   try {
-    //stats.browser = device;
+    stats.ipAdress = ipAdress;
     await stats.save();
     res.send(stats);
   } catch (err) {
