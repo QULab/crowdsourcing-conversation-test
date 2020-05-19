@@ -85,9 +85,11 @@ app.get('/stream', (req, res) => {
   fileName = req.query.fileName;
   console.log(fileName);
   let filePath = streamSwitcher(fileName.toString());
+  let stat = fs.statSync(filePath);
   console.log(filePath);
   res.writeHead(200, {
     'Content-Type': 'audio/wav',
+    'Content-Length': stat.size
   });
   fs.createReadStream(filePath).pipe(res);
 });
