@@ -331,8 +331,10 @@ function gotRemoteStream(e) {
     // }
     audio2.src = "https://conversation-test.qulab.org/stream/" + "?fileName=" + fileName.toString();
     audio2.onerror = function (error) {
+      if(!audio2.onended){
       location.href = "../404.html";
       console.error(error);
+      }
     }
     //audio2.srcObject = e.streams[0];
     console.log('Received remote stream');
