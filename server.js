@@ -19,7 +19,7 @@ const userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 
 const moment = require('moment');
 // const csv = require('csv-express');
 const json2csv = require('json-2-csv');
-const redisClient = redis.createClient();
+const redisClient = redis.createClient(6379, "webrtc-redis");
 let sessionID;
 
 const port = process.env.PORT || 3000;
