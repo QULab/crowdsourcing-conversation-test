@@ -9,29 +9,29 @@ let type = urlParams.get('type');
 console.log(type);
 let consent;
 
-let checktype = function(){
-    if(type != "USER2FILE") return true;
-    if(type != "USER2USER") return true;
-    return false;
-}
+// let checktype = function(){
+//     if(type != "USER2FILE") return true;
+//     if(type != "USER2USER") return true;
+//     return false;
+// }
 
-let flag = function(){
-    if (type == "USER2FILE") {
-        if (fileName == null){
-            return true;
-        }
-        return false;
-    } else if (type == "USER2USER"){
-        if (roomNumber == null) {
-            return true;
-        }
-        return false;
-    }
-}
+// let flag = function(){
+//     if (type == "USER2FILE") {
+//         if (fileName == null){
+//             return true;
+//         }
+//         return false;
+//     } else if (type == "USER2USER"){
+//         if (roomNumber == null) {
+//             return true;
+//         }
+//         return false;
+//     }
+// }
 
-if (queryString == null || checktype ||  flag ){
-    location.href = "./404.html";
-}
+// if (queryString == null || checktype ||  flag ){
+//     location.href = "./404.html";
+// }
 
 function change_button(checkbx, button_id) {
     var btn = document.getElementById(button_id);
