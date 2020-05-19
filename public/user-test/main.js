@@ -184,8 +184,10 @@ function showStats(results) {
       averagePacktLoss = averageArray(packetLossArray);
     }
   });
+  if(rttArr && rttArr.length){
   sumOfRTT = rttArr.reduce(reducer);
   sumOfPacketLoss = packetLossArray.reduce(reducer);
+  }
 }
 
 function hangup() {
@@ -214,7 +216,9 @@ function answer(){
 
 function sendData(answer) {
   if (rttArr.length) {
-    var hash = CryptoJS.MD5("Message").toString();
+    let r = Math.random().toString(36).substring(10);
+    // console.log("random", r);
+    var hash = CryptoJS.MD5(r).toString();
     //alert(hash);
     // $('#myModalTitle').html(myTitle);
     $('#modalBodyMessage')
@@ -284,7 +288,7 @@ function sendData(answer) {
       os: os,
       browser: browserString.toString(),
       rating: answer,
-      fileName: fileName
+      fileName: fileName,
     };
     console.log("data sent", data);
     // console.log("browser string", browserString);
@@ -321,7 +325,15 @@ function gotRemoteStream(e) {
     let remoteStream;
     context.resume();
     // audio2.src = "http://localhost:3000/stream" + "?fileName=" + fileName.toString();
+    // audio2.onerror = function (error) {
+    //   location.href = "../404.html";
+    //   console.error(error);
+    // }
     audio2.src = "https://conversation-test.qulab.org/stream/" + "?fileName=" + fileName.toString();
+    audio2.onerror = function (error) {
+      location.href = "../404.html";
+      console.error(error);
+    }
     //audio2.srcObject = e.streams[0];
     console.log('Received remote stream');
     audio2.addEventListener('ended', (event) => {

@@ -5,10 +5,12 @@ const app = express();
 const router = express.Router();
 const cors = require('cors');
 const session = require('express-session');
+const { v4: uuidv4 } = require('uuid');
+const redis = require('redis');
+const redisStore = require('connect-redis')(session);
 const http = require("http");
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-
 const server = http.createServer(app);
 const io = require("socket.io")(server);
 const basicAuth = require('express-basic-auth');
@@ -17,6 +19,9 @@ const userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 
 const moment = require('moment');
 // const csv = require('csv-express');
 const json2csv = require('json-2-csv');
+const redisClient = redis.createClient();
+let sessionID;
+
 const port = process.env.PORT || 3000;
 let ipAdress;
 let fileName;
@@ -27,6 +32,37 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.raw());
 
+// change for server docker
+mongoose.connect('mongodb://mongo:27017/webrtc', {
+  useNewUrlParser: true
+});
+
+// mongoose.connect('mongodb://localhost:27017/webrtc', {
+//   useNewUrlParser: true
+// });
+
+// redis 
+redisClient.on('error', (err) => {
+  console.log('Redis error: ', err);
+});
+
+app.use(session({
+  genid: (req) => {
+    return uuidv4();
+  },
+  store: new redisStore({ host: 'webrtc-redis', port: 6379, client: redisClient }),
+  name: '_redisDemo',
+  secret: "54F962E6ECF99",
+  resave: false,
+  cookie: { secure: false, maxAge: 60 * 60 * 24 }, // Set to secure:false and expire in 1 minute for demo purposes
+  saveUninitialized: true
+}));
+
+app.use((req, res, next) => {
+  sessionID = req.sessionID
+  console.info(req.sessionID);
+  next();
+})
 
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -40,11 +76,11 @@ app.get('/stream', (req, res) => {
   console.log(req.query);
   fileName = req.query.fileName;
   console.log(fileName);
+  let filePath = streamSwitcher(fileName.toString());
+  console.log(filePath);
   res.writeHead(200, {
     'Content-Type': 'audio/wav',
   });
-  let filePath = streamSwitcher(fileName.toString());
-  console.log(filePath);
   fs.createReadStream(filePath).pipe(res);
 });
 
@@ -70,16 +106,6 @@ function streamSwitcher(fileName) {
   }
 }
 
-// change for server docker
-// mongoose.connect('mongodb://mongo:27017/webrtc', {
-//   useNewUrlParser: true
-// });
-
-mongoose.connect('mongodb://localhost:27017/webrtc', {
-  useNewUrlParser: true
-});
-
-
 // mongodb connection
 const schema = mongoose.Schema;
 
@@ -95,7 +121,8 @@ let statSchema = new schema({
   rating: { type: String },
   fileName: { type: String },
   ipAdress: { type: Number },
-  testDuration: { type: Number }
+  testDuration: { type: Number },
+  sessionID: { type: String }
 });
 
 // let statSchema = new mongoose.Schema({},
@@ -117,6 +144,7 @@ app.post('/stats', async (req, res) => {
 
   try {
     stats.ipAdress = ipAdress;
+    stats.sessionID = sessionID;
     await stats.save();
     res.send(stats);
   } catch (err) {
@@ -143,11 +171,11 @@ app.get('/exporttocsv', basicAuth({
   challenge: true,
   users: { 'admin': 'supersecret' }
 }), async (req, res) => {
-    var ts = Date.now();
-    var date = new Date(ts);
-    var filename = date.toISOString() + "-conversationtest.csv";
-    var dataArray;
-  
+  var ts = Date.now();
+  var date = new Date(ts);
+  var filename = date.toISOString() + "-conversationtest.csv";
+  var dataArray;
+
   statModel.find({}).sort({ timestamp: 'desc' }).lean().exec({}).then(data => {
     json2csv.json2csv({ data: data }, function (err, csvStr) {
       if (err) {
