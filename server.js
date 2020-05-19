@@ -20,6 +20,7 @@ const moment = require('moment');
 // const csv = require('csv-express');
 const json2csv = require('json-2-csv');
 const redisClient = redis.createClient(6379, "webrtc-redis");
+// const redisClient = redis.createClient();
 let sessionID;
 
 const port = process.env.PORT || 3000;
@@ -61,8 +62,15 @@ app.use(session({
 app.use((req, res, next) => {
   sessionID = req.sessionID
   console.info(req.sessionID);
+  let fileP = req.query.fileName;
+  if(fileP != null){
+  fileP = streamSwitcher(fileP);
+  if(fileP == "file not found"){
+    res.sendFile('404.html', { root: "public" });
+  }
+}
   next();
-})
+});
 
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -120,7 +128,7 @@ let statSchema = new schema({
   type: { type: String, required: true },
   rating: { type: String },
   fileName: { type: String },
-  ipAdress: { type: Number },
+  ipAdress: { type: String },
   testDuration: { type: Number },
   sessionID: { type: String }
 });
