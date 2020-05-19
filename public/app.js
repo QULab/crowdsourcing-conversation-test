@@ -12,6 +12,7 @@ let consent;
 let checktype = function(){
     if(type != "USER2FILE") return true;
     if(type != "USER2USER") return true;
+    return false;
 }
 
 let flag = function(){
