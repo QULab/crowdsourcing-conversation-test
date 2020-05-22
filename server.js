@@ -19,8 +19,8 @@ const userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 
 const moment = require('moment');
 // const csv = require('csv-express');
 const json2csv = require('json-2-csv');
-const redisClient = redis.createClient(6379, "webrtc-redis");
-// const redisClient = redis.createClient();
+// const redisClient = redis.createClient(6379, "webrtc-redis");
+const redisClient = redis.createClient();
 let sessionID;
 
 const port = process.env.PORT || 3000;
@@ -34,30 +34,30 @@ app.use(bodyParser.json());
 app.use(bodyParser.raw());
 
 // change for server docker
-mongoose.connect('mongodb://mongo:27017/webrtc', {
-  useNewUrlParser: true
-});
-
-// mongoose.connect('mongodb://localhost:27017/webrtc', {
+// mongoose.connect('mongodb://mongo:27017/webrtc', {
 //   useNewUrlParser: true
 // });
 
-// redis 
-redisClient.on('error', (err) => {
-  console.log('Redis error: ', err);
+mongoose.connect('mongodb://localhost:27017/webrtc', {
+  useNewUrlParser: true
 });
 
-app.use(session({
-  genid: (req) => {
-    return uuidv4();
-  },
-  store: new redisStore({ host: 'webrtc-redis', port: 6379, client: redisClient }),
-  name: '_redisDemo',
-  secret: "54F962E6ECF99",
-  resave: false,
-  cookie: { secure: false, maxAge: 60 * 60 * 24 }, // Set to secure:false and expire in 1 minute for demo purposes
-  saveUninitialized: true
-}));
+// redis 
+// redisClient.on('error', (err) => {
+//   console.log('Redis error: ', err);
+// });
+
+// app.use(session({
+//   genid: (req) => {
+//     return uuidv4();
+//   },
+//   store: new redisStore({ host: 'webrtc-redis', port: 6379, client: redisClient }),
+//   name: '_redisDemo',
+//   secret: "54F962E6ECF99",
+//   resave: false,
+//   cookie: { secure: false, maxAge: 60 * 60 * 24 }, // Set to secure:false and expire in 1 minute for demo purposes
+//   saveUninitialized: true
+// }));
 
 app.use((req, res, next) => {
   sessionID = req.sessionID
@@ -132,7 +132,7 @@ let statSchema = new schema({
   fileName: { type: String },
   ipAdress: { type: String },
   testDuration: { type: Number },
-  sessionID: { type: String }
+  //sessionID: { type: String }
 });
 
 // let statSchema = new mongoose.Schema({},
