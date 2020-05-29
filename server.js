@@ -86,10 +86,24 @@ app.get('/stream', (req, res) => {
   console.log(fileName);
   let filePath = streamSwitcher(fileName.toString());
   let stat = fs.statSync(filePath);
+
+  let chunkSize = 1024 * 1024;
+  if (stat.size > chunkSize * 2) {
+    chunkSize = Math.ceil(stat.size * 1);
+  }
+  let range = (req.headers.range) ? req.headers.range.replace(/bytes=/, "").split("-") : [];
+
+  range[0] = range[0] ? parseInt(range[0], 10) : 0;
+  range[1] = range[1] ? parseInt(range[1], 10) : range[0] + chunkSize;
+  if (range[1] > stat.size - 1) {
+    range[1] = stat.size - 1;
+  }
+  range = { start: range[0], end: range[1] };
   console.log(filePath);
   res.writeHead(200, {
     'Content-Type': 'audio/wav',
-    'Content-Length': stat.size
+    'Content-Range': 'bytes ' + range.start + '-' + range.end + '/' + stat.size,
+    'Content-Length': range.end - range.start,
   });
   fs.createReadStream(filePath).pipe(res);
 });
