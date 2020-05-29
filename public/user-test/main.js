@@ -38,6 +38,8 @@ let measurements = 0;
 let interval;
 let fileName;
 
+$("#table :input[type=radio]").prop('disabled', true);
+
 const queryString = window.location.search;
 console.log("queryString", queryString);
 const urlParams = new URLSearchParams(queryString);
@@ -344,6 +346,7 @@ function gotRemoteStream(e) {
         // location.href = "../404.html";
       }
     }
+    audio2.preload ="none";
     //audio2.srcObject = e.streams[0];
     console.log('Received remote stream');
     
@@ -355,6 +358,7 @@ function gotRemoteStream(e) {
         // hangup and send data
         answerButton.disabled = false;
         hangup();
+      $("#table :input[type=radio]").prop('disabled', false);
         // show('question');
     });
     

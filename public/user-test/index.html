@@ -29,17 +29,20 @@
                         <div class="card-body text-dark">
                             <h5 class="card-title text-center"><b>Instructions</b></h5>
                             <p class="">
-                                The Test requires media permissions from browser,
-                                so please allow microphone settings when prompted by the browser.<br />
-                                For the research purposes, your audio maybe recorded and used to determine
-                                quality of the audio conversation.
+                            The audio file will be streamed to your device, therefore 
+                            The test requires media permissions from the browser, so
+                            please allow microphone settings when prompted by the browser.<br />
                             </p>
                             <p class="">
-                                Please click the <b>Start button</b> and listen to the audio played carefully.
-                                After the audio is completely played, please select the rating for question about the
-                                quality of the audio and click submit answer button. After answer is submitted you will
-                                be provided with a <b>Verification code</b>, please copy the code and paste it to
-                                <b>Amazon Mechanical Turk</b>.
+                              <b>Steps:</b><br>
+                              <ol>
+                                  <li>Click on the <b>Start</b> button and listen to the audio 
+                                      file carefully until the end.</li>
+                                  <li>Rate the quality on the speech clip you listened to.</li>
+                                  <li><b>Submit</b> your answer</li>
+                                  <li>You will be provided with a <b>Verification code</b>, please copy the code and paste it to
+                                <b>Amazon Mechanical Turk</b>.</li>
+                              </ol>
                             </p>
                         </div>
                     </div>
@@ -52,7 +55,7 @@
                         </div>
                         <div>
                             <!-- <div class="label">Remote audio:</div> -->
-                            <audio id="audio2" autoplay controls></audio>
+                            <audio id="audio2" controls controlsList="nodownload nofullscreen noremoteplayback" ></audio>
                         </div>
                     </div>
 
@@ -156,9 +159,10 @@
                 <div class="question card border-light mb-3">
                     <div class="card-body text-dark">
                         <form id="question">
-                            <h6 class="card-title">1. How do you rate the <b>overall quality</b> of the speech sample
+                            <h6 class="card-title">1. How do you rate the 
+                                <b>overall quality</b> of the speech sample
                                 played?</h6>
-                            <table class="table table-borderless">
+                            <table class="table table-borderless" id="table">
                                 <thead>
                                     <tr>
                                         <th scope="col">Quality of the Speech</th>
