@@ -110,19 +110,19 @@ app.get('/stream', (req, res) => {
 
 function streamSwitcher(fileName) {
   switch (fileName) {
-    case '01_2.wav':
+    case '01_2':
 
       return './public/assets/sup23_selected_1min/01_2.wav';
-    case '17_2.wav':
+    case '17_2':
 
       return './public/assets/sup23_selected_1min/17_2.wav';
-    case '21_2.wav':
+    case '21_2':
 
       return './public/assets/sup23_selected_1min/21_2.wav';
-    case '32_2.wav':
+    case '32_2':
 
       return './public/assets/sup23_selected_1min/32_2.wav';
-    case '46_2.wav':
+    case '46_2':
 
       return './public/assets/sup23_selected_1min/46_2.wav';
     default:
