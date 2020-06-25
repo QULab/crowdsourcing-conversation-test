@@ -38,7 +38,7 @@ app.use(bodyParser.raw());
 //   useNewUrlParser: true
 // });
 
-mongoose.connect('mongodb://localhost:27017/webrtc', {
+mongoose.connect('mongodb+srv://pavan:bitnance210@cluster0.0il5v.mongodb.net/webtrc?retryWrites=true&w=majority', {
   useNewUrlParser: true
 });
 
