@@ -325,7 +325,7 @@ function sendData(answer) {
     let localPost = 'http://localhost:3000/stats';
     let serverPost = 'https://conversation-test.qulab.org/stats';
     
-    fetch(localPost , {
+    fetch(serverPost , {
       method: 'POST', // or 'PUT'
       headers: {
         'Content-Type': 'application/json',
@@ -355,21 +355,21 @@ function gotRemoteStream(e) {
     let streamEnded = false;
     context.resume();
     
-    audio2.src = "http://localhost:3000/stream" + "?fileName=" + fileName.toString();
-    audio2.onerror = function (error) {
-      if (!streamEnded) {
-        location.href = "../404.html";
-        console.error(error);
-      }
-    }
-    
-    // audio2.src = "https://conversation-test.qulab.org/stream/" + "?fileName=" + fileName.toString();
+    // audio2.src = "http://localhost:3000/stream" + "?fileName=" + fileName.toString();
     // audio2.onerror = function (error) {
     //   if (!streamEnded) {
+    //     location.href = "../404.html";
     //     console.error(error);
-    //     // location.href = "../404.html";
     //   }
     // }
+    
+    audio2.src = "https://conversation-test.qulab.org/stream/" + "?fileName=" + fileName.toString();
+    audio2.onerror = function (error) {
+      if (!streamEnded) {
+        console.error(error);
+        // location.href = "../404.html";
+      }
+    }
     audio2.preload ="none";
     audio2.play();
     //audio2.srcObject = e.streams[0];
