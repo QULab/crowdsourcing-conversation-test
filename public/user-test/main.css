@@ -23,6 +23,11 @@ button {
   margin-left: 20px;
 }
 
+#play-pause-button {
+  font-size: 50px;
+  cursor: pointer;
+}
+
 
 /* table {
     border-collapse: collapse;

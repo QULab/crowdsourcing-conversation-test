@@ -2,7 +2,8 @@
 
 const audio1 = document.querySelector('audio#audio1');
 const audio2 = document.querySelector('audio#audio2');
-const callButton = document.querySelector('button#callButton');
+const callButton = document.getElementById('callButton');
+// const callButton = document.querySelector('button#callButton');
 const question = document.getElementsByClassName('.question');
 const answerButton = document.getElementById('answerButton');
 // const hangupButton = document.querySelector('button#hangupButton');
@@ -94,6 +95,26 @@ function show(div){
   $("." + div ).show();
 }
 
+$('#audio2').on('timeupdate', function () {
+  $('#seekbar').attr("value", this.currentTime / this.duration);
+})
+
+function SetVolume(val) {
+  var player = document.getElementById('audio2');
+  // console.log('Before: ' + player.volume);
+  player.volume = val / 100;
+  // console.log('After: ' + player.volume);
+}
+
+var update = setInterval(function () {
+  var mins = Math.floor(audio2.currentTime / 60);
+  var secs = Math.floor(audio2.currentTime % 60);
+  if (secs < 10) {
+    secs = '0' + String(secs);
+  }
+  timer.innerHTML = mins + ':' + secs;
+}, 10);
+
 const offerOptions = {
   offerToReceiveAudio: 1,
   offerToReceiveVideo: 0,
@@ -102,6 +123,7 @@ const offerOptions = {
 
 function gotStream(stream) {
   audio1.muted = true
+  audio2.play();
   // hangupButton.disabled = false;
   console.log('Received local stream');
   localStream = stream;
@@ -120,6 +142,8 @@ function gotStream(stream) {
 function onCreateSessionDescriptionError(error) {
   // console.log(`Failed to create session description: ${error.toString()}`);
 }
+
+
 
 function call() {
   callButton.disabled = true;
@@ -205,7 +229,7 @@ function hangup() {
   pc2 = null;
   audio2.src = null;
   // hangupButton.disabled = true;
-  callButton.disabled = false;
+  // callButton.disabled = true;
 }
 
 function answer(){
@@ -347,6 +371,7 @@ function gotRemoteStream(e) {
     //   }
     // }
     audio2.preload ="none";
+    audio2.play();
     //audio2.srcObject = e.streams[0];
     console.log('Received remote stream');
     
