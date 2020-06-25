@@ -51,7 +51,7 @@ app.use(session({
   genid: (req) => {
     return uuidv4();
   },
-  store: new redisStore({ host: 'webrtc-redis', port: 6379, client: redisClient }),
+  store: new redisStore({ host: 'redis', port: 6379, client: redisClient }),
   name: '_redisDemo',
   secret: "54F962E6ECF99",
   resave: false,
