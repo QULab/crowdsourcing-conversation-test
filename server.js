@@ -19,8 +19,8 @@ const userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 
 const moment = require('moment');
 // const csv = require('csv-express');
 const json2csv = require('json-2-csv');
-const redisClient = redis.createClient(6379, "webrtc-redis");
-// const redisClient = redis.createClient();
+// const redisClient = redis.createClient(6379, "webrtc-redis");
+const redisClient = redis.createClient();
 let sessionID;
 
 const port = process.env.PORT || 3000;
@@ -34,13 +34,13 @@ app.use(bodyParser.json());
 app.use(bodyParser.raw());
 
 // change for server docker
-mongoose.connect('mongodb://mongo:27017/webrtc', {
-  useNewUrlParser: true
-});
-
-// mongoose.connect('mongodb://localhost:27017/webrtc', {
+// mongoose.connect('mongodb://mongo:27017/webrtc', {
 //   useNewUrlParser: true
 // });
+
+mongoose.connect('mongodb://localhost:27017/webrtc', {
+  useNewUrlParser: true
+});
 
 // redis 
 redisClient.on('error', (err) => {
