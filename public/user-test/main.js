@@ -323,7 +323,7 @@ function sendData(answer) {
     // console.log("browser string", browserString);
     
     let localPost = 'http://localhost:3000/stats';
-    let serverPost = 'https://conversation-test.qulab.org/stats';
+    let serverPost = 'https://webrtc.pavanct.com/stats';
     
     fetch(serverPost , {
       method: 'POST', // or 'PUT'
@@ -363,7 +363,7 @@ function gotRemoteStream(e) {
     //   }
     // }
     
-    audio2.src = "https://conversation-test.qulab.org/stream/" + "?fileName=" + fileName.toString();
+    audio2.src = "https://webrtc.pavanct.com/stream/" + "?fileName=" + fileName.toString();
     audio2.onerror = function (error) {
       if (!streamEnded) {
         console.error(error);
