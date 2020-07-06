@@ -219,6 +219,10 @@ function showStats(results) {
   }
 }
 
+function hideID(div) {
+  $("#" + div).hide();
+}
+
 function hangup() {
   console.log('Ending call');
   clearInterval(interval);
@@ -230,6 +234,8 @@ function hangup() {
   audio2.src = null;
   // hangupButton.disabled = true;
   // callButton.disabled = true;
+  hideID("progress");
+  location.href="#question";
 }
 
 function answer(){
@@ -363,7 +369,7 @@ function gotRemoteStream(e) {
     //   }
     // }
     
-    audio2.src = "https://webrtc.pavanct.com/stream/" + "?fileName=" + fileName.toString();
+    audio2.src = "http://webrtc.pavanct.com:3000/stream/" + "?fileName=" + fileName.toString();
     audio2.onerror = function (error) {
       if (!streamEnded) {
         console.error(error);

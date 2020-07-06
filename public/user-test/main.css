@@ -67,3 +67,7 @@ div.graph-container {
 a#viewSource {
   clear: both;
 }
+
+#player{
+  text-align: center;
+}

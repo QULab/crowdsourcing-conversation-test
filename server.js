@@ -20,7 +20,7 @@ const moment = require('moment');
 // const csv = require('csv-express');
 const json2csv = require('json-2-csv');
 const redisClient = redis.createClient(6379, "redis");
-// const redisClient = redis.createClient();
+//const redisClient = redis.createClient();
 let sessionID;
 
 const port = process.env.PORT || 3000;
@@ -52,7 +52,7 @@ app.use(session({
     return uuidv4();
   },
   store: new redisStore({ host: 'redis', port: 6379, client: redisClient }),
-  name: '_redisDemo',
+  name: 'webrtc',
   secret: "54F962E6ECF99",
   resave: false,
   cookie: { secure: false, maxAge: 60 * 60 * 24 }, // Set to secure:false and expire in 1 minute for demo purposes
