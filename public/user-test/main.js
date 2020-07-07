@@ -377,7 +377,7 @@ function gotRemoteStream(e) {
       }
     }
     audio2.preload ="none";
-    audio2.play();
+    // audio2.play();
     //audio2.srcObject = e.streams[0];
     console.log('Received remote stream');
     
