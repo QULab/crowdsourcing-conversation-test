@@ -38,8 +38,10 @@ AudioContext = window.AudioContext || window.webkitAudioContext;
 const context = new AudioContext();
 let destination = context.createMediaStreamDestination();
 context.audioWorklet.addModule('js/white-noise-processor.js');
+context.audioWorklet.addModule('js/slap-back-delay');
 let gainNode = context.createGain();
 gainNode.gain.value = 0.1;
+let oscillator = context.createOscillator();
 
 
 let averageLatency;
@@ -78,6 +80,10 @@ if (navigator.userAgent.indexOf("like Mac") != -1) os =
     "iOS";
 os = os.toString();
 
+let noise = false;
+let oscillate = false;
+let slapback = false;
+let delay = false;
 
 const url = window.location.href;
 console.log("url", url);
@@ -85,11 +91,13 @@ const queryString = window.location.search;
 console.log("queryString", queryString);
 const urlParams = new URLSearchParams(queryString);
 roomNumber = urlParams.get('roomNumber');
+noise = urlParams.get('noise')
 console.log(roomNumber);
 if (roomNumber != null) {
     socket.emit("create or join", roomNumber);
     // divConsultingRoom.style = "display: block";
 }
+
 
 // on creating the room - call initiator 
 socket.on("created", function (room) {
@@ -261,17 +269,43 @@ function onAddStream(event) {
         // true causes WebRTC getStats() receive track audioLevel == 0
         audio3.muted = false;
 
-        const input = context.createMediaStreamSource(audio3.srcObject);
-        // const delayNode = context.createDelay(10);
-        // delayNode.delayTime.value = 6; // delay by seconds
-        // input.connect(delayNode);
-        // delayNode.connect(destination);
-        // console.log("delay", delayNode.delayTime);
-        const whiteNoiseNode = new AudioWorkletNode(context, 'white-noise-processor');
-        input.connect(gainNode);
-        whiteNoiseNode.connect(gainNode);
-        gainNode.connect(context.destination);
-        // console.log(destination);
+        if(delay){
+            const delayNode = context.createDelay(10);
+            delayNode.delayTime.value = 6; // delay by seconds
+            input.connect(delayNode);
+            delayNode.connect(destination);
+            console.log("delay", delayNode.delayTime);
+        }
+        if (noise) {
+            const input = context.createMediaStreamSource(audio3.srcObject);
+            const whiteNoiseNode = new AudioWorkletNode(context, 'white-noise-processor');
+            input.connect(gainNode);
+            whiteNoiseNode.connect(gainNode);
+            gainNode.connect(context.destination);
+        }
+        
+        // oscillator
+        // const input = context.createMediaStreamSource(audio3.srcObject);
+        // input.connect(gainNode);
+        if(oscillate){
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(200, context.currentTime); // value in hertz
+        oscillator.connect(context.destination);
+        oscillator.start()
+        }
+
+        // reverb
+        if(slapback){
+        //create a couple of native nodes and our custom node
+        let gain = context.createGain();
+        const slapBackNode = new AudioWorkletNode(context, 'slap-back-delay');
+        const anotherGain = context.createGain();
+
+        //connect our custom node to the native nodes and send to the output
+        gain.connect(slapBackNode.input);
+        customNode.connect(anotherGain);
+        anotherGain.connect(context.destination);
+        }
     };
 
     // console.log("local stream", localStream);
@@ -283,6 +317,7 @@ function onAddStream(event) {
     }, 1000)
 
 }
+
 
 // getStats using webrtc peerConnection.getstats()
 function showStats(results) {
@@ -316,8 +351,9 @@ function showStats(results) {
 function hangup() {
     console.log('Ending call');
     localStream.id = null;
-    audioContainer = null;
-    localAudio.srcObject = null;
+    oscillator.stop();
+    // audioContainer = null;
+    // localAudio.srcObject = null;
     rtcPeerConnection.close();
     hangupButton.disabled = true;
     //table.style.visibility = 'hidden';
