@@ -30,9 +30,10 @@ let localStreamNode;
 
 let rtcPeerConnection = new RTCPeerConnection(iceServers);
 
-var context = new AudioContext();
+let context = new AudioContext();
 let outgoingRemoteStreamNode = context.createMediaStreamDestination();
 let outgoingRemoteGainNode = context.createGain();
+let synthDelay = context.createDelay(5.0);
 
 let averageLatency;
 let averageArray;
@@ -242,12 +243,33 @@ function setLocalAnswer(sessionDescription) {
 
 function onAddStream(event) {
 
-    console.log("ondAddStream", event.streams);
+    // console.log("ondAddStream", event.streams);
+    // add delay using webaudio
+    
+    
     audioContainer = document.createElement("audio");
     audioContainer.setAttribute("width", "max-content");
     audioContainer.setAttribute("autoplay", true);
-    audioContainer.srcObject = event.streams[0];
+    audioContainer.srcObject = event.streams[0].clone();
     divConsultingRoom.appendChild(audioContainer);
+    console.log("adding delay");
+    audioContainer.onloadedmetadata = () => {
+
+        // controls if original stream should also be played
+        // true causes WebRTC getStats() receive track audioLevel == 0
+        audioContainer.muted = false;
+
+        const input = context.createMediaStreamSource(audioContainer.srcObject);
+        const delayNode = context.createDelay();
+        delayNode.delayTime.value = 3; // delay by seconds
+        input.connect(delayNode);
+        delayNode.connect(context.destination);
+        // audioContainer1 = document.createElement("audio");
+        // audioContainer1.setAttribute("width", "max-content");
+        // audioContainer1.setAttribute("autoplay", true);
+        // audioContainer1.srcObject = input.mediaStream;
+        // divConsultingRoom.appendChild(audioContainer1);
+    };
     console.log("local stream", localStream);
 
     setInterval(() => {
@@ -363,7 +385,7 @@ function sendData() {
             type: "USER2USER",
         };
         console.log("data sent", data);
-        fetch('https://conversation-test.qulab.org/stats', {   // always change to listen to server specific before docker build
+        fetch('https://webrtc.pavanct.com/stats', {   // always change to listen to server specific before docker build
             method: 'POST', // or 'PUT'
             headers: {
                 'Content-Type': 'application/json',
@@ -383,6 +405,8 @@ function sendData() {
         };    
     }  
 }
+
+/*
 
 // gotremotestream -- roomnumber 2
 function gotRemoteStream(event) {
@@ -474,4 +498,4 @@ function gotLocalMediaStream(mediaStream) {
     console.log('Connected localStreamNode.');
 }
 
-// Recording
+*/
