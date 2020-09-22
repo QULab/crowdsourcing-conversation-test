@@ -1,3 +1,5 @@
+'use strict';
+
 const localAudio = document.querySelector('audio#local-audio');
 const hangupButton = document.querySelector('button#hangupButton');
 //const divSelectRoom = document.getElementById("select-room");
@@ -29,10 +31,16 @@ let audioContainer1;
 let socket = io();
 
 let localStreamNode;
+let filteredStream;
 
 let rtcPeerConnection = new RTCPeerConnection(iceServers);
+AudioContext = window.AudioContext || window.webkitAudioContext;
+const context = new AudioContext();
+let destination = context.createMediaStreamDestination();
+context.audioWorklet.addModule('js/white-noise-processor.js');
+let gainNode = context.createGain();
+gainNode.gain.value = 0.1;
 
-let context = new AudioContext();
 
 let averageLatency;
 let averageArray;
@@ -57,7 +65,7 @@ let browser = (function (agent) {
 console.log(window.navigator.userAgent.toLowerCase() + "\n" + browser);
 browser = browser.toString();
 
-let os = "Unknown OS"; 
+let os = "Unknown OS";
 if (navigator.userAgent.indexOf("Win") != -1) os =
     "Windows OS";
 if (navigator.userAgent.indexOf("Mac") != -1) os =
@@ -67,32 +75,20 @@ if (navigator.userAgent.indexOf("Linux") != -1) os =
 if (navigator.userAgent.indexOf("Android") != -1) os =
     "Android OS";
 if (navigator.userAgent.indexOf("like Mac") != -1) os =
-    "iOS"; 
-os = os.toString();  
+    "iOS";
+os = os.toString();
 
-// Room code
-// btnGoRoom.onclick = function () {
-//     if (inputRoomNumber.value === "") {
-//         alert("Please enter a room number");
-//     } else {
-//         roomNumber = inputRoomNumber.value;
 
-//         socket.emit("create or join", roomNumber);
-
-//         divSelectRoom.style = "display: none";
-//         divConsultingRoom.style = "display: block";
-//     }
-// };
 const url = window.location.href;
-console.log("url", url); 
+console.log("url", url);
 const queryString = window.location.search;
 console.log("queryString", queryString);
 const urlParams = new URLSearchParams(queryString);
 roomNumber = urlParams.get('roomNumber');
 console.log(roomNumber);
-if(roomNumber != null){
+if (roomNumber != null) {
     socket.emit("create or join", roomNumber);
-    divConsultingRoom.style = "display: block";
+    // divConsultingRoom.style = "display: block";
 }
 
 // on creating the room - call initiator 
@@ -102,7 +98,8 @@ socket.on("created", function (room) {
         streamConstraints).then(
             (stream) => {
                 localStream = stream;
-                localAudio.srcObject = stream;
+                // localAudio.srcObject = stream;
+
                 isCaller = true;
                 // gotLocalMediaStream(stream);
                 socket.emit("ready", roomNumber);
@@ -123,9 +120,8 @@ socket.on("joined", function (room) {
         (stream) => {
             console.log("stream inside socket joined", stream);
             console.log("switching stream to audio file");
-            // TODO switch stream from microphone to local file
             localStream = stream;
-            localAudio.srcObject = stream;
+            // localAudio.srcObject = stream;
             socket.emit("ready", roomNumber);
         }
     );
@@ -142,6 +138,7 @@ socket.on("ready", function () {
         console.log("caller stream", localStream);
 
         for (const track of localStream.getTracks()) {
+            console.log("tracks", localStream);
             rtcPeerConnection.addTrack(track, localStream);
         }
 
@@ -242,43 +239,42 @@ function setLocalAnswer(sessionDescription) {
 
 function onAddStream(event) {
 
-    // console.log("ondAddStream", event.streams);
+    console.log("ondAddStream", event.streams);
     // add delay using webaudio
-    
-    
+
+
     // audioContainer = document.createElement("audio");
     // audioContainer.setAttribute("width", "max-content");
     // audioContainer.setAttribute("autoplay", true);
     // audioContainer.srcObject = event.streams[0].clone();
-    audio2 = new Audio();
-    audio2.srcObject = event.streams[0].clone();
-    audio2.autoplay = true;    
+    // let audio2 = new Audio();
+    // audio2.srcObject = event.streams[0].clone();
+    // audio2.autoplay = true;    
     // divConsultingRoom.appendChild(audioContainer);
+    let audio3 = new Audio();
+    audio3.srcObject = event.streams[0];
+    audio3.autoplay = true;
     console.log("adding delay");
-    let destination = context.createMediaStreamDestination();
-    audio2.onloadedmetadata = () => {
+    audio3.onloadedmetadata = () => {
 
         // controls if original stream should also be played
         // true causes WebRTC getStats() receive track audioLevel == 0
-        audio2.muted = true;
+        audio3.muted = false;
 
-        const input = context.createMediaStreamSource(audio2.srcObject);
-        const delayNode = context.createDelay(10);
-        delayNode.delayTime.value = 10; // delay by seconds
-        input.connect(delayNode);
-       
-        delayNode.connect(destination);
-        console.log("delay", delayNode.delayTime);
-
-        // audioContainer1 = document.createElement("audio");
-        // audioContainer1.setAttribute("width", "max-content");
-        // audioContainer1.setAttribute("autoplay", true);
-        // divConsultingRoom.appendChild(audioContainer1);
+        const input = context.createMediaStreamSource(audio3.srcObject);
+        // const delayNode = context.createDelay(10);
+        // delayNode.delayTime.value = 6; // delay by seconds
+        // input.connect(delayNode);
+        // delayNode.connect(destination);
+        // console.log("delay", delayNode.delayTime);
+        const whiteNoiseNode = new AudioWorkletNode(context, 'white-noise-processor');
+        input.connect(gainNode);
+        whiteNoiseNode.connect(gainNode);
+        gainNode.connect(context.destination);
+        // console.log(destination);
     };
-    audio3 = new Audio();
-    audio3.srcObject = destination.stream;
-    audio3.autoplay = true; 
-    console.log("local stream", localStream);
+
+    // console.log("local stream", localStream);
 
     setInterval(() => {
         rtcPeerConnection.getStats(null).then(showStats, err =>
@@ -377,7 +373,7 @@ function sendData() {
         hideTooltip(btn);
     });
 
-    if(rttArr.length){
+    if (rttArr.length) {
         // post data to backend after hangup
         const data = {
             verificationCode: hash,
@@ -407,12 +403,13 @@ function sendData() {
             .catch((error) => {
                 console.error('Error:', error);
             });
-        
+
         document.getElementById("modalButton").onclick = function () {
             location.href = "../index.html";
-        };    
-    }  
+        };
+    }
 }
+
 
 /*
 
@@ -455,7 +452,7 @@ async function setupLocalMediaStreamsFromFile(filepath) {
 
         });
 
-        // We need a media stream for WebRTC 
+        // We need a media stream for WebRTC
         // so run our MediaSource through a muted HTML audio element
         // and grab its stream via captureStream()
         audioContainer = document.createElement("audio");
