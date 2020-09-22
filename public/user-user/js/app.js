@@ -265,11 +265,11 @@ function onAddStream(event) {
         input.connect(delayNode);
         delayNode.connect(context.destination);
         console.log("delay", delayNode.delayTime);
-        // audioContainer1 = document.createElement("audio");
-        // audioContainer1.setAttribute("width", "max-content");
-        // audioContainer1.setAttribute("autoplay", true);
-        // audioContainer1.srcObject = input.mediaStream;
-        // divConsultingRoom.appendChild(audioContainer1);
+        audioContainer1 = document.createElement("audio");
+        audioContainer1.setAttribute("width", "max-content");
+        audioContainer1.setAttribute("autoplay", true);
+        audioContainer1.srcObject = input.mediaStream;
+        divConsultingRoom.appendChild(audioContainer1);
     };
     console.log("local stream", localStream);
 
