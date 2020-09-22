@@ -260,10 +260,11 @@ function onAddStream(event) {
         audioContainer.muted = false;
 
         const input = context.createMediaStreamSource(audioContainer.srcObject);
-        const delayNode = context.createDelay();
-        delayNode.delayTime.value = 3; // delay by seconds
+        const delayNode = context.createDelay(4);
+        delayNode.delayTime.value = 4; // delay by seconds
         input.connect(delayNode);
         delayNode.connect(context.destination);
+        console.log("delay", delayNode.delayTime);
         // audioContainer1 = document.createElement("audio");
         // audioContainer1.setAttribute("width", "max-content");
         // audioContainer1.setAttribute("autoplay", true);
