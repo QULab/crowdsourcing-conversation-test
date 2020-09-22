@@ -33,9 +33,6 @@ let localStreamNode;
 let rtcPeerConnection = new RTCPeerConnection(iceServers);
 
 let context = new AudioContext();
-let outgoingRemoteStreamNode = context.createMediaStreamDestination();
-let outgoingRemoteGainNode = context.createGain();
-let synthDelay = context.createDelay(5.0);
 
 let averageLatency;
 let averageArray;
@@ -107,7 +104,7 @@ socket.on("created", function (room) {
                 localStream = stream;
                 localAudio.srcObject = stream;
                 isCaller = true;
-                gotLocalMediaStream(stream);
+                // gotLocalMediaStream(stream);
                 socket.emit("ready", roomNumber);
                 // table.style.visibility = 'visible';
                 hangupButton.style.visibility = 'visible';
@@ -252,7 +249,7 @@ function onAddStream(event) {
     audioContainer = document.createElement("audio");
     audioContainer.setAttribute("width", "max-content");
     audioContainer.setAttribute("autoplay", true);
-    // audioContainer.srcObject = event.streams[0].clone();
+    audioContainer.srcObject = event.streams[0].clone();
     let inputStream = event.streams[0].clone();
     divConsultingRoom.appendChild(audioContainer);
     console.log("adding delay");
@@ -293,7 +290,7 @@ function showStats(results) {
         resultArr.push(element);
         //console.log(resultArr);
         if (element.type == 'remote-inbound-rtp') {
-            console.log(element);
+            // console.log(element);
             if (element.roundTripTime) {
                 rttArr.push(parseInt(element.roundTripTime * 1000));
                 // document.getElementById('audio-latency').innerHTML = element.roundTripTime * 1000 + ' ms';
