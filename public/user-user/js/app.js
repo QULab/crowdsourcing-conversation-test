@@ -246,32 +246,38 @@ function onAddStream(event) {
     // add delay using webaudio
     
     
-    audioContainer = document.createElement("audio");
-    audioContainer.setAttribute("width", "max-content");
-    audioContainer.setAttribute("autoplay", true);
-    audioContainer.srcObject = event.streams[0].clone();
-    let inputStream = event.streams[0].clone();
-    divConsultingRoom.appendChild(audioContainer);
+    // audioContainer = document.createElement("audio");
+    // audioContainer.setAttribute("width", "max-content");
+    // audioContainer.setAttribute("autoplay", true);
+    // audioContainer.srcObject = event.streams[0].clone();
+    audio2 = new Audio();
+    audio2.srcObject = event.streams[0].clone();
+    audio2.autoplay = true;    
+    // divConsultingRoom.appendChild(audioContainer);
     console.log("adding delay");
-    audioContainer.onloadedmetadata = () => {
+    let destination = context.createMediaStreamDestination();
+    audio2.onloadedmetadata = () => {
 
         // controls if original stream should also be played
         // true causes WebRTC getStats() receive track audioLevel == 0
-        audioContainer.muted = false;
+        audio2.muted = true;
 
-        const input = context.createMediaStreamSource(inputStream);
-        const delayNode = context.createDelay(4);
-        delayNode.delayTime.value = 4; // delay by seconds
+        const input = context.createMediaStreamSource(audio2.srcObject);
+        const delayNode = context.createDelay(10);
+        delayNode.delayTime.value = 10; // delay by seconds
         input.connect(delayNode);
-        delayNode.connect(context.destination);
+       
+        delayNode.connect(destination);
         console.log("delay", delayNode.delayTime);
 
         // audioContainer1 = document.createElement("audio");
         // audioContainer1.setAttribute("width", "max-content");
         // audioContainer1.setAttribute("autoplay", true);
-        audioContainer.srcObject = input.mediaStream;
         // divConsultingRoom.appendChild(audioContainer1);
     };
+    audio3 = new Audio();
+    audio3.srcObject = destination.stream;
+    audio3.autoplay = true; 
     console.log("local stream", localStream);
 
     setInterval(() => {
