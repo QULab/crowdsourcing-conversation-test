@@ -24,6 +24,8 @@ let isCaller;
 let latencyArray = [];
 
 let audioContainer;
+let audioContainer1;
+
 let socket = io();
 
 let localStreamNode;
@@ -250,26 +252,28 @@ function onAddStream(event) {
     audioContainer = document.createElement("audio");
     audioContainer.setAttribute("width", "max-content");
     audioContainer.setAttribute("autoplay", true);
-    audioContainer.srcObject = event.streams[0].clone();
+    // audioContainer.srcObject = event.streams[0].clone();
+    let inputStream = event.streams[0].clone();
     divConsultingRoom.appendChild(audioContainer);
     console.log("adding delay");
     audioContainer.onloadedmetadata = () => {
 
         // controls if original stream should also be played
         // true causes WebRTC getStats() receive track audioLevel == 0
-        audioContainer.muted = true;
+        audioContainer.muted = false;
 
-        const input = context.createMediaStreamSource(audioContainer.srcObject);
+        const input = context.createMediaStreamSource(inputStream);
         const delayNode = context.createDelay(4);
         delayNode.delayTime.value = 4; // delay by seconds
         input.connect(delayNode);
         delayNode.connect(context.destination);
         console.log("delay", delayNode.delayTime);
-        audioContainer1 = document.createElement("audio");
-        audioContainer1.setAttribute("width", "max-content");
-        audioContainer1.setAttribute("autoplay", true);
-        audioContainer1.srcObject = input.mediaStream;
-        divConsultingRoom.appendChild(audioContainer1);
+
+        // audioContainer1 = document.createElement("audio");
+        // audioContainer1.setAttribute("width", "max-content");
+        // audioContainer1.setAttribute("autoplay", true);
+        audioContainer.srcObject = input.mediaStream;
+        // divConsultingRoom.appendChild(audioContainer1);
     };
     console.log("local stream", localStream);
 
