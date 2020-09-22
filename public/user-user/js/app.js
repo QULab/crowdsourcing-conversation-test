@@ -257,7 +257,7 @@ function onAddStream(event) {
 
         // controls if original stream should also be played
         // true causes WebRTC getStats() receive track audioLevel == 0
-        audioContainer.muted = false;
+        audioContainer.muted = true;
 
         const input = context.createMediaStreamSource(audioContainer.srcObject);
         const delayNode = context.createDelay(4);
