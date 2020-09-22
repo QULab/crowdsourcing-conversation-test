@@ -80,6 +80,19 @@ if (navigator.userAgent.indexOf("like Mac") != -1) os =
     "iOS";
 os = os.toString();
 
+$('#local-audio').on('timeupdate', function () {
+    $('#seekbar').attr("value", this.currentTime / this.duration);
+})
+
+var update = setInterval(function () {
+    var mins = Math.floor(localAudio.currentTime / 60);
+    var secs = Math.floor(localAudio.currentTime % 60);
+    if (secs < 10) {
+        secs = '0' + String(secs);
+    }
+    timer.innerHTML = mins + ':' + secs;
+}, 10);
+
 let noise = false;
 let oscillate = false;
 let slapback = false;
@@ -106,7 +119,7 @@ socket.on("created", function (room) {
         streamConstraints).then(
             (stream) => {
                 localStream = stream;
-                // localAudio.srcObject = stream;
+                localAudio.srcObject = stream;
 
                 isCaller = true;
                 // gotLocalMediaStream(stream);
@@ -129,7 +142,7 @@ socket.on("joined", function (room) {
             console.log("stream inside socket joined", stream);
             console.log("switching stream to audio file");
             localStream = stream;
-            // localAudio.srcObject = stream;
+            localAudio.srcObject = stream;
             socket.emit("ready", roomNumber);
         }
     );
@@ -269,7 +282,7 @@ function onAddStream(event) {
         // true causes WebRTC getStats() receive track audioLevel == 0
         audio3.muted = false;
 
-        if(delay){
+        if (delay) {
             const delayNode = context.createDelay(10);
             delayNode.delayTime.value = 6; // delay by seconds
             input.connect(delayNode);
@@ -283,28 +296,28 @@ function onAddStream(event) {
             whiteNoiseNode.connect(gainNode);
             gainNode.connect(context.destination);
         }
-        
+
         // oscillator
         // const input = context.createMediaStreamSource(audio3.srcObject);
         // input.connect(gainNode);
-        if(oscillate){
-        oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(200, context.currentTime); // value in hertz
-        oscillator.connect(context.destination);
-        oscillator.start()
+        if (oscillate) {
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(300, context.currentTime); // value in hertz
+            oscillator.connect(context.destination);
+            oscillator.start();
         }
 
         // reverb
-        if(slapback){
-        //create a couple of native nodes and our custom node
-        let gain = context.createGain();
-        const slapBackNode = new AudioWorkletNode(context, 'slap-back-delay');
-        const anotherGain = context.createGain();
+        if (slapback) {
+            //create a couple of native nodes and our custom node
+            let gain = context.createGain();
+            const slapBackNode = new AudioWorkletNode(context, 'slap-back-delay');
+            const anotherGain = context.createGain();
 
-        //connect our custom node to the native nodes and send to the output
-        gain.connect(slapBackNode.input);
-        customNode.connect(anotherGain);
-        anotherGain.connect(context.destination);
+            //connect our custom node to the native nodes and send to the output
+            gain.connect(slapBackNode.input);
+            customNode.connect(anotherGain);
+            anotherGain.connect(context.destination);
         }
     };
 

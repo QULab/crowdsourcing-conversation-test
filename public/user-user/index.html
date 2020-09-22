@@ -53,8 +53,10 @@
                                 </p>
                                 <p class="">
                                     Please click the <b>Start button</b> and listen to the audio played carefully.
-                                    After the audio is completely played, please select the rating for question about the
-                                    quality of the audio and click submit answer button. After answer is submitted you will
+                                    After the audio conversation is complete, please select the rating for question about
+                                    the
+                                    quality of the audio and click submit answer button. After answer is submitted you
+                                    will
                                     be provided with a <b>Verification code</b>, please copy the code and paste it to
                                     <b>Amazon Mechanical Turk</b>.
                                 </p>
@@ -62,21 +64,24 @@
                         </div>
                     </div>
                     <div class="card border-light mb-3">
-                    <div id="audio" class="card-body text-dark">
-                        <!-- <div id="consulting-room" style="display: none;">
+                        <div id="audio" class="card-body text-dark">
+
                             <div class="label">Local Audio</div>
-                            <audio id="local-audio" controls autoplay muted></audio>
-                        </div> -->
-                        <!-- <div style="display: none;">
+                            <audio id="local-audio" controls autoplay muted style="display: none;"></audio>
+
+                            <!-- <div id="progress"><progress id="seekbar" value="0" max="1" style="width:200px;"></progress> -->
+                            <span id="timer"> 00:00</span></div>
+
+                            <!-- <div style="display: none;">
                             <audio src="http://localhost:3000/stream?fileName=01_2" muted autoplay id="back"></audio>
                         </div> -->
-                        
-                        <!-- <div>
+
+                            <!-- <div>
                                 <div class="label">Remote Audio</div>
                                     <audio id="remote-audio" controls autoplay></audio>
                                 </div> 
                              </div> -->
-                    </div>
+                        </div>
                     </div>
                     <div id="buttons" style="display: none;">
                         <select id="codec">
@@ -140,7 +145,8 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button id="copy" data-clipboard-target="#verificationCode" class="btn btn-secondary mr-auto">
+                                <button id="copy" data-clipboard-target="#verificationCode"
+                                    class="btn btn-secondary mr-auto">
                                     Copy</button>
                                 <button type="button" id="modalButton" class="btn btn-secondary"
                                     data-dismiss="modal">Close</button>
