@@ -70,7 +70,7 @@ console.log(browser);
 if (browser === "edge") {
   location.href = "../unsupported.html";
 }
-browser();
+// browser();
 
 let os = "Unknown OS";
 if (navigator.userAgent.indexOf("Win") != -1) os =
