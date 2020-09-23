@@ -1,11 +1,13 @@
 class SlapbackDelayNode extends AudioWorkletProcessor {
-    constructor() {
+    process(input, outputs, parameters) {
+        
+        let context = new AudioContext();        
         //create the nodes we’ll use
-        this.input = audioContext.createGain();
-        var output = audioContext.createGain(),
-            delay = audioContext.createDelay(),
-            feedback = audioContext.createGain(),
-            wetLevel = audioContext.createGain();
+        input = context.createGain();
+        var output = context.createGain(),
+            delay = context.createDelay(),
+            feedback = context.createGain(),
+            wetLevel = context.createGain();
 
         //set some decent values
         delay.delayTime.value = 0.15; //150 ms delay
@@ -13,16 +15,15 @@ class SlapbackDelayNode extends AudioWorkletProcessor {
         wetLevel.gain.value = 0.25;
 
         //set up the routing
-        this.input.connect(delay);
-        this.input.connect(output);
+        input.connect(delay);
+        input.connect(output);
         delay.connect(feedback);
         delay.connect(wetLevel);
         feedback.connect(delay);
         wetLevel.connect(output);
 
-        this.connect = function (target) {
-            output.connect(target);
-        };
+        return true
+
     }
 }
 

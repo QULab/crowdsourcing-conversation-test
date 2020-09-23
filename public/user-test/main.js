@@ -66,8 +66,12 @@ let browser = (function (agent) {
 })(window.navigator.userAgent.toLowerCase());
 console.log(window.navigator.userAgent.toLowerCase() + "\n" + browser);
 browser = browser.toString();
-var browserString = browser;
-console.log(browserString);
+console.log(browser);
+if (browser === "edge") {
+  location.href = "../unsupported.html";
+}
+browser();
+
 let os = "Unknown OS";
 if (navigator.userAgent.indexOf("Win") != -1) os =
   "Windows OS";

@@ -27,11 +27,22 @@
 </head>
 
 <body>
+
     <div id="container" class="container h-100">
         <div class="row h-100">
             <div class="col-12 d-flex justify-content-center my-auto">
+                <div class="toast started" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000"
+                    data-animation="true">
+                    <div class="toast-header">
+                        Call connected!
+                        <button type="button" class="close" data-dismiss="toast">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+               
                 <div>
-                    <h1>WebRTC Audio User-User</h1>
+                    <h1 style="text-align: center;">Conversation test</h1>
 
                     <!-- <div id="select-room" style="display: inline-block;">
                         <label>Type room number. Maximum for 2 people</label>
@@ -45,33 +56,35 @@
                         <div class="card border-dark mb-3" style="margin-top: 30px">
                             <div class="card-body text-dark">
                                 <h5 class="card-title text-center"><b>Instructions</b></h5>
+                                <h6 class="card-title text-center" style="color: firebrick;"><b>Please read the instructions carefully!</b></h6><br>
                                 <p class="">
                                     The Test requires media permissions from browser,
-                                    so please allow microphone settings when prompted by the browser.<br />
+                                    so please allow microphone settings when prompted by the browser.
                                     For the research purposes, your audio maybe recorded and used to determine
                                     quality of the audio conversation.
+                                    <br/>
+                                    Please wait for the other person to join, once the person joins you will see a <b style="color: #23C552;">Call Connected!</b> notification.
+                                    Adjust your volume in your device and please use <b>Chrome browser</b> or <b>Firefox browser</b> for taking the test.
                                 </p>
                                 <p class="">
-                                    Please click the <b>Start button</b> and listen to the audio played carefully.
-                                    After the audio conversation is complete, please select the rating for question about
-                                    the
-                                    quality of the audio and click submit answer button. After answer is submitted you
-                                    will
-                                    be provided with a <b>Verification code</b>, please copy the code and paste it to
+                                    After the audio conversation test is complete, you can press the button <b>Hangup</b>, and you will see the notification <b style="color: firebrick">Call disconnected!</b>.  
+                                    Please select the rating for question about the quality of the audio and click submit answer button. After answer is submitted you
+                                    will be provided with a <b>Verification code</b>, please copy the code and paste it to
                                     <b>Amazon Mechanical Turk</b>.
                                 </p>
                             </div>
                         </div>
                     </div>
-                    <div class="card border-light mb-3">
-                        <div id="audio" class="card-body text-dark">
 
-                            <div class="label">Local Audio</div>
+                    <div class="card border-light mb-3">
+                        <div id="audio" class="card-body text-dark" style="text-align: center;">
+
                             <audio id="local-audio" controls autoplay muted style="display: none;"></audio>
 
                             <!-- <div id="progress"><progress id="seekbar" value="0" max="1" style="width:200px;"></progress> -->
-                            <span id="timer"> 00:00</span></div>
-
+                            <label>Duration</label>&nbsp;&nbsp;<span id="timer"> 00:00</span>&nbsp;&nbsp;
+                            <button id="hangupButton" class="btn btn-outline-danger">Hang Up</button>
+    
                             <!-- <div style="display: none;">
                             <audio src="http://localhost:3000/stream?fileName=01_2" muted autoplay id="back"></audio>
                         </div> -->
@@ -95,7 +108,6 @@
                         </select>
 
                     </div>
-                    <button id="hangupButton" class="btn btn-outline-danger">Hang Up</button>
                     <div id="statediv"></div>
                     </td>
                     <td>
@@ -153,6 +165,64 @@
                                 <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
                             </div>
                         </div>
+                    </div>
+                </div>
+                <!-- <div class="question card border-light mb-3">
+                    <div class="card-body text-dark">
+                        <form id="question">
+                            <h6 class="card-title">1. How do you rate the
+                                <b>overall quality</b> of the speech sample
+                                played?</h6>
+                            <table class="table table-borderless" id="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Quality of the Speech</th>
+                                        <th scope="col">Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <label for="Excellent"><input type="radio" name="rating" id="" value="Excellent" required>
+                                                Excellent</label></td>
+                                        <td>5</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label for="Good"><input type="radio" name="rating" id="" value="Good">
+                                                Good</label> </td>
+                                        <td>4</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label for="Fair"><input type="radio" name="rating" id="" value="Fair">
+                                                Fair</label></td>
+                                        <td>3</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label for="Poor"><input type="radio" name="rating" id="" value="Poor">
+                                                Poor</label></td>
+                                        <td>2</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label for="Poor"><input type="radio" name="rating" id="" value="Bad">
+                                                Bad</label></td>
+                                        <td>1</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <button type="submit" id="answerButton" class="btn btn-outline-success" onclick="answer()">Submit</button>
+                        </form>
+                    </div>
+                </div> -->
+                <div class="toast ended" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000" data-animation="true">
+                    <div class="toast-header">
+                        Call ended!
+                        <button type="button" class="close" data-dismiss="toast">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
                 </div>
             </div>

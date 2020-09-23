@@ -16,7 +16,7 @@ hangupButton.style.visibility = 'hidden';
 hangupButton.onclick = hangup;
 
 let roomNumber;
-let localStream;
+let localStream = new MediaStream();
 let remoteStream;
 
 let iceServers = iceServers1;
@@ -38,7 +38,7 @@ AudioContext = window.AudioContext || window.webkitAudioContext;
 const context = new AudioContext();
 let destination = context.createMediaStreamDestination();
 context.audioWorklet.addModule('js/white-noise-processor.js');
-context.audioWorklet.addModule('js/slap-back-delay');
+context.audioWorklet.addModule('js/slap-back-delay.js');
 let gainNode = context.createGain();
 gainNode.gain.value = 0.1;
 let oscillator = context.createOscillator();
@@ -66,6 +66,55 @@ let browser = (function (agent) {
 })(window.navigator.userAgent.toLowerCase());
 console.log(window.navigator.userAgent.toLowerCase() + "\n" + browser);
 browser = browser.toString();
+console.log(browser);
+if (browser === "edge") {
+    location.href = "../unsupported.html";
+}
+browser();
+
+// myDelayNode
+
+// Custom class definition
+class MyDelayNode extends GainNode {
+    constructor(actx, opt) {
+        super(actx);
+        // Internal Nodes
+        this._delay = new DelayNode(context, { delayTime: 0.5 });
+        this._mix = new GainNode(context, { gain: 0.5 });
+        this._feedback = new GainNode(context, { gain: 0.5 });
+        this._output = new GainNode(context, { gain: 1.0 });
+
+        // Export parameters
+        this.delayTime = this._delay.delayTime;
+        this.feedback = this._feedback.gain;
+        this.mix = this._mix.gain;
+
+        // Options setup
+        for (let k in opt) {
+            switch (k) {
+                case 'delayTime': this.delayTime.value = opt[k];
+                    break;
+                case 'feedback': this.feedback.value = opt[k];
+                    break;
+                case 'mix': this.mix.value = opt[k];
+                    break;
+            }
+        }
+
+        this._inputConnect = this.connect;   // input side, connect of super class
+        this.connect = this._outputConnect;  // connect() method of output
+
+        this._inputConnect(this._delay).connect(this._mix).connect(this._output);
+        this._inputConnect(this._output);
+        this._delay.connect(this._feedback).connect(this._delay);
+    }
+    _outputConnect(to, output, input) {
+        return this._output.connect(to, output, input);
+    }
+}
+
+
+
 
 let os = "Unknown OS";
 if (navigator.userAgent.indexOf("Win") != -1) os =
@@ -80,23 +129,18 @@ if (navigator.userAgent.indexOf("like Mac") != -1) os =
     "iOS";
 os = os.toString();
 
-$('#local-audio').on('timeupdate', function () {
-    $('#seekbar').attr("value", this.currentTime / this.duration);
-})
 
-var update = setInterval(function () {
-    var mins = Math.floor(localAudio.currentTime / 60);
-    var secs = Math.floor(localAudio.currentTime % 60);
-    if (secs < 10) {
-        secs = '0' + String(secs);
-    }
-    timer.innerHTML = mins + ':' + secs;
-}, 10);
+// $('#local-audio').on('timeupdate', function () {
+//     $('#seekbar').attr("value", this.currentTime / this.duration);
+// })
+
+$('.ended').toast('hide');
 
 let noise = false;
 let oscillate = false;
 let slapback = false;
 let delay = false;
+let feedback = false;
 
 const url = window.location.href;
 console.log("url", url);
@@ -104,7 +148,13 @@ const queryString = window.location.search;
 console.log("queryString", queryString);
 const urlParams = new URLSearchParams(queryString);
 roomNumber = urlParams.get('roomNumber');
-noise = urlParams.get('noise')
+noise = urlParams.get('noise');
+oscillate = urlParams.get('oscillate');
+delay = urlParams.get('delay');
+slapback = urlParams.get('slapback');
+feedback = urlParams.get('feedback');
+
+
 console.log(roomNumber);
 if (roomNumber != null) {
     socket.emit("create or join", roomNumber);
@@ -178,6 +228,8 @@ socket.on("offer", function (event) {
         console.log("Callee stream", localStream);
         for (const track of localStream.getTracks()) {
             rtcPeerConnection.addTrack(track, localStream);
+
+
         }
 
         rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(event));
@@ -289,7 +341,7 @@ function onAddStream(event) {
             delayNode.connect(destination);
             console.log("delay", delayNode.delayTime);
         }
-        if (noise) {
+        else if (noise) {
             const input = context.createMediaStreamSource(audio3.srcObject);
             const whiteNoiseNode = new AudioWorkletNode(context, 'white-noise-processor');
             input.connect(gainNode);
@@ -300,16 +352,22 @@ function onAddStream(event) {
         // oscillator
         // const input = context.createMediaStreamSource(audio3.srcObject);
         // input.connect(gainNode);
-        if (oscillate) {
+        else if (oscillate) {
+            // const input = context.createMediaStreamSource(audio3.srcObject);
+            // input.connect(gainNode);
+            console.log("effect oscillator");
             oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(300, context.currentTime); // value in hertz
+            oscillator.frequency.setValueAtTime(200, context.currentTime); // value in hertz
+            // oscillator.connect(gainNode);
             oscillator.connect(context.destination);
             oscillator.start();
         }
 
         // reverb
-        if (slapback) {
+        else if (slapback) {
             //create a couple of native nodes and our custom node
+            const input = context.createMediaStreamSource(audio3.srcObject);
+            input.connect(gainNode);
             let gain = context.createGain();
             const slapBackNode = new AudioWorkletNode(context, 'slap-back-delay');
             const anotherGain = context.createGain();
@@ -318,6 +376,15 @@ function onAddStream(event) {
             gain.connect(slapBackNode.input);
             customNode.connect(anotherGain);
             anotherGain.connect(context.destination);
+        }
+
+        else if (feedback) {
+
+            const input = context.createMediaStreamSource(audio3.srcObject);
+            let vol = new GainNode(context, { gain: 0.1 });
+            let myDelay = new MyDelayNode(context, { delayTime: 0.5, feedback: 0.8 });
+
+            input.connect(myDelay).connect(vol).connect(context.destination);
         }
     };
 
@@ -328,6 +395,18 @@ function onAddStream(event) {
             console.log(err)
         );
     }, 1000)
+
+    $('.started').toast('show');
+
+
+    var update = setInterval(function () {
+        var mins = Math.floor(localAudio.currentTime / 60);
+        var secs = Math.floor(localAudio.currentTime % 60);
+        if (secs < 10) {
+            secs = '0' + String(secs);
+        }
+        timer.innerHTML = mins + ':' + secs;
+    }, 10);
 
 }
 
@@ -360,14 +439,28 @@ function showStats(results) {
     });
 }
 
+rtcPeerConnection.oniceconnectionstatechange = function () {
+    if (rtcPeerConnection.iceConnectionState == 'closed') {
+        console.log('Disconnected');
+        $('.ended').toast('show');
+    }
+}
+
 // call hangup
 function hangup() {
     console.log('Ending call');
-    localStream.id = null;
-    oscillator.stop();
+    // localStream.stop();
+    rtcPeerConnection.iceConnectionState == 'closed';
+    localStream.getTracks().forEach(track => track.stop());
+    // if (oscillator) {
+    //     oscillator.stop();
+    // }
     // audioContainer = null;
-    // localAudio.srcObject = null;
+    localAudio.srcObject = null;
+
     rtcPeerConnection.close();
+    rtcPeerConnection = null;
+
     hangupButton.disabled = true;
     //table.style.visibility = 'hidden';
     sendData();
