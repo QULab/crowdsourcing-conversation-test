@@ -55,7 +55,7 @@ let averagePacktLoss;
 let browser = (function (agent) {
     switch (true) {
         case agent.indexOf("edge") > -1: return "edge";
-        case agent.indexOf("edg") > -1: return "chromium based edge (dev or canary)";
+        case agent.indexOf("edg") > -1: return "chrome-edge";
         case agent.indexOf("opr") > -1 && !!window.opr: return "opera";
         case agent.indexOf("chrome") > -1 && !!window.chrome: return "chrome";
         case agent.indexOf("trident") > -1: return "ie";
@@ -67,9 +67,17 @@ let browser = (function (agent) {
 console.log(window.navigator.userAgent.toLowerCase() + "\n" + browser);
 browser = browser.toString();
 console.log(browser);
-if (browser === "edge") {
+
+const browsers = ['edge', 'chome-edge', 'opera', 'safari'];
+
+if (browser === 'ie') {
+    supported = false;
     location.href = "../unsupported.html";
 }
+else if (browsers.includes(browser)) {
+    supported = false;
+    location.href = "../unsupported.html";
+} 
 // browser();
 
 // myDelayNode

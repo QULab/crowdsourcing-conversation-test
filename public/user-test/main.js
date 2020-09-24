@@ -41,16 +41,7 @@ let fileName;
 
 $("#table :input[type=radio]").prop('disabled', true);
 
-const queryString = window.location.search;
-console.log("queryString", queryString);
-const urlParams = new URLSearchParams(queryString);
-fileName = urlParams.get('fileName');
-console.log(fileName);
-if (fileName == null || location.href.indexOf("USER2FILE") == -1){
-  console.log("not found");
-  location.href = "../404.html";
-}
-/* globals MediaRecorder */
+// browser detection
 
 let browser = (function (agent) {
   switch (true) {
@@ -67,11 +58,30 @@ let browser = (function (agent) {
 console.log(window.navigator.userAgent.toLowerCase() + "\n" + browser);
 browser = browser.toString();
 console.log(browser);
-if (browser === "edge") {
+const browsers = ['edge', 'chome-edge', 'opera', 'safari'];
+
+if (browser === 'ie') {
+  supported = false;
   location.href = "../unsupported.html";
 }
-// browser();
+else if (browsers.includes(browser)) {
+  supported = false;
+  location.href = "../unsupported.html";
+} 
 
+// QueryString code
+
+const queryString = window.location.search;
+console.log("queryString", queryString);
+const urlParams = new URLSearchParams(queryString);
+fileName = urlParams.get('fileName');
+console.log(fileName);
+if (fileName == null || location.href.indexOf("USER2FILE") == -1){
+  console.log("not found");
+  location.href = "../404.html";
+}
+
+// OS detection
 let os = "Unknown OS";
 if (navigator.userAgent.indexOf("Win") != -1) os =
   "Windows OS";

@@ -1,16 +1,3 @@
-const queryString = window.location.search;
-console.log("queryString", queryString);
-const urlParams = new URLSearchParams(queryString);
-let fileName = urlParams.get('fileName');
-console.log(fileName);
-let roomNumber = urlParams.get('roomNumber');
-console.log(roomNumber);
-let type = urlParams.get('type');
-console.log(type);
-let consent;
-let supported = true;
-
-
 let browser = (function (agent) {
     switch (true) {
         case agent.indexOf("edge") > -1: return "edge";
@@ -27,10 +14,22 @@ console.log(window.navigator.userAgent.toLowerCase() + "\n" + browser);
 browser = browser.toString();
 console.log(browser);
 
-if (browser === "edge") {
+const browsers = ['edge', 'chome-edge', 'opera', 'safari'];
+
+const queryString = window.location.search;
+console.log("queryString", queryString);
+
+let consent;
+let supported = true;
+
+if(browser === 'ie'){
     supported = false;
-    location.href = "./unsupported.html";
-}
+    location.href = "../unsupported.html";
+} 
+else if (browsers.includes(browser)) {
+    supported = false;
+    location.href = "../unsupported.html";
+} 
 
 let os = "Unknown OS";
 if (navigator.userAgent.indexOf("Win") != -1) os =
@@ -51,29 +50,13 @@ if (navigator.userAgent.includes("Firefox")) {
     isFireFox1 = true;
 }
 
-// let checktype = function(){
-//     if(type != "USER2FILE") return true;
-//     if(type != "USER2USER") return true;
-//     return false;
-// }
-
-// let flag = function(){
-//     if (type == "USER2FILE") {
-//         if (fileName == null){
-//             return true;
-//         }
-//         return false;
-//     } else if (type == "USER2USER"){
-//         if (roomNumber == null) {
-//             return true;
-//         }
-//         return false;
-//     }
-// }
-
-// if (queryString == null || checktype ||  flag ){
-//     location.href = "./404.html";
-// }
+const urlParams = new URLSearchParams(queryString);
+let fileName = urlParams.get('fileName');
+console.log(fileName);
+let roomNumber = urlParams.get('roomNumber');
+console.log(roomNumber);
+let type = urlParams.get('type');
+console.log(type);
 
 function change_button(checkbx, button_id) {
     var btn = document.getElementById(button_id);
