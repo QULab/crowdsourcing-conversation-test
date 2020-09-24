@@ -77,7 +77,7 @@ if (browser === 'ie') {
 else if (browsers.includes(browser)) {
     supported = false;
     location.href = "../unsupported.html";
-} 
+}
 // browser();
 
 // myDelayNode
@@ -335,19 +335,54 @@ function onAddStream(event) {
     let audio3 = new Audio();
     audio3.srcObject = event.streams[0];
     audio3.autoplay = true;
-    console.log("adding delay");
+    
+ 
+
     audio3.onloadedmetadata = () => {
 
-        // controls if original stream should also be played
+        
         // true causes WebRTC getStats() receive track audioLevel == 0
-        audio3.muted = false;
+        audio3.muted = true;
 
         if (delay) {
+            console.log("adding delay");
+
+            // controls if original stream should also be played
+            // true causes WebRTC getStats() receive track audioLevel == 0
+
+            const recvAudioSource = context.createMediaStreamSource(audio3.srcObject);
             const delayNode = context.createDelay(10);
-            delayNode.delayTime.value = 6; // delay by seconds
-            input.connect(delayNode);
-            delayNode.connect(destination);
-            console.log("delay", delayNode.delayTime);
+            delayNode.delayTime.value = 4; // delay by 1 second
+            recvAudioSource.connect(delayNode);
+            delayNode.connect(context.destination);
+
+            // var streamNode;
+            // var masterNode;
+            // var bypassNode;
+            // var delayNode;
+            // var feedbackNode;
+
+            // streamNode = context.createMediaStreamSource(event.streams[0]);
+            // delayNode = context.createDelay(10)
+            // feedbackNode = context.createGain();
+            // bypassNode = context.createGain();
+            // masterNode = context.createGain();
+
+            // //controls
+            // delayNode.delayTime.value = 1;
+            // feedbackNode.gain.value = 0.8;
+            // bypassNode.gain.value = 1;
+
+            // //wire up nodes
+            // streamNode.connect(delayNode);
+            // delayNode.connect(feedbackNode);
+            // feedbackNode.connect(delayNode);
+
+            // delayNode.connect(bypassNode);
+            // bypassNode.connect(masterNode);
+            // streamNode.connect(masterNode);
+
+            // masterNode.connect(context.destination);
         }
         else if (noise) {
             const input = context.createMediaStreamSource(audio3.srcObject);
@@ -394,6 +429,8 @@ function onAddStream(event) {
 
             input.connect(myDelay).connect(vol).connect(context.destination);
         }
+
+
     };
 
     // console.log("local stream", localStream);

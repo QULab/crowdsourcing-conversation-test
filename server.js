@@ -76,6 +76,8 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use('/user-test', express.static('public/user-test'));
 
+app.use('/delay', express.static('public/delay'));
+
 //app.use('/newapp', express.static('public/restructure-html'));
 
 app.use('/user-user', express.static('public/user-user'));
