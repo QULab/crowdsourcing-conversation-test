@@ -29,20 +29,21 @@
                         <div class="card-body text-dark">
                             <h5 class="card-title text-center"><b>Instructions</b></h5>
                             <p class="">
-                            The audio file will be streamed to your device, therefore 
-                            The test requires media permissions from the browser, so
-                            please allow microphone settings when prompted by the browser.<br />
+                                The audio file will be streamed to your device, therefore
+                                The test requires media permissions from the browser, so
+                                please allow microphone settings when prompted by the browser.<br />
                             </p>
                             <p class="">
-                              <b>Steps:</b><br>
-                              <ol>
-                                  <li>Click on the <b>Start</b> button and listen to the audio 
-                                      file carefully until the end.</li>
-                                  <li>Rate the quality on the speech clip you listened to.</li>
-                                  <li><b>Submit</b> your answer</li>
-                                  <li>You will be provided with a <b>Verification code</b>, please copy the code and paste it to
-                                <b>Amazon Mechanical Turk</b>.</li>
-                              </ol>
+                                <b>Steps:</b><br>
+                            <ol>
+                                <li>Click on the <b>Start</b> button and listen to the audio
+                                    file carefully until the end.</li>
+                                <li>Rate the quality on the speech clip you listened to.</li>
+                                <li><b>Submit</b> your answer</li>
+                                <li>You will be provided with a <b>Verification code</b>, please copy the code and paste
+                                    it to
+                                    <b>Amazon Mechanical Turk</b>.</li>
+                            </ol>
                             </p>
                         </div>
                     </div>
@@ -53,9 +54,25 @@
                             <div class="label">Local audio:</div>
                             <audio id="audio1" autoplay controls muted></audio>
                         </div>
-                        <div>
+                        <div id="player">
                             <!-- <div class="label">Remote audio:</div> -->
-                            <audio id="audio2" autoplay controls controlsList="nodownload nofullscreen noremoteplayback" ></audio>
+                            <!-- <audio id="audio2" autoplay controls controlsList="nodownload nofullscreen noremoteplayback" ></audio> -->
+                            <audio id="audio2" autoplay src=""></audio>
+                            <div>
+                                <div><button id="callButton" data-toggle="tooltip" data-placement="right" title="Play">
+                                        <img
+                                            src="http://icons.iconarchive.com/icons/iconsmind/outline/64/Play-Music-icon.png" />
+                                    </button></div>
+
+
+                                <!-- <button onclick="document.getElementById('audio2').pause()">
+                                    <img src="http://icons.iconarchive.com/icons/custom-icon-design/pretty-office-8/48/Pause-icon.png" />
+                                </button> -->
+                                <br>
+                                <div id="progress"><progress id="seekbar" value="0" max="1" style="width:200px;"></progress>
+                                    <span id="timer"> 00:00</span></div>
+
+                            </div>
                         </div>
                     </div>
 
@@ -69,7 +86,7 @@
                                                                                 <option value="G722">G722</option>
                                                                                 <option value="PCMU">PCMU</option>
                                                                             </select> -->
-                        <button id="callButton" class="btn btn-outline-success text-center">Start</button>
+                        <!-- <button id="callButton" class="btn btn-outline-success text-center">Start</button> -->
                         <!-- <button id="hangupButton" class="btn btn-outline-danger">Hang Up</button> -->
                     </div>
                 </div>
@@ -159,7 +176,7 @@
                 <div class="question card border-light mb-3">
                     <div class="card-body text-dark">
                         <form id="question">
-                            <h6 class="card-title">1. How do you rate the 
+                            <h6 class="card-title">1. How do you rate the
                                 <b>overall quality</b> of the speech sample
                                 played?</h6>
                             <table class="table table-borderless" id="table">

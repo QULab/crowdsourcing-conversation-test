@@ -97,6 +97,29 @@ audio {
   a#viewSource {
     clear: both;
   }
+
+  .started{
+    position: absolute;
+    right: 0;
+    top: 0;
+    background: #23C552;
+    width: fit-content;
+    border: black 1px solid;
+  }
+
+  .ended {
+    position: absolute;
+    right: 0;
+    top: 0;
+    background: firebrick;
+    width: fit-content;
+    border: black 1px solid;
+  }
+
+  .question {
+    margin-top: 30px;
+    height: min-content;
+  }
   
 
  

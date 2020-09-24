@@ -2,7 +2,8 @@
 
 const audio1 = document.querySelector('audio#audio1');
 const audio2 = document.querySelector('audio#audio2');
-const callButton = document.querySelector('button#callButton');
+const callButton = document.getElementById('callButton');
+// const callButton = document.querySelector('button#callButton');
 const question = document.getElementsByClassName('.question');
 const answerButton = document.getElementById('answerButton');
 // const hangupButton = document.querySelector('button#hangupButton');
@@ -40,16 +41,7 @@ let fileName;
 
 $("#table :input[type=radio]").prop('disabled', true);
 
-const queryString = window.location.search;
-console.log("queryString", queryString);
-const urlParams = new URLSearchParams(queryString);
-fileName = urlParams.get('fileName');
-console.log(fileName);
-if (fileName == null || location.href.indexOf("USER2FILE") == -1){
-  console.log("not found");
-  location.href = "../404.html";
-}
-/* globals MediaRecorder */
+// browser detection
 
 let browser = (function (agent) {
   switch (true) {
@@ -65,8 +57,31 @@ let browser = (function (agent) {
 })(window.navigator.userAgent.toLowerCase());
 console.log(window.navigator.userAgent.toLowerCase() + "\n" + browser);
 browser = browser.toString();
-var browserString = browser;
-console.log(browserString);
+console.log(browser);
+const browsers = ['edge', 'chome-edge', 'opera', 'safari'];
+
+if (browser === 'ie') {
+  supported = false;
+  location.href = "../unsupported.html";
+}
+else if (browsers.includes(browser)) {
+  supported = false;
+  location.href = "../unsupported.html";
+} 
+
+// QueryString code
+
+const queryString = window.location.search;
+console.log("queryString", queryString);
+const urlParams = new URLSearchParams(queryString);
+fileName = urlParams.get('fileName');
+console.log(fileName);
+if (fileName == null || location.href.indexOf("USER2FILE") == -1){
+  console.log("not found");
+  location.href = "../404.html";
+}
+
+// OS detection
 let os = "Unknown OS";
 if (navigator.userAgent.indexOf("Win") != -1) os =
   "Windows OS";
@@ -94,6 +109,26 @@ function show(div){
   $("." + div ).show();
 }
 
+$('#audio2').on('timeupdate', function () {
+  $('#seekbar').attr("value", this.currentTime / this.duration);
+})
+
+function SetVolume(val) {
+  var player = document.getElementById('audio2');
+  // console.log('Before: ' + player.volume);
+  player.volume = val / 100;
+  // console.log('After: ' + player.volume);
+}
+
+var update = setInterval(function () {
+  var mins = Math.floor(audio2.currentTime / 60);
+  var secs = Math.floor(audio2.currentTime % 60);
+  if (secs < 10) {
+    secs = '0' + String(secs);
+  }
+  timer.innerHTML = mins + ':' + secs;
+}, 10);
+
 const offerOptions = {
   offerToReceiveAudio: 1,
   offerToReceiveVideo: 0,
@@ -102,6 +137,7 @@ const offerOptions = {
 
 function gotStream(stream) {
   audio1.muted = true
+  audio2.play();
   // hangupButton.disabled = false;
   console.log('Received local stream');
   localStream = stream;
@@ -120,6 +156,8 @@ function gotStream(stream) {
 function onCreateSessionDescriptionError(error) {
   // console.log(`Failed to create session description: ${error.toString()}`);
 }
+
+
 
 function call() {
   callButton.disabled = true;
@@ -195,6 +233,10 @@ function showStats(results) {
   }
 }
 
+function hideID(div) {
+  $("#" + div).hide();
+}
+
 function hangup() {
   console.log('Ending call');
   clearInterval(interval);
@@ -205,7 +247,9 @@ function hangup() {
   pc2 = null;
   audio2.src = null;
   // hangupButton.disabled = true;
-  callButton.disabled = false;
+  // callButton.disabled = true;
+  hideID("progress");
+  location.href="#question";
 }
 
 function answer(){
@@ -299,7 +343,7 @@ function sendData(answer) {
     // console.log("browser string", browserString);
     
     let localPost = 'http://localhost:3000/stats';
-    let serverPost = 'https://conversation-test.qulab.org/stats';
+    let serverPost = 'https://webrtc.pavanct.com/stats';
     
     fetch(serverPost , {
       method: 'POST', // or 'PUT'
@@ -339,14 +383,23 @@ function gotRemoteStream(e) {
     //   }
     // }
     
-    audio2.src = "https://conversation-test.qulab.org/stream/" + "?fileName=" + fileName.toString();
+    audio2.src = "http://webrtc.pavanct.com/stream" + "?fileName=" + fileName.toString();
     audio2.onerror = function (error) {
       if (!streamEnded) {
+        location.href = "../404.html";
         console.error(error);
-        // location.href = "../404.html";
       }
     }
+    
+    // audio2.src = "https://conversation-test.qulab.org/stream/" + "?fileName=" + fileName.toString();
+    // audio2.onerror = function (error) {
+    //   if (!streamEnded) {
+    //     console.error(error);
+    //     // location.href = "../404.html";
+    //   }
+    // }
     audio2.preload ="none";
+    // audio2.play();
     //audio2.srcObject = e.streams[0];
     console.log('Received remote stream');
     

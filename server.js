@@ -34,13 +34,13 @@ app.use(bodyParser.json());
 app.use(bodyParser.raw());
 
 // change for server docker
-mongoose.connect('mongodb://mongo:27017/webrtc', {
-  useNewUrlParser: true
-});
-
-// mongoose.connect('mongodb://localhost:27017/webrtc', {
+// mongoose.connect('mongodb://mongo:27017/webrtc', {
 //   useNewUrlParser: true
 // });
+
+mongoose.connect('mongodb+srv://pavan:bitnance210@cluster0.0il5v.mongodb.net/webtrc?retryWrites=true&w=majority', {
+  useNewUrlParser: true
+});
 
 // redis 
 redisClient.on('error', (err) => {
@@ -51,8 +51,8 @@ app.use(session({
   genid: (req) => {
     return uuidv4();
   },
-  store: new redisStore({ host: 'webrtc-redis', port: 6379, client: redisClient }),
-  name: '_redisDemo',
+  store: new redisStore({ host: 'redis', port: 6379, client: redisClient }),
+  name: 'webrtc',
   secret: "54F962E6ECF99",
   resave: false,
   cookie: { secure: false, maxAge: 60 * 60 * 24 }, // Set to secure:false and expire in 1 minute for demo purposes
@@ -110,19 +110,19 @@ app.get('/stream', (req, res) => {
 
 function streamSwitcher(fileName) {
   switch (fileName) {
-    case '01_2.wav':
+    case '01_2':
 
       return './public/assets/sup23_selected_1min/01_2.wav';
-    case '17_2.wav':
+    case '17_2':
 
       return './public/assets/sup23_selected_1min/17_2.wav';
-    case '21_2.wav':
+    case '21_2':
 
       return './public/assets/sup23_selected_1min/21_2.wav';
-    case '32_2.wav':
+    case '32_2':
 
       return './public/assets/sup23_selected_1min/32_2.wav';
-    case '46_2.wav':
+    case '46_2':
 
       return './public/assets/sup23_selected_1min/46_2.wav';
     default:

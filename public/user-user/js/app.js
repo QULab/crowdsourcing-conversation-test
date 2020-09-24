@@ -1,3 +1,5 @@
+'use strict';
+
 const localAudio = document.querySelector('audio#local-audio');
 const hangupButton = document.querySelector('button#hangupButton');
 //const divSelectRoom = document.getElementById("select-room");
@@ -14,7 +16,7 @@ hangupButton.style.visibility = 'hidden';
 hangupButton.onclick = hangup;
 
 let roomNumber;
-let localStream;
+let localStream = new MediaStream();
 let remoteStream;
 
 let iceServers = iceServers1;
@@ -24,15 +26,23 @@ let isCaller;
 let latencyArray = [];
 
 let audioContainer;
+let audioContainer1;
+
 let socket = io();
 
 let localStreamNode;
+let filteredStream;
 
 let rtcPeerConnection = new RTCPeerConnection(iceServers);
+AudioContext = window.AudioContext || window.webkitAudioContext;
+const context = new AudioContext();
+let destination = context.createMediaStreamDestination();
+context.audioWorklet.addModule('js/white-noise-processor.js');
+context.audioWorklet.addModule('js/slap-back-delay.js');
+let gainNode = context.createGain();
+gainNode.gain.value = 0.1;
+let oscillator = context.createOscillator();
 
-var context = new AudioContext();
-let outgoingRemoteStreamNode = context.createMediaStreamDestination();
-let outgoingRemoteGainNode = context.createGain();
 
 let averageLatency;
 let averageArray;
@@ -45,7 +55,7 @@ let averagePacktLoss;
 let browser = (function (agent) {
     switch (true) {
         case agent.indexOf("edge") > -1: return "edge";
-        case agent.indexOf("edg") > -1: return "chromium based edge (dev or canary)";
+        case agent.indexOf("edg") > -1: return "chrome-edge";
         case agent.indexOf("opr") > -1 && !!window.opr: return "opera";
         case agent.indexOf("chrome") > -1 && !!window.chrome: return "chrome";
         case agent.indexOf("trident") > -1: return "ie";
@@ -56,8 +66,65 @@ let browser = (function (agent) {
 })(window.navigator.userAgent.toLowerCase());
 console.log(window.navigator.userAgent.toLowerCase() + "\n" + browser);
 browser = browser.toString();
+console.log(browser);
 
-let os = "Unknown OS"; 
+const browsers = ['edge', 'chome-edge', 'opera', 'safari'];
+
+if (browser === 'ie') {
+    supported = false;
+    location.href = "../unsupported.html";
+}
+else if (browsers.includes(browser)) {
+    supported = false;
+    location.href = "../unsupported.html";
+} 
+// browser();
+
+// myDelayNode
+
+// Custom class definition
+class MyDelayNode extends GainNode {
+    constructor(actx, opt) {
+        super(actx);
+        // Internal Nodes
+        this._delay = new DelayNode(context, { delayTime: 0.5 });
+        this._mix = new GainNode(context, { gain: 0.5 });
+        this._feedback = new GainNode(context, { gain: 0.5 });
+        this._output = new GainNode(context, { gain: 1.0 });
+
+        // Export parameters
+        this.delayTime = this._delay.delayTime;
+        this.feedback = this._feedback.gain;
+        this.mix = this._mix.gain;
+
+        // Options setup
+        for (let k in opt) {
+            switch (k) {
+                case 'delayTime': this.delayTime.value = opt[k];
+                    break;
+                case 'feedback': this.feedback.value = opt[k];
+                    break;
+                case 'mix': this.mix.value = opt[k];
+                    break;
+            }
+        }
+
+        this._inputConnect = this.connect;   // input side, connect of super class
+        this.connect = this._outputConnect;  // connect() method of output
+
+        this._inputConnect(this._delay).connect(this._mix).connect(this._output);
+        this._inputConnect(this._output);
+        this._delay.connect(this._feedback).connect(this._delay);
+    }
+    _outputConnect(to, output, input) {
+        return this._output.connect(to, output, input);
+    }
+}
+
+
+
+
+let os = "Unknown OS";
 if (navigator.userAgent.indexOf("Win") != -1) os =
     "Windows OS";
 if (navigator.userAgent.indexOf("Mac") != -1) os =
@@ -67,33 +134,41 @@ if (navigator.userAgent.indexOf("Linux") != -1) os =
 if (navigator.userAgent.indexOf("Android") != -1) os =
     "Android OS";
 if (navigator.userAgent.indexOf("like Mac") != -1) os =
-    "iOS"; 
-os = os.toString();  
+    "iOS";
+os = os.toString();
 
-// Room code
-// btnGoRoom.onclick = function () {
-//     if (inputRoomNumber.value === "") {
-//         alert("Please enter a room number");
-//     } else {
-//         roomNumber = inputRoomNumber.value;
 
-//         socket.emit("create or join", roomNumber);
+// $('#local-audio').on('timeupdate', function () {
+//     $('#seekbar').attr("value", this.currentTime / this.duration);
+// })
 
-//         divSelectRoom.style = "display: none";
-//         divConsultingRoom.style = "display: block";
-//     }
-// };
+$('.ended').toast('hide');
+
+let noise = false;
+let oscillate = false;
+let slapback = false;
+let delay = false;
+let feedback = false;
+
 const url = window.location.href;
-console.log("url", url); 
+console.log("url", url);
 const queryString = window.location.search;
 console.log("queryString", queryString);
 const urlParams = new URLSearchParams(queryString);
 roomNumber = urlParams.get('roomNumber');
+noise = urlParams.get('noise');
+oscillate = urlParams.get('oscillate');
+delay = urlParams.get('delay');
+slapback = urlParams.get('slapback');
+feedback = urlParams.get('feedback');
+
+
 console.log(roomNumber);
-if(roomNumber != null){
+if (roomNumber != null) {
     socket.emit("create or join", roomNumber);
-    divConsultingRoom.style = "display: block";
+    // divConsultingRoom.style = "display: block";
 }
+
 
 // on creating the room - call initiator 
 socket.on("created", function (room) {
@@ -103,8 +178,9 @@ socket.on("created", function (room) {
             (stream) => {
                 localStream = stream;
                 localAudio.srcObject = stream;
+
                 isCaller = true;
-                gotLocalMediaStream(stream);
+                // gotLocalMediaStream(stream);
                 socket.emit("ready", roomNumber);
                 // table.style.visibility = 'visible';
                 hangupButton.style.visibility = 'visible';
@@ -123,7 +199,6 @@ socket.on("joined", function (room) {
         (stream) => {
             console.log("stream inside socket joined", stream);
             console.log("switching stream to audio file");
-            // TODO switch stream from microphone to local file
             localStream = stream;
             localAudio.srcObject = stream;
             socket.emit("ready", roomNumber);
@@ -142,6 +217,7 @@ socket.on("ready", function () {
         console.log("caller stream", localStream);
 
         for (const track of localStream.getTracks()) {
+            console.log("tracks", localStream);
             rtcPeerConnection.addTrack(track, localStream);
         }
 
@@ -160,6 +236,8 @@ socket.on("offer", function (event) {
         console.log("Callee stream", localStream);
         for (const track of localStream.getTracks()) {
             rtcPeerConnection.addTrack(track, localStream);
+
+
         }
 
         rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(event));
@@ -243,12 +321,82 @@ function setLocalAnswer(sessionDescription) {
 function onAddStream(event) {
 
     console.log("ondAddStream", event.streams);
-    audioContainer = document.createElement("audio");
-    audioContainer.setAttribute("width", "max-content");
-    audioContainer.setAttribute("autoplay", true);
-    audioContainer.srcObject = event.streams[0];
-    divConsultingRoom.appendChild(audioContainer);
-    console.log("local stream", localStream);
+    // add delay using webaudio
+
+
+    // audioContainer = document.createElement("audio");
+    // audioContainer.setAttribute("width", "max-content");
+    // audioContainer.setAttribute("autoplay", true);
+    // audioContainer.srcObject = event.streams[0].clone();
+    // let audio2 = new Audio();
+    // audio2.srcObject = event.streams[0].clone();
+    // audio2.autoplay = true;    
+    // divConsultingRoom.appendChild(audioContainer);
+    let audio3 = new Audio();
+    audio3.srcObject = event.streams[0];
+    audio3.autoplay = true;
+    console.log("adding delay");
+    audio3.onloadedmetadata = () => {
+
+        // controls if original stream should also be played
+        // true causes WebRTC getStats() receive track audioLevel == 0
+        audio3.muted = false;
+
+        if (delay) {
+            const delayNode = context.createDelay(10);
+            delayNode.delayTime.value = 6; // delay by seconds
+            input.connect(delayNode);
+            delayNode.connect(destination);
+            console.log("delay", delayNode.delayTime);
+        }
+        else if (noise) {
+            const input = context.createMediaStreamSource(audio3.srcObject);
+            const whiteNoiseNode = new AudioWorkletNode(context, 'white-noise-processor');
+            input.connect(gainNode);
+            whiteNoiseNode.connect(gainNode);
+            gainNode.connect(context.destination);
+        }
+
+        // oscillator
+        // const input = context.createMediaStreamSource(audio3.srcObject);
+        // input.connect(gainNode);
+        else if (oscillate) {
+            // const input = context.createMediaStreamSource(audio3.srcObject);
+            // input.connect(gainNode);
+            console.log("effect oscillator");
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(200, context.currentTime); // value in hertz
+            // oscillator.connect(gainNode);
+            oscillator.connect(context.destination);
+            oscillator.start();
+        }
+
+        // reverb
+        else if (slapback) {
+            //create a couple of native nodes and our custom node
+            const input = context.createMediaStreamSource(audio3.srcObject);
+            input.connect(gainNode);
+            let gain = context.createGain();
+            const slapBackNode = new AudioWorkletNode(context, 'slap-back-delay');
+            const anotherGain = context.createGain();
+
+            //connect our custom node to the native nodes and send to the output
+            gain.connect(slapBackNode.input);
+            customNode.connect(anotherGain);
+            anotherGain.connect(context.destination);
+        }
+
+        else if (feedback) {
+
+            const input = context.createMediaStreamSource(audio3.srcObject);
+            let vol = new GainNode(context, { gain: 0.1 });
+            let myDelay = new MyDelayNode(context, { delayTime: 0.5, feedback: 0.8 });
+
+            input.connect(myDelay).connect(vol).connect(context.destination);
+        }
+    };
+
+    // console.log("local stream", localStream);
 
     setInterval(() => {
         rtcPeerConnection.getStats(null).then(showStats, err =>
@@ -256,7 +404,20 @@ function onAddStream(event) {
         );
     }, 1000)
 
+    $('.started').toast('show');
+
+
+    var update = setInterval(function () {
+        var mins = Math.floor(localAudio.currentTime / 60);
+        var secs = Math.floor(localAudio.currentTime % 60);
+        if (secs < 10) {
+            secs = '0' + String(secs);
+        }
+        timer.innerHTML = mins + ':' + secs;
+    }, 10);
+
 }
+
 
 // getStats using webrtc peerConnection.getstats()
 function showStats(results) {
@@ -266,7 +427,7 @@ function showStats(results) {
         resultArr.push(element);
         //console.log(resultArr);
         if (element.type == 'remote-inbound-rtp') {
-            console.log(element);
+            // console.log(element);
             if (element.roundTripTime) {
                 rttArr.push(parseInt(element.roundTripTime * 1000));
                 // document.getElementById('audio-latency').innerHTML = element.roundTripTime * 1000 + ' ms';
@@ -286,13 +447,28 @@ function showStats(results) {
     });
 }
 
+rtcPeerConnection.oniceconnectionstatechange = function () {
+    if (rtcPeerConnection.iceConnectionState == 'closed') {
+        console.log('Disconnected');
+        $('.ended').toast('show');
+    }
+}
+
 // call hangup
 function hangup() {
     console.log('Ending call');
-    localStream.id = null;
-    audioContainer = null;
+    // localStream.stop();
+    rtcPeerConnection.iceConnectionState == 'closed';
+    localStream.getTracks().forEach(track => track.stop());
+    // if (oscillator) {
+    //     oscillator.stop();
+    // }
+    // audioContainer = null;
     localAudio.srcObject = null;
+
     rtcPeerConnection.close();
+    rtcPeerConnection = null;
+
     hangupButton.disabled = true;
     //table.style.visibility = 'hidden';
     sendData();
@@ -347,7 +523,7 @@ function sendData() {
         hideTooltip(btn);
     });
 
-    if(rttArr.length){
+    if (rttArr.length) {
         // post data to backend after hangup
         const data = {
             verificationCode: hash,
@@ -363,7 +539,7 @@ function sendData() {
             type: "USER2USER",
         };
         console.log("data sent", data);
-        fetch('https://conversation-test.qulab.org/stats', {   // always change to listen to server specific before docker build
+        fetch('https://webrtc.pavanct.com/stats', {   // always change to listen to server specific before docker build
             method: 'POST', // or 'PUT'
             headers: {
                 'Content-Type': 'application/json',
@@ -377,12 +553,15 @@ function sendData() {
             .catch((error) => {
                 console.error('Error:', error);
             });
-        
+
         document.getElementById("modalButton").onclick = function () {
             location.href = "../index.html";
-        };    
-    }  
+        };
+    }
 }
+
+
+/*
 
 // gotremotestream -- roomnumber 2
 function gotRemoteStream(event) {
@@ -423,7 +602,7 @@ async function setupLocalMediaStreamsFromFile(filepath) {
 
         });
 
-        // We need a media stream for WebRTC 
+        // We need a media stream for WebRTC
         // so run our MediaSource through a muted HTML audio element
         // and grab its stream via captureStream()
         audioContainer = document.createElement("audio");
@@ -474,4 +653,4 @@ function gotLocalMediaStream(mediaStream) {
     console.log('Connected localStreamNode.');
 }
 
-// Recording
+*/
