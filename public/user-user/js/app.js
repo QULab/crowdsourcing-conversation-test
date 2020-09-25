@@ -342,9 +342,10 @@ function onAddStream(event) {
 
         
         // true causes WebRTC getStats() receive track audioLevel == 0
-        audio3.muted = true;
+        audio3.muted = false;
 
         if (delay) {
+            audio3.muted = true;
             console.log("adding delay");
 
             // controls if original stream should also be played
