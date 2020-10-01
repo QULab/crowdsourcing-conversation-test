@@ -267,7 +267,8 @@ function sendData(answer) {
   if (rttArr.length) {
     let r = Math.random().toString(36).substring(10);
     // console.log("random", r);
-    var hash = CryptoJS.MD5(r).toString();
+    let fullhash = CryptoJS.MD5(r).toString();
+    let hash = fullhash.substring(0,11).toUpperCase();
     //alert(hash);
     // $('#myModalTitle').html(myTitle);
     $('#modalBodyMessage')
@@ -324,7 +325,7 @@ function sendData(answer) {
     // post data to backend after hangup
     const data = {
       url: url,
-      verificationCode: hash,
+      verificationCode: fullhash,
       statistics: {
         AverageTotalTripTime: averageLatency,
         rttArr: rttArr,
