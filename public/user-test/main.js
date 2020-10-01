@@ -335,7 +335,7 @@ function sendData(answer) {
       },
       type: "USER2FILE",
       os: os,
-      browser: browserString.toString(),
+      browser: browser,
       rating: answer,
       fileName: fileName,
     };
