@@ -3,14 +3,15 @@
 const audio1 = document.querySelector('audio#audio1');
 const audio2 = document.querySelector('audio#audio2');
 const callButton = document.getElementById('callButton');
+const callImage = document.getElementById('image-call');
 // const callButton = document.querySelector('button#callButton');
 const question = document.getElementsByClassName('.question');
 const answerButton = document.getElementById('answerButton');
-// const hangupButton = document.querySelector('button#hangupButton');
+const hangupButton = document.getElementById('hangupButton');
 // hangupButton.disabled = true;
 callButton.onclick = call;
 answerButton.disabled = true;
-// hangupButton.onclick = hangup;
+hangupButton.onclick = hangup;
 
 let pc1;
 let pc2;
@@ -101,13 +102,19 @@ if (navigator.userAgent.includes("Firefox")) {
   isFireFox1 = true;
 }
 
+function hideID(div) {
+  $("#" + div).hide();
+}
+
 function hide(div) {
-  $("." + div).hide();
+  $(div).hide();
 }
 
 function show(div){
-  $("." + div ).show();
+  $(div ).show();
 }
+
+hide(hangupButton);
 
 $('#audio2').on('timeupdate', function () {
   $('#seekbar').attr("value", this.currentTime / this.duration);
@@ -233,11 +240,14 @@ function showStats(results) {
   }
 }
 
-function hideID(div) {
-  $("#" + div).hide();
-}
+
 
 function hangup() {
+  answerButton.disabled = false;
+  $("#table :input[type=radio]").prop('disabled', false);
+  // hangupButton.disabled = false;
+  hide(hangupButton);
+  show(callButton);
   console.log('Ending call');
   clearInterval(interval);
   localStream.getTracks().forEach(track => track.stop());
@@ -253,11 +263,11 @@ function hangup() {
 }
 
 function answer(){
-  var form = document.getElementById('question');
+  let form = document.getElementById('question');
   form.onsubmit = function (event) { 
     event.preventDefault();
     console.log("answer", form.elements["rating"].value);
-    var answer = form.elements["rating"].value;
+    let answer = form.elements["rating"].value;
     sendData(answer);
    }
   
@@ -373,7 +383,7 @@ function gotRemoteStream(e) {
     console.log("Remote stream", e.streams[0]);
     // console.log("switch stream to web audio");
     let remoteStream;
-    let streamEnded = false;
+    // let streamEnded = false;
     context.resume();
     
     // audio2.src = "http://localhost:3000/stream" + "?fileName=" + fileName.toString();
@@ -386,12 +396,16 @@ function gotRemoteStream(e) {
     
     audio2.src = "http://webrtc.pavanct.com/stream" + "?fileName=" + fileName.toString();
     audio2.onerror = function (error) {
-      if (!streamEnded) {
-        location.href = "../404.html";
-        console.error(error);
-      }
+      // if (!streamEnded) {
+      //   location.href = "../404.html";
+      //   console.error(error);
+      // }
+      console.error(error);
     }
-    
+    hide(callButton);
+    show(hangupButton);
+    hangupButton.disabled = true;
+    setTimeout(() => { hangupButton.disabled = false}, 25000);
     // audio2.src = "https://conversation-test.qulab.org/stream/" + "?fileName=" + fileName.toString();
     // audio2.onerror = function (error) {
     //   if (!streamEnded) {
@@ -405,14 +419,14 @@ function gotRemoteStream(e) {
     console.log('Received remote stream');
     
     audio2.addEventListener('ended', (event) => {
-      streamEnded = true;
+      // streamEnded = true;
       console.log('audio stopped either because 1) it was over, ' +
         'or 2) no further data is available.');
         setTimeout(2000);
         // hangup and send data
-        answerButton.disabled = false;
+        
         hangup();
-      $("#table :input[type=radio]").prop('disabled', false);
+      
         // show('question');
     });
     

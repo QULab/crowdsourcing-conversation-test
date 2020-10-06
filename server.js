@@ -39,7 +39,8 @@ app.use(bodyParser.raw());
 // });
 
 mongoose.connect('mongodb+srv://pavan:bitnance210@cluster0.0il5v.mongodb.net/webtrc?retryWrites=true&w=majority', {
-  useNewUrlParser: true
+  useNewUrlParser: true,
+  useUnifiedTopology: true 
 });
 
 // redis 

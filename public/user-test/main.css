@@ -71,3 +71,21 @@ a#viewSource {
 #player{
   text-align: center;
 }
+
+#callButton {
+  content: '';
+  background-color: #00a500;
+  border: honeydew;
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+}
+
+#hangupButton {
+  content: '';
+  background-color: red;
+  border: honeydew;
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+}
