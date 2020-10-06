@@ -89,3 +89,7 @@ a#viewSource {
   width: 100px;
   height: 100px;
 }
+
+tr.selected {
+  background: #ddd;
+}

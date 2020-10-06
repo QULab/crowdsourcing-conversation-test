@@ -36,13 +36,25 @@
                             <p class="">
                                 <b>Steps:</b><br>
                             <ol>
-                                <li>Click on the <b>Start</b> button and listen to the audio
+                                <li>Click on the <b>Call <svg width="1em" height="1em" viewBox="0 0 16 16"
+                                            class="bi bi-telephone-fill" fill="green"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd"
+                                                d="M2.267.98a1.636 1.636 0 0 1 2.448.152l1.681 2.162c.309.396.418.913.296 1.4l-.513 2.053a.636.636 0 0 0 .167.604L8.65 9.654a.636.636 0 0 0 .604.167l2.052-.513a1.636 1.636 0 0 1 1.401.296l2.162 1.681c.777.604.849 1.753.153 2.448l-.97.97c-.693.693-1.73.998-2.697.658a17.47 17.47 0 0 1-6.571-4.144A17.47 17.47 0 0 1 .639 4.646c-.34-.967-.035-2.004.658-2.698l.97-.969z" />
+                                        </svg></b> button and listen to the audio
                                     file carefully until the end.</li>
-                                <li>Rate the quality on the speech clip you listened to.</li>
-                                <li><b>Submit</b> your answer</li>
+                                <li>Audio is about <b>1 minute</b> long</li>    
+                                <li>Rate the quality on the speech clip you listened to using the options displayed below.</li>
+                                <li><b>Submit</b> your answer using the <b>Submit button</b> after the call ends</li>
                                 <li>You will be provided with a <b>Verification code</b>, please copy the code and paste
                                     it to
                                     <b>Amazon Mechanical Turk</b>.</li>
+                                <li>You can end the call using <b>Hangup</b>  <svg xmlns="http://www.w3.org/2000/svg"
+                                        height="24" fill="red" viewBox="0 0 24 24" width="24">
+                                        <path d="M0 0h24v24H0z" fill="none" />
+                                        <path
+                                            d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08c-.18-.17-.29-.42-.29-.7 0-.28.11-.53.29-.71C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67c.18.18.29.43.29.71 0 .28-.11.53-.29.71l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28-.79-.74-1.69-1.36-2.67-1.85-.33-.16-.56-.5-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z" />
+                                    </svg> button but only after atleast <b>25 seconds</b> of listeining to the audio file</li>
                             </ol>
                             </p>
                         </div>
@@ -59,12 +71,13 @@
                             <!-- <audio id="audio2" autoplay controls controlsList="nodownload nofullscreen noremoteplayback" ></audio> -->
                             <audio id="audio2" autoplay src=""></audio>
                             <div>
-                                <div class="callButton"><button id="callButton"  data-toggle="tooltip" data-placement="right" title="Call">
-                                        <img id="image-call"
-                                            src="../assets/call-white-48dp.svg"/>
+                                <div class="callButton"><button id="callButton" data-toggle="tooltip"
+                                        data-placement="right" title="Call">
+                                        <img id="image-call" src="../assets/call-white-48dp.svg" />
                                     </button></div>
-                                
-                                <div class="hangupButton"><button id="hangupButton"  data-toggle="tooltip" data-placement="right" title="Hangup">
+
+                                <div class="hangupButton"><button id="hangupButton" data-toggle="tooltip"
+                                        data-placement="right" title="Hangup">
                                         <img id="image-end" src="../assets/call_end-white-48dp.svg" />
                                     </button></div>
 
@@ -73,7 +86,8 @@
                                     <img src="http://icons.iconarchive.com/icons/custom-icon-design/pretty-office-8/48/Pause-icon.png" />
                                 </button> -->
                                 <br>
-                                <div id="progress"><progress id="seekbar" value="0" max="1" style="width:200px;"></progress>
+                                <div id="progress"><progress id="seekbar" value="0" max="1"
+                                        style="width:200px;"></progress>
                                     <span id="timer"> 00:00</span></div>
 
                             </div>
@@ -190,7 +204,7 @@
                                         <th scope="col">Score</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody class="answer-options">
                                     <tr>
                                         <td>
                                             <label for="Excellent"><input type="radio" name="rating" id=""
@@ -201,25 +215,25 @@
                                     <tr>
                                         <td>
                                             <label for="Good"><input type="radio" name="rating" id="" value="Good">
-                                                Good</label> </td>
+                                                Good</label></td>
                                         <td>4</td>
                                     </tr>
                                     <tr>
                                         <td>
                                             <label for="Fair"><input type="radio" name="rating" id="" value="Fair">
-                                                Fair</label></td>
+                                                Fair</label> </td>
                                         <td>3</td>
                                     </tr>
                                     <tr>
                                         <td>
                                             <label for="Poor"><input type="radio" name="rating" id="" value="Poor">
-                                                Poor</label></td>
+                                                Poor</label> </td>
                                         <td>2</td>
                                     </tr>
                                     <tr>
-                                        <td>
-                                            <label for="Poor"><input type="radio" name="rating" id="" value="Bad">
-                                                Bad</label></td>
+                                        <td> <label for="Poor"><input type="radio" name="rating" id="" value="Bad">
+                                                Bad</label>
+                                        </td>
                                         <td>1</td>
                                     </tr>
                                 </tbody>

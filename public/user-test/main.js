@@ -556,5 +556,13 @@ function gotLocalMediaStream(mediaStream) {
   // console.log('Connected localStreamNode.');
 }
 
+$('.answer-options tr').click(function () {
+  $(this).find('td input:radio').prop('checked', true);
+
+  $('.answer-options tr').removeClass('selected');
+  $(this).toggleClass('selected');
+
+});
+
 
 
