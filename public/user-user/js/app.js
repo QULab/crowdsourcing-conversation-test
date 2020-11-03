@@ -21,7 +21,10 @@ let remoteStream;
 
 let iceServers = iceServers1;
 
-let streamConstraints = { audio: true };
+let streamConstraints = { audio: {
+    latency: 0.4,
+    echoCancellation: true,
+} };
 let isCaller;
 let latencyArray = [];
 
@@ -84,13 +87,13 @@ else if (browsers.includes(browser)) {
 
 // Custom class definition
 class MyDelayNode extends GainNode {
-    constructor(actx, opt) {
-        super(actx);
+    constructor(context, opt) {
+        super(context);
         // Internal Nodes
-        this._delay = new DelayNode(context, { delayTime: 0.5 });
-        this._mix = new GainNode(context, { gain: 0.5 });
+        this._delay = new DelayNode(context, { delayTime: 1 });
+        this._mix = new GainNode(context, { gain: 1 });
         this._feedback = new GainNode(context, { gain: 0.5 });
-        this._output = new GainNode(context, { gain: 1.0 });
+        this._output = new GainNode(context, { gain: 0 });
 
         // Export parameters
         this.delayTime = this._delay.delayTime;
@@ -323,6 +326,12 @@ function onAddStream(event) {
     console.log("ondAddStream", event.streams);
     // add delay using webaudio
 
+    // Add additional 2 seconds of buffering
+    // const [audioReceiver] = rtcPeerConnection.getReceivers();
+    // console.log(audioReceiver);
+    // setInterval(async () => {
+    //     audioReceiver.playoutDelayHint = audioReceiver.jitterBufferDelayHint = 0.4;
+    // }, 1);
 
     // audioContainer = document.createElement("audio");
     // audioContainer.setAttribute("width", "max-content");
@@ -335,12 +344,9 @@ function onAddStream(event) {
     let audio3 = new Audio();
     audio3.srcObject = event.streams[0];
     audio3.autoplay = true;
-    
- 
 
     audio3.onloadedmetadata = () => {
 
-        
         // true causes WebRTC getStats() receive track audioLevel == 0
         audio3.muted = false;
 
@@ -352,8 +358,8 @@ function onAddStream(event) {
             // true causes WebRTC getStats() receive track audioLevel == 0
 
             const recvAudioSource = context.createMediaStreamSource(audio3.srcObject);
-            const delayNode = context.createDelay(10);
-            delayNode.delayTime.value = 4; // delay by 1 second
+            const delayNode = context.createDelay(1);
+            delayNode.delayTime.value = 0.5; // delay by 1 second
             recvAudioSource.connect(delayNode);
             delayNode.connect(context.destination);
 
@@ -423,10 +429,11 @@ function onAddStream(event) {
         }
 
         else if (feedback) {
+            audio3.muted = true;
 
             const input = context.createMediaStreamSource(audio3.srcObject);
-            let vol = new GainNode(context, { gain: 0.1 });
-            let myDelay = new MyDelayNode(context, { delayTime: 0.5, feedback: 0.8 });
+            let vol = new GainNode(context, { gain: 0.5 });
+            let myDelay = new MyDelayNode(context, { delayTime: 1, feedback: 0 });
 
             input.connect(myDelay).connect(vol).connect(context.destination);
         }
