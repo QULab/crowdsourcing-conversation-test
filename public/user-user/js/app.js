@@ -21,10 +21,12 @@ let remoteStream;
 
 let iceServers = iceServers1;
 
-let streamConstraints = { audio: {
-    // latency: 0,
-    echoCancellation: true,
-} };
+let streamConstraints = {
+    audio: {
+        // latency: 0,
+        echoCancellation: true,
+    }
+};
 let isCaller;
 let latencyArray = [];
 
@@ -152,6 +154,7 @@ let oscillate = false;
 let slapback = false;
 let delay = false;
 let feedback = false;
+let echo = false;
 
 const url = window.location.href;
 console.log("url", url);
@@ -164,6 +167,7 @@ oscillate = urlParams.get('oscillate');
 delay = urlParams.get('delay');
 slapback = urlParams.get('slapback');
 feedback = urlParams.get('feedback');
+echo = urlParams.get('echo');
 
 
 console.log(roomNumber);
@@ -180,7 +184,7 @@ socket.on("created", function (room) {
         streamConstraints).then(
             (stream) => {
                 // localStream = stream;
-                if(delay){
+                if (delay) {
                     let n = context.createMediaStreamSource(stream);
                     let delayNode = context.createDelay(1);
                     delayNode.delayTime.value = 1;
@@ -189,11 +193,11 @@ socket.on("created", function (room) {
                     delayNode.connect(dest);
                     localStream = dest.stream;
                     localAudio.srcObject = stream;
-                }else{
+                } else {
                     localStream = stream;
                     localAudio.srcObject = stream;
                 }
-                
+
 
                 isCaller = true;
                 // gotLocalMediaStream(stream);
@@ -380,25 +384,25 @@ function onAddStream(event) {
     // let pannerNode = context.createPanner();
     // delayNode.connect(pannerNode);
     // pannerNode.connect(context.destination);
-    
+
     // delayNode.connect(context.destination);
     audio3.onloadedmetadata = () => {
 
         // true causes WebRTC getStats() receive track audioLevel == 0
         audio3.muted = false;
-        
-        if (delay) {
-            // audio3.muted = true;
-            // console.log("adding delay");
+
+        if (echo) {
+            audio3.muted = true;
+            console.log("adding delay");
 
             // controls if original stream should also be played
             // true causes WebRTC getStats() receive track audioLevel == 0
-            
-            // const recvAudioSource = context.createMediaStreamSource(audio3.srcObject);
-            // const delayNode = context.createDelay(1);
-            // delayNode.delayTime.value = 0.5; // delay by 1 second
-            // recvAudioSource.connect(delayNode);
-            // delayNode.connect(context.destination);
+
+            const recvAudioSource = context.createMediaStreamSource(audio3.srcObject);
+            const delayNode = context.createDelay(1);
+            delayNode.delayTime.value = 0.5; // delay by 1 second
+            recvAudioSource.connect(delayNode);
+            delayNode.connect(context.destination);
 
             // var streamNode;
             // var masterNode;
