@@ -22,7 +22,7 @@ let remoteStream;
 let iceServers = iceServers1;
 
 let streamConstraints = { audio: {
-    latency: 0.4,
+    // latency: 0,
     echoCancellation: true,
 } };
 let isCaller;
@@ -179,8 +179,21 @@ socket.on("created", function (room) {
     navigator.mediaDevices.getUserMedia(
         streamConstraints).then(
             (stream) => {
-                localStream = stream;
-                localAudio.srcObject = stream;
+                // localStream = stream;
+                if(delay){
+                    let n = context.createMediaStreamSource(stream);
+                    let delayNode = context.createDelay(1);
+                    delayNode.delayTime.value = 1;
+                    let dest = context.createMediaStreamDestination();
+                    n.connect(delayNode);
+                    delayNode.connect(dest);
+                    localStream = dest.stream;
+                    localAudio.srcObject = stream;
+                }else{
+                    localStream = stream;
+                    localAudio.srcObject = stream;
+                }
+                
 
                 isCaller = true;
                 // gotLocalMediaStream(stream);
@@ -202,8 +215,20 @@ socket.on("joined", function (room) {
         (stream) => {
             console.log("stream inside socket joined", stream);
             console.log("switching stream to audio file");
-            localStream = stream;
-            localAudio.srcObject = stream;
+            // localStream = stream;
+            if (delay) {
+                let n = context.createMediaStreamSource(stream);
+                let delayNode = context.createDelay(1);
+                delayNode.delayTime.value = 1;
+                let dest = context.createMediaStreamDestination();
+                n.connect(delayNode);
+                delayNode.connect(dest);
+                localStream = dest.stream;
+                localAudio.srcObject = stream;
+            } else {
+                localStream = stream;
+                localAudio.srcObject = stream;
+            }
             socket.emit("ready", roomNumber);
         }
     );
@@ -344,24 +369,36 @@ function onAddStream(event) {
     let audio3 = new Audio();
     audio3.srcObject = event.streams[0];
     audio3.autoplay = true;
+    audio3.muted = true;
+    // let cStream = audio3.captureStream();
+    // let n = context.createMediaStreamSource(cStream);
+    // n.connect(context.destination);
 
+    // const delayNode = context.createDelay(1);
+    // delayNode.delayTime.value = 1;
+    // n.connect(delayNode);
+    // let pannerNode = context.createPanner();
+    // delayNode.connect(pannerNode);
+    // pannerNode.connect(context.destination);
+    
+    // delayNode.connect(context.destination);
     audio3.onloadedmetadata = () => {
 
         // true causes WebRTC getStats() receive track audioLevel == 0
         audio3.muted = false;
-
+        
         if (delay) {
-            audio3.muted = true;
-            console.log("adding delay");
+            // audio3.muted = true;
+            // console.log("adding delay");
 
             // controls if original stream should also be played
             // true causes WebRTC getStats() receive track audioLevel == 0
-
-            const recvAudioSource = context.createMediaStreamSource(audio3.srcObject);
-            const delayNode = context.createDelay(1);
-            delayNode.delayTime.value = 0.5; // delay by 1 second
-            recvAudioSource.connect(delayNode);
-            delayNode.connect(context.destination);
+            
+            // const recvAudioSource = context.createMediaStreamSource(audio3.srcObject);
+            // const delayNode = context.createDelay(1);
+            // delayNode.delayTime.value = 0.5; // delay by 1 second
+            // recvAudioSource.connect(delayNode);
+            // delayNode.connect(context.destination);
 
             // var streamNode;
             // var masterNode;
@@ -405,10 +442,13 @@ function onAddStream(event) {
         else if (oscillate) {
             // const input = context.createMediaStreamSource(audio3.srcObject);
             // input.connect(gainNode);
+            // audio3.muted = true;
+
             console.log("effect oscillator");
             oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(200, context.currentTime); // value in hertz
+            oscillator.frequency.setValueAtTime(100, context.currentTime); // value in hertz
             // oscillator.connect(gainNode);
+
             oscillator.connect(context.destination);
             oscillator.start();
         }
@@ -699,3 +739,7 @@ function gotLocalMediaStream(mediaStream) {
 }
 
 */
+
+
+// record and playback
+
