@@ -45,14 +45,15 @@ make
     "study_name": "text (use in database so the records are separated)."  
     "number_of_session_per_condition": 10,
     "scenario": "short_conversation test// + future work other scenarios", 
+    "instruction_html": "path to the study specific instruction",
+    "rating_scale_html":"html to be shown at the end of conversation where participants can rate. It my contain one or more scales",
+    "html_party_caller": "html_address",
+    "html_party_receiver": "html_address",
     "condition": [
         {
             "condition_name": "c01_user_2_file",
             "condition_id": 1,             
-            "configuration_ids":[1,2],
-            "html_party_1": "html_address",
-            "html_party_2": "html_address",
-            "scale": ["overall_quality"]
+            "configuration_ids":[1,2],                        
         }
         
     ],
