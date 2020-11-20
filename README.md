@@ -70,7 +70,8 @@ make
         "config_id": 3 ,
         "condition_type": "packet_lost",       
         "probability": 0.2,
-        "burst_ratio" : 1     
+        "burst_ratio" : 1,
+        "burst_ratio_pattern": "random"     
       }, { 
         "config_id": 4 ,
         "condition_type": "echo",       
@@ -91,7 +92,9 @@ More details for each config file:
  "condition_type": one of "noise", "delay", "packet_lost", "echo"
  
  "burst_ratio": "how close the packet could be (1: random), higher 4, 5 means packet_lost happen in clusters"
-
+  
+  "burst_ratio_pattern": "random" or "fixed": in case fix, then create the pattern once and apply to all session. 
+  In case of random, then the pattern should be generated online.
 
 ## Contact
 Pavan
