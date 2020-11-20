@@ -354,9 +354,10 @@ function sendData(answer) {
     // console.log("browser string", browserString);
     
     let localPost = 'http://localhost:3000/stats';
-    let serverPost = 'https://webrtc.pavanct.com/stats';
+    let serverPost1 = 'https://conversation-test.qulab.org/stats';
+    let serverPost2 = 'https://webrtc.pavanct.com/stats';
     
-    fetch(serverPost , {
+    fetch(serverPost2 , {
       method: 'POST', // or 'PUT'
       headers: {
         'Content-Type': 'application/json',
