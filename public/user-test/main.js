@@ -386,6 +386,7 @@ function gotRemoteStream(e) {
     // let streamEnded = false;
     context.resume();
     
+
     // audio2.src = "http://localhost:3000/stream" + "?fileName=" + fileName.toString();
     // audio2.onerror = function (error) {
     //   if (!streamEnded) {
@@ -393,8 +394,9 @@ function gotRemoteStream(e) {
     //     console.error(error);
     //   }
     // }
-    
-    audio2.src = "http://webrtc.pavanct.com/stream" + "?fileName=" + fileName.toString();
+    let serverSrc = "https://conversation-test.qulab.org/stream";
+    let localSrc = "http://localhost:3000/stream";
+    audio2.src = serverSrc + "?fileName=" + fileName.toString();
     audio2.onerror = function (error) {
       // if (!streamEnded) {
       //   location.href = "../404.html";

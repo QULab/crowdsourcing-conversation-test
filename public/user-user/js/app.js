@@ -155,6 +155,7 @@ let slapback = false;
 let delay = false;
 let feedback = false;
 let echo = false;
+let pl = false;
 
 const url = window.location.href;
 console.log("url", url);
@@ -168,6 +169,7 @@ delay = urlParams.get('delay');
 slapback = urlParams.get('slapback');
 feedback = urlParams.get('feedback');
 echo = urlParams.get('echo');
+pl = urlParams.get('pl');
 
 
 console.log(roomNumber);
@@ -482,7 +484,20 @@ function onAddStream(event) {
             input.connect(myDelay).connect(vol).connect(context.destination);
         }
 
+        else if (pl) {
+            // stream.getAudioTracks()[0].enabled = true
 
+            setInterval(() => {
+                let v = Math.random();
+                if (v < 0.2) {
+                    audio3.muted = true;
+                    console.log(v, "muted");
+                } else {
+                    audio3.muted = false;
+                    console.log(v, "nou muted");
+                }
+            }, 1000)
+        }
     };
 
     // console.log("local stream", localStream);
@@ -565,7 +580,10 @@ function hangup() {
 
 function sendData() {
     // show the thank you message
-    var hash = CryptoJS.MD5("Message").toString();
+    let r = Math.random().toString(36).substring(10);
+    // console.log("random", r);
+    let fullhash = CryptoJS.MD5(r).toString();
+    let hash = fullhash.substring(0, 11).toUpperCase();
     $('#modalBodyMessage')
         .html("Verification code: " + "<div id='verificationCode' style='color: #0275d8;'> " + hash + "</div>");
     //$('#modalBodyVerificationCode').html(hash);
@@ -615,7 +633,7 @@ function sendData() {
     if (rttArr.length) {
         // post data to backend after hangup
         const data = {
-            verificationCode: hash,
+            verificationCode: fullhash,
             statistics: {
                 AverageTotalTripTime: averageLatency,
                 rttArr: rttArr,
@@ -628,7 +646,10 @@ function sendData() {
             type: "USER2USER",
         };
         console.log("data sent", data);
-        fetch('https://webrtc.pavanct.com/stats', {   // always change to listen to server specific before docker build
+        let localPost = 'http://localhost:3000/stats';
+        let serverPost = 'https://conversation-test.qulab.org/stats';
+
+        fetch(serverPost, {
             method: 'POST', // or 'PUT'
             headers: {
                 'Content-Type': 'application/json',
@@ -642,6 +663,35 @@ function sendData() {
             .catch((error) => {
                 console.error('Error:', error);
             });
+        // always change to listen to server specific before docker build
+        // fetch('https://conversation-test.qulab.org/stats', {   
+        //     method: 'POST', // or 'PUT'
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify(data),
+        // })
+        //     .then((response) => response.json())
+        //     .then((data) => {
+        //         console.log('Success:', data);
+        //     })
+        //     .catch((error) => {
+        //         console.error('Error:', error);
+        //     });
+        // fetch('http://localhost:3000/stats', {
+        //     method: 'POST', // or 'PUT'
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify(data),
+        // })
+        //     .then((response) => response.json())
+        //     .then((data) => {
+        //         console.log('Success:', data);
+        //     })
+        //     .catch((error) => {
+        //         console.error('Error:', error);
+        //     });
 
         document.getElementById("modalButton").onclick = function () {
             location.href = "../index.html";
