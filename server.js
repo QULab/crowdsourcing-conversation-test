@@ -18,13 +18,13 @@ const basicAuth = require('express-basic-auth');
 const userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.122 Safari/537.36";
 const moment = require('moment');
 // const csv = require('csv-express');
-const json2csv = require('json-2-csv');
+const { Parser } = require('json2csv');
 const redisClient = redis.createClient(6379, "webrtc-redis");
 // const redisClient = redis.createClient();
 let sessionID;
 
 const port = process.env.PORT || 3000;
-let ipAdress;
+let ipAddress;
 let fileName;
 // TODO session management
 app.set('view engine', 'ejs');
@@ -147,7 +147,7 @@ let statSchema = new schema({
   type: { type: String, required: true },
   rating: { type: String },
   fileName: { type: String },
-  ipAdress: { type: String },
+  ipAddress: { type: String },
   testDuration: { type: Number },
   sessionID: { type: String }
 });
@@ -162,7 +162,7 @@ let statModel = mongoose.model("stats", statSchema);
 
 app.post('/stats', async (req, res) => {
 
-  ipAdress = req.connection.remoteAddress;
+  let ipAddress = req.connection.remoteAddress;
 
   let browserType = req.get('user-agent');
   console.log('Got body:', req.body);
@@ -170,7 +170,7 @@ app.post('/stats', async (req, res) => {
   const stats = new statModel(req.body);
 
   try {
-    stats.ipAdress = ipAdress;
+    stats.ipAddress = ipAddress;
     stats.sessionID = sessionID;
     await stats.save();
     res.send(stats);
@@ -203,18 +203,27 @@ app.get('/exporttocsv', basicAuth({
   var filename = date.toISOString() + "-conversationtest.csv";
   var dataArray;
 
-  statModel.find({}).sort({ timestamp: 'desc' }).lean().exec({}).then(data => {
-    json2csv.json2csv({ data: data }, function (err, csvStr) {
-      if (err) {
-        console.log(err);
-        res.statusCode = 500;
-        return res.end(err.message);
-      }
-      res.setHeader('Content-Type', 'text/csv');
-      res.setHeader("Content-Disposition", 'attachment; filename=' + filename);
-      res.status(200).send(csvStr);
-    })
-  }).catch(res.status(500));
+  // statModel.find({}).sort({ timestamp: 'desc' }).lean().exec({}).then(data => {
+  //   json2csv.json2csv({ data: data }, function (err, csvStr) {
+  //     if (err) {
+  //       console.log(err);
+  //       res.statusCode = 500;
+  //       return res.end(err.message);
+  //     }
+  //     res.setHeader('Content-Type', 'text/csv');
+  //     res.setHeader("Content-Disposition", 'attachment; filename=' + filename);
+  //     res.status(200).send(csvStr);
+  //   })
+  // }).catch(res.status(500));
+
+    statModel.find().lean().exec({}, function (err, stats) {
+      const json2csv = new Parser({});
+      const csv = json2csv.parse(stats);
+      res.header('Content-Type', 'text/csv');
+      res.attachment(filename);
+      return res.send(csv);
+    });
+
 })
 
 
