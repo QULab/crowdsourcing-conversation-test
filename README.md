@@ -65,7 +65,7 @@ make
       }, { 
         "config_id": 2 ,
         "condition_type": "delay",       
-        "delay_time_": 5      
+        "delay_time_sec": 2      
       }, { 
         "config_id": 3 ,
         "condition_type": "packet_lost",       
@@ -74,7 +74,7 @@ make
       }, { 
         "config_id": 4 ,
         "condition_type": "echo",       
-        "delay_time_": 5,
+        "delay_time_sec": 1.5,
         "attenuation": 5      
       }
        
