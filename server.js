@@ -3,31 +3,33 @@ const fs = require("fs");
 const express = require("express");
 const app = express();
 const router = express.Router();
-const cors = require('cors');
-const session = require('express-session');
-const { v4: uuidv4 } = require('uuid');
-const redis = require('redis');
-const redisStore = require('connect-redis')(session);
+const cors = require("cors");
+const session = require("express-session");
+const { v4: uuidv4 } = require("uuid");
+const redis = require("redis");
+const redisStore = require("connect-redis")(session);
 const http = require("http");
-const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
+const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
 const server = http.createServer(app);
 const io = require("socket.io")(server);
-const basicAuth = require('express-basic-auth');
+const basicAuth = require("express-basic-auth");
 // let filePath = './public/assets/sup23_selected_1min/01_2.wav';
-const userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.122 Safari/537.36";
-const moment = require('moment');
+const userAgent =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.122 Safari/537.36";
+const moment = require("moment");
 // const csv = require('csv-express');
-const json2csv = require('json-2-csv');
+const json2csv = require("json-2-csv");
 const redisClient = redis.createClient(6379, "webrtc-redis");
 // const redisClient = redis.createClient();
+const dotenv = require("dotenv").config();
 let sessionID;
 
 const port = process.env.PORT || 3000;
 let ipAdress;
 let fileName;
 // TODO session management
-app.set('view engine', 'ejs');
+app.set("view engine", "ejs");
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -38,52 +40,58 @@ app.use(bodyParser.raw());
 //   useNewUrlParser: true
 // });
 
-mongoose.connect('mongodb+srv://pavan:bitnance210@cluster0.0il5v.mongodb.net/webtrc?retryWrites=true&w=majority', {
+let connectionUrl =
+  "mongodb+srv://pavan:" +
+  process.env.DB_PASS +
+  "@cluster0.0il5v.mongodb.net/"  + process.env.DB_NAME + "?retryWrites=true&w=majority";
+mongoose.connect(connectionUrl, {
   useNewUrlParser: true,
-  useUnifiedTopology: true 
+  useUnifiedTopology: true,
 });
 
-// redis 
-redisClient.on('error', (err) => {
-  console.log('Redis error: ', err);
+// redis
+redisClient.on("error", (err) => {
+  console.log("Redis error: ", err);
 });
 
-app.use(session({
-  genid: (req) => {
-    return uuidv4();
-  },
-  store: new redisStore({ host: 'redis', port: 6379, client: redisClient }),
-  name: 'webrtc',
-  secret: "54F962E6ECF99",
-  resave: false,
-  cookie: { secure: false, maxAge: 60 * 60 * 24 }, // Set to secure:false and expire in 1 minute for demo purposes
-  saveUninitialized: true
-}));
+app.use(
+  session({
+    genid: (req) => {
+      return uuidv4();
+    },
+    store: new redisStore({ host: "redis", port: 6379, client: redisClient }),
+    name: "webrtc",
+    secret: "54F962E6ECF99",
+    resave: false,
+    cookie: { secure: false, maxAge: 60 * 60 * 24 }, // Set to secure:false and expire in 1 minute for demo purposes
+    saveUninitialized: true,
+  })
+);
 
 app.use((req, res, next) => {
-  sessionID = req.sessionID
-  console.info(req.sessionID);
+  sessionID = req.sessionID;
+  // console.info(req.sessionID);
   let fileP = req.query.fileName;
-  if(fileP != null){
-  fileP = streamSwitcher(fileP);
-  if(fileP == "file not found"){
-    res.sendFile('404.html', { root: "public" });
+  if (fileP != null) {
+    fileP = streamSwitcher(fileP);
+    if (fileP == "file not found") {
+      res.sendFile("404.html", { root: "public" });
+    }
   }
-}
   next();
 });
 
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use('/user-test', express.static('public/user-test'));
+app.use("/user-test", express.static("public/user-test"));
 
-app.use('/delay', express.static('public/delay'));
+app.use("/delay", express.static("public/delay"));
 
 //app.use('/newapp', express.static('public/restructure-html'));
 
-app.use('/user-user', express.static('public/user-user'));
+app.use("/user-user", express.static("public/user-user"));
 
-app.get('/stream', (req, res) => {
+app.get("/stream", (req, res) => {
   console.log(req.query);
   fileName = req.query.fileName;
   console.log(fileName);
@@ -94,7 +102,9 @@ app.get('/stream', (req, res) => {
   if (stat.size > chunkSize * 2) {
     chunkSize = Math.ceil(stat.size * 1);
   }
-  let range = (req.headers.range) ? req.headers.range.replace(/bytes=/, "").split("-") : [];
+  let range = req.headers.range
+    ? req.headers.range.replace(/bytes=/, "").split("-")
+    : [];
 
   range[0] = range[0] ? parseInt(range[0], 10) : 0;
   range[1] = range[1] ? parseInt(range[1], 10) : range[0] + chunkSize;
@@ -104,32 +114,27 @@ app.get('/stream', (req, res) => {
   range = { start: range[0], end: range[1] };
   console.log(filePath);
   res.writeHead(200, {
-    'Content-Type': 'audio/wav',
-    'Content-Range': 'bytes ' + range.start + '-' + range.end + '/' + stat.size,
-    'Content-Length': range.end - range.start,
+    "Content-Type": "audio/wav",
+    "Content-Range": "bytes " + range.start + "-" + range.end + "/" + stat.size,
+    "Content-Length": range.end - range.start,
   });
   fs.createReadStream(filePath).pipe(res);
 });
 
 function streamSwitcher(fileName) {
   switch (fileName) {
-    case '01_2':
-
-      return './public/assets/sup23_selected_1min/01_2.wav';
-    case '17_2':
-
-      return './public/assets/sup23_selected_1min/17_2.wav';
-    case '21_2':
-
-      return './public/assets/sup23_selected_1min/21_2.wav';
-    case '32_2':
-
-      return './public/assets/sup23_selected_1min/32_2.wav';
-    case '46_2':
-
-      return './public/assets/sup23_selected_1min/46_2.wav';
+    case "01_2":
+      return "./public/assets/sup23_selected_1min/01_2.wav";
+    case "17_2":
+      return "./public/assets/sup23_selected_1min/17_2.wav";
+    case "21_2":
+      return "./public/assets/sup23_selected_1min/21_2.wav";
+    case "32_2":
+      return "./public/assets/sup23_selected_1min/32_2.wav";
+    case "46_2":
+      return "./public/assets/sup23_selected_1min/46_2.wav";
     default:
-      return 'file not found';
+      return "file not found";
   }
 }
 
@@ -149,23 +154,22 @@ let statSchema = new schema({
   fileName: { type: String },
   ipAdress: { type: String },
   testDuration: { type: Number },
-  sessionID: { type: String }
+  sessionID: { type: String },
 });
 
 // let statSchema = new mongoose.Schema({},
 //   {strict:false }
 // );
 
-let statModel = mongoose.model("stats", statSchema);
+let statModel = mongoose.model("webrtc-stats", statSchema);
 
 // post to mongodb
 
-app.post('/stats', async (req, res) => {
-
+app.post("/stats", async (req, res) => {
   ipAdress = req.connection.remoteAddress;
 
-  let browserType = req.get('user-agent');
-  console.log('Got body:', req.body);
+  let browserType = req.get("user-agent");
+  console.log("Got body:", req.body);
   let body = req.body;
   const stats = new statModel(req.body);
 
@@ -183,41 +187,60 @@ app.post('/stats', async (req, res) => {
 
 // get from mongodb
 
-app.get('/stats', basicAuth({
-  challenge: true,
-  users: { 'admin': 'supersecret' }
-}), async (req, res) => {
-  // console.log(device);
+app.get(
+  "/stats",
+  basicAuth({
+    challenge: true,
+    users: { admin: process.env.SECRET },
+  }),
+  async (req, res) => {
+    // console.log(device);
 
-  statModel.find().sort({ timestamp: 'desc' }).then(data => {
-    res.render('data.ejs', { data: data, moment: moment });
-  }).catch(res.status(500));
-});
+    statModel
+      .find()
+      .sort({ timestamp: "desc" })
+      .then((data) => {
+        res.render("data.ejs", { data: data, moment: moment });
+      })
+      .catch(res.status(500));
+  }
+);
 
-app.get('/exporttocsv', basicAuth({
-  challenge: true,
-  users: { 'admin': 'supersecret' }
-}), async (req, res) => {
-  var ts = Date.now();
-  var date = new Date(ts);
-  var filename = date.toISOString() + "-conversationtest.csv";
-  var dataArray;
+app.get(
+  "/exporttocsv",
+  basicAuth({
+    challenge: true,
+    users: { admin: process.env.SECRET },
+  }),
+  async (req, res) => {
+    var ts = Date.now();
+    var date = new Date(ts);
+    var filename = date.toISOString() + "-conversationtest.csv";
+    var dataArray;
 
-  statModel.find({}).sort({ timestamp: 'desc' }).lean().exec({}).then(data => {
-    json2csv.json2csv({ data: data }, function (err, csvStr) {
-      if (err) {
-        console.log(err);
-        res.statusCode = 500;
-        return res.end(err.message);
-      }
-      res.setHeader('Content-Type', 'text/csv');
-      res.setHeader("Content-Disposition", 'attachment; filename=' + filename);
-      res.status(200).send(csvStr);
-    })
-  }).catch(res.status(500));
-})
-
-
+    statModel
+      .find({})
+      .sort({ timestamp: "desc" })
+      .lean()
+      .exec({})
+      .then((data) => {
+        json2csv.json2csv({ data: data }, function (err, csvStr) {
+          if (err) {
+            console.log(err);
+            res.statusCode = 500;
+            return res.end(err.message);
+          }
+          res.setHeader("Content-Type", "text/csv");
+          res.setHeader(
+            "Content-Disposition",
+            "attachment; filename=" + filename
+          );
+          res.status(200).send(csvStr);
+        });
+      })
+      .catch(res.status(500));
+  }
+);
 
 let rooms = [];
 
