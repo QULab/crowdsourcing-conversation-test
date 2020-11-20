@@ -75,7 +75,8 @@ make
         "config_id": 4 ,
         "condition_type": "echo",       
         "delay_time_sec": 1.5,
-        "attenuation": 5      
+        "attenuation": 5 
+             
       }
        
     
