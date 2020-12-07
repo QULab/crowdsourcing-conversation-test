@@ -263,10 +263,16 @@ io.on("connection", function (socket) {
     } else if (numClients === 1) {
       socket.join(room);
       socket.emit("joined", room);
+      socket.broadcast.to(room).emit("user_joined");
     } else {
       socket.emit("full", `Sorry room '${room}' are full.`);
     }
   });
+
+  socket.on("caller_ready", function(room){
+    socket.emit("called", room);
+    socket.broadcast.to(room).emit("accept_call");
+  })
 
   socket.on("ready", function (room) {
     socket.broadcast.to(room).emit("ready");

@@ -7,13 +7,24 @@ const divConsultingRoom = document.getElementById("consulting-room");
 // const inputRoomNumber = document.getElementById("room-number");
 // const btnGoRoom = document.getElementById("go-room");
 // const table = document.getElementById("table-stats");
+const callButton = document.querySelector('button#callButton');
+const startButton = document.querySelector('button#startButton');
+const acceptButton = document.querySelector('button#acceptButton');
+const duration = document.getElementById('progress');
 
+duration.style.visibility= "hidden";
 // table.style.visibility = 'hidden';
+callButton.disabled = true;
+callButton.onclick = startCall;
+// startButton.style.visibility = 'hidden';
 
 // for call hangup
 hangupButton.disabled = true;
 hangupButton.style.visibility = 'hidden';
 hangupButton.onclick = hangup;
+
+// for call begin
+
 
 let roomNumber;
 let localStream = new MediaStream();
@@ -181,7 +192,27 @@ console.log(roomNumber);
 if (roomNumber != null) {
     socket.emit("create or join", roomNumber);
     // divConsultingRoom.style = "display: block";
+
 }
+
+function startCall() {
+    socket.emit("caller_ready", roomNumber);
+    socket.emit("ready", roomNumber);
+}
+
+socket.on("accept_call", function(){
+    $('#callModal').modal('show');
+    acceptButton.onclick = acceptCall;
+})
+
+function acceptCall(){
+    socket.emit("ready", roomNumber);
+
+}
+
+socket.on("called", function(){
+    callButton.disabled = true;
+})
 
 
 // on creating the room - call initiator 
@@ -208,20 +239,20 @@ socket.on("created", function (room) {
 
                 isCaller = true;
                 // gotLocalMediaStream(stream);
-                socket.emit("ready", roomNumber);
+                // socket.emit("ready", roomNumber);
                 // table.style.visibility = 'visible';
-                hangupButton.style.visibility = 'visible';
-                hangupButton.disabled = false;
+                // callButton.disabled = false;
+                // callButton.visibility = 'hidden';
                 console.log("room created, track added local");
             }).catch((error) => {
                 console.log(`An error occured when accessing media devices`, error);
             });
 });
 
-// when someone joins - call reciever
+// when someone joins - call receiver
 socket.on("joined", function (room) {
-    console.log("Remote User - Callee");
-
+    // $('.started').toast('show');
+    console.log("Remote User - receiver");
     navigator.mediaDevices.getUserMedia(streamConstraints).then(
         (stream) => {
             console.log("stream inside socket joined", stream);
@@ -240,16 +271,29 @@ socket.on("joined", function (room) {
                 localStream = stream;
                 localAudio.srcObject = stream;
             }
-            socket.emit("ready", roomNumber);
+
         }
     );
     console.log("room joined, track added local", roomNumber);
-
+    
+    // socket.emit("ready", roomNumber);
+    // $('.started').toast('show');
 });
+
+socket.on("user_joined", function () {
+    $('.started').toast('show');
+    if (isCaller) {
+        callButton.disabled = false;
+        console.log("inside user_joined");
+    }
+})
 
 // for caller - on emit ready
 socket.on("ready", function () {
+
+
     if (isCaller) {
+
         rtcPeerConnection.onicecandidate = onIceCandidate;
         rtcPeerConnection.ontrack = onAddStream;
 
@@ -358,6 +402,10 @@ function setLocalAnswer(sessionDescription) {
 }
 
 function onAddStream(event) {
+    callButton.style.visibility = 'hidden';
+    hangupButton.style.visibility = 'visible';
+    duration.style.visibility = "visible";
+    hangupButton.disabled = false;
 
     console.log("ondAddStream", event.streams);
     // add delay using webaudio
@@ -551,7 +599,7 @@ function onAddStream(event) {
         );
     }, 1000)
 
-    $('.started').toast('show');
+    $('.connected').toast('show');
 
 
     var update = setInterval(function () {
@@ -738,7 +786,8 @@ function sendData() {
         //     });
 
         document.getElementById("modalButton").onclick = function () {
-            location.href = "../index.html";
+            console.log("task completed");
+            location.href = "../taskcompleted.html";
         };
     }
 }

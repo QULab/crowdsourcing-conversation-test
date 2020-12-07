@@ -4,8 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Conversation Test U-U</title>
+    <title>Conversation Test User to User</title>
     <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
@@ -27,231 +26,184 @@
 </head>
 
 <body>
-
     <div id="container" class="container h-100">
         <div class="row h-100">
             <div class="col-12 d-flex justify-content-center my-auto">
-                <div class="toast started" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000"
+                <div class="toast started" role="alert" aria-live="assertive" aria-atomic="true" data-delay="8000"
                     data-animation="true">
                     <div class="toast-header">
-                        Call connected!
+                        User Joined!
                         <button type="button" class="close" data-dismiss="toast">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                 </div>
-               
+
+                <div class="toast connected" role="alert" aria-live="assertive" aria-atomic="true" data-delay="8000"
+                    data-animation="true">
+                    <div class="toast-header">
+                        Call Connected!
+                        <button type="button" class="close" data-dismiss="toast">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+
                 <div>
                     <h1 style="text-align: center;">Conversation test</h1>
-
-                    <!-- <div id="select-room" style="display: inline-block;">
-                        <label>Type room number. Maximum for 2 people</label>
-                        <div class="input-group input-group-sm mb-3">
-                            <input id="room-number" type="text" class="form-control" aria-label="Small"
-                                aria-describedby="inputGroup-sizing-sm">
-                        </div>
-                        <button id="go-room" class="btn btn-outline-primary btn-sm">Go</button>
-                    </div> -->
                     <div class="instructions">
                         <div class="card border-dark mb-3" style="margin-top: 30px">
                             <div class="card-body text-dark">
                                 <h5 class="card-title text-center"><b>Instructions</b></h5>
-                                <h6 class="card-title text-center" style="color: firebrick;"><b>Please read the instructions carefully!</b></h6><br>
+                                <h6 class="card-title text-center" style="color: firebrick;"><b>Please read the
+                                        instructions carefully!</b></h6><br>
                                 <p class="">
                                     The Test requires media permissions from browser,
                                     so please allow microphone settings when prompted by the browser.
                                     For the research purposes, your audio maybe recorded and used to determine
                                     quality of the audio conversation.
-                                    <br/>
-                                    Please wait for the other person to join, once the person joins you will see a <b style="color: #23C552;">Call Connected!</b> notification.
-                                    Adjust your volume in your device and please use <b>Chrome browser</b> or <b>Firefox browser</b> for taking the test.
+                                    <br />
+                                    Please wait for the other person to join, once the person joins you will see a <b
+                                        style="color: #23C552;">Call Connected!</b> notification.
+                                    Adjust your volume in your device and please use <b>Chrome browser</b> or <b>Firefox
+                                        browser</b> for taking the test.
                                 </p>
                                 <p class="">
-                                    After the audio conversation test is complete, you can press the button <b>Hangup</b>, and you will see the notification <b style="color: firebrick">Call disconnected!</b>.  
-                                    Please select the rating for question about the quality of the audio and click submit answer button. After answer is submitted you
-                                    will be provided with a <b>Verification code</b>, please copy the code and paste it to
+                                    After the audio conversation test is complete, you can press the button
+                                    <b>Hangup</b>, and you will see the notification <b style="color: firebrick">Call
+                                        disconnected!</b>.
+                                    Please select the rating for question about the quality of the audio and click
+                                    submit answer button. After answer is submitted you
+                                    will be provided with a <b>Verification code</b>, please copy the code and paste it
+                                    to
                                     <b>Amazon Mechanical Turk</b>.
                                 </p>
                             </div>
                         </div>
                     </div>
 
+                    <div class="card border-dark mb-3" style="margin-top: 30px">
+                        <div class="card-body text-dark">
+                            <h5 class="card-title text-center"><b>Study Specific Instructions</b></h5>
+                            <h6 class="card-title text-center" style="color: firebrick;"><b>Please read the
+                                    instructions carefully!</b></h6><br>
+                            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Velit totam asperiores
+                                veritatis excepturi, alias porro quod, dicta sapiente amet quae dolorem beatae sed
+                                accusantium nemo repellendus illo recusandae voluptate molestiae.</p>
+                        </div>
+                    </div>
                     <div class="card border-light mb-3">
+                        <div class="callButton"><button id="callButton" data-toggle="tooltip" data-placement="right"
+                                title="Call">
+                                <img id="image-call" src="../assets/call-white-48dp.svg" />
+                            </button></div>
                         <div id="audio" class="card-body text-dark" style="text-align: center;">
 
                             <audio id="local-audio" controls autoplay muted style="display: none;"></audio>
 
-                            <!-- <div id="progress"><progress id="seekbar" value="0" max="1" style="width:200px;"></progress> -->
-                            <label>Duration</label>&nbsp;&nbsp;<span id="timer"> 00:00</span>&nbsp;&nbsp;
-                            <button id="hangupButton" class="btn btn-outline-danger">Hang Up</button>
-    
-                            <!-- <div style="display: none;">
-                            <audio src="http://localhost:3000/stream?fileName=01_2" muted autoplay id="back"></audio>
-                        </div> -->
+                            <div id="progress"><label>Duration</label>&nbsp;&nbsp;<span id="timer">
+                                    00:00</span>&nbsp;&nbsp;
+                                <!-- <button id="hangupButton" class="btn btn-outline-danger">Hang Up</button> -->
 
-                            <!-- <div>
-                                <div class="label">Remote Audio</div>
-                                    <audio id="remote-audio" controls autoplay></audio>
-                                </div> 
-                             </div> -->
-                        </div>
-                    </div>
-                    <div id="buttons" style="display: none;">
-                        <select id="codec">
-                            <!-- Codec values are matched with how they appear in the SDP.
-                                                                                    For instance, opus matches opus/48000/2 in Chrome, and ISAC/16000
-                                                                                    matches 16K iSAC (but not 32K iSAC). -->
-                            <option value="opus">Opus</option>
-                            <option value="ISAC">iSAC 16K</option>
-                            <option value="G722">G722</option>
-                            <option value="PCMU">PCMU</option>
-                        </select>
 
-                    </div>
-                    <div id="statediv"></div>
-                    </td>
-                    <td>
-                        <div id="div"></div><br>
-                        <div id="statsdiv"></div>
-                    </td>
-                    </tr>
-                    <!-- <table id="table-stats">
-                        <tbody>
-                            <tr>
-                                <td>Round Trip Time: </td>
-                                <td>
-                                    <span id="audio-latency"></span><br>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>packetsLost: </td>
-                                <td>
-                                    <span id="audio-packetsLost"></span><br>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>Average Round Trip Time: </td>
-                                <td>
-                                    <span id="audio-averageLatency"></span><br>
-                                </td>
-                            </tr>
-                        </tbody>
-
-                    </table> -->
-                </div>
-                <!-- Modal verification code -->
-                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
-                    aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">Thank you for the Participation</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
+                                <!-- <div>
+                                    <div class="label">Remote Audio</div>
+                                        <audio id="remote-audio" controls autoplay></audio>
+                                    </div> 
+                                 </div> -->
                             </div>
-                            <div class="modal-body" id="myModalBody">
-                                <div id="modalBodyMessage">
+                            <div class="hangupButton"><button id="hangupButton" data-toggle="tooltip"
+                                    data-placement="right" title="Hangup">
+                                    <img id="image-end" src="../assets/call_end-white-48dp.svg" />
+                                </button></div>
+                        </div>
+                        <div id="statediv"></div>
+                        </td>
+                        <td>
+                            <div id="div"></div><br>
+                            <div id="statsdiv"></div>
+                        </td>
+                        </tr>
+                    </div>
+                    <div class="modal fade" id="callModal" tabindex="-1" role="dialog"
+                        aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Incoming Call</h5>
+                                </div>
+                                <!-- <div class="modal-body" id="myModalBody">
+                                    <div id="modalBodyMessage">
+                                        Please accept the call to proceed
+                                    </div>
+                                </div> -->
+                                <div class="modal-footer">
+                                    <!-- <button id="copy" data-clipboard-target="#verificationCode" class="btn btn-secondary mr-auto">
+                                        Copy</button> -->
+                                    <button type="button" id="acceptButton" class="btn btn-success"
+                                        data-dismiss="modal">Accept</button>
+                                    <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
                                 </div>
                             </div>
-                            <div class="modal-footer">
-                                <button id="copy" data-clipboard-target="#verificationCode"
-                                    class="btn btn-secondary mr-auto">
-                                    Copy</button>
-                                <button type="button" id="modalButton" class="btn btn-secondary"
-                                    data-dismiss="modal">Close</button>
-                                <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+                        </div>
+                    </div>
+                    <!-- Modal verification code -->
+                    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
+                        aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Thank you for the Participation</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body" id="myModalBody">
+                                    <div id="modalBodyMessage">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button id="copy" data-clipboard-target="#verificationCode"
+                                        class="btn btn-secondary mr-auto">
+                                        Copy</button>
+                                    <button type="button" id="modalButton" class="btn btn-secondary"
+                                        data-dismiss="modal">Close</button>
+                                    <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <!-- <div class="question card border-light mb-3">
-                    <div class="card-body text-dark">
-                        <form id="question">
-                            <h6 class="card-title">1. How do you rate the
-                                <b>overall quality</b> of the speech sample
-                                played?</h6>
-                            <table class="table table-borderless" id="table">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Quality of the Speech</th>
-                                        <th scope="col">Score</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <label for="Excellent"><input type="radio" name="rating" id="" value="Excellent" required>
-                                                Excellent</label></td>
-                                        <td>5</td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <label for="Good"><input type="radio" name="rating" id="" value="Good">
-                                                Good</label> </td>
-                                        <td>4</td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <label for="Fair"><input type="radio" name="rating" id="" value="Fair">
-                                                Fair</label></td>
-                                        <td>3</td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <label for="Poor"><input type="radio" name="rating" id="" value="Poor">
-                                                Poor</label></td>
-                                        <td>2</td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <label for="Poor"><input type="radio" name="rating" id="" value="Bad">
-                                                Bad</label></td>
-                                        <td>1</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <button type="submit" id="answerButton" class="btn btn-outline-success" onclick="answer()">Submit</button>
-                        </form>
-                    </div>
-                </div> -->
-                <div class="toast ended" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000" data-animation="true">
-                    <div class="toast-header">
-                        Call ended!
-                        <button type="button" class="close" data-dismiss="toast">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+                    <div class="toast ended" role="alert" aria-live="assertive" aria-atomic="true" data-delay="6000"
+                        data-animation="true">
+                        <div class="toast-header">
+                            Call ended!
+                            <button type="button" class="close" data-dismiss="toast">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
-        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-        crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
-        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
-        crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js">
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/7.3.0/adapter.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/core.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/md5.js"></script>
-    <!-- <script src="https://cdn.webrtc-experiment.com/getStats.js"></script> -->
-    <!-- <script src="js/webAudio.js"></script> -->
-    <script src="js/icecandidates.js"></script>
-    <!-- <script src="js/RecordRTC.js"></script> -->
-    <!-- <script src="js/client.js"></script> -->
-    <script src="js/app.js"></script>
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+            integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+            crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+            crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+            crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js">
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/7.3.0/adapter.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/core.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/md5.js"></script>
+        <script src="js/icecandidates.js"></script>
+        <script src="js/app.js"></script>
 </body>
 
 </html>
