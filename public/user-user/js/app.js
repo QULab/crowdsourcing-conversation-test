@@ -156,6 +156,9 @@ let delay = false;
 let feedback = false;
 let echo = false;
 let pl = false;
+let pl_state = 1;
+let ppl = 0.8;
+let burstRate = 3;
 
 const url = window.location.href;
 console.log("url", url);
@@ -170,6 +173,8 @@ slapback = urlParams.get('slapback');
 feedback = urlParams.get('feedback');
 echo = urlParams.get('echo');
 pl = urlParams.get('pl');
+ppl = urlParams.get('ppl');
+burstRate = urlParams.get('burstRate');
 
 
 console.log(roomNumber);
@@ -484,19 +489,57 @@ function onAddStream(event) {
             input.connect(myDelay).connect(vol).connect(context.destination);
         }
 
+        // packet loss based on a Paper Raake Et Al. 
         else if (pl) {
             // stream.getAudioTracks()[0].enabled = true
+            // Et El Raake.
+            console.log({ ppl });
+            console.log({ burstRate });
+            let q = (1 - ppl) / burstRate;
+            console.log({ q });
+            let p = (ppl * q) / (1 - ppl);
+            console.log({ p });
+
+            function determinePacketLoss(pl_state, p, q) {
+                console.log({ pl_state }, { p }, { q });
+                if (pl_state === 0) {
+                    console.log("pl_state is 0");
+                    if (Math.random() < p) {
+                        console.log("pl_state is 1");
+                        pl_state = 1;
+                    }
+                }
+                else if (pl_state === 1) {
+                    console.log("pl_state is 1");
+                    if (Math.random() < q) {
+                        console.log("pl_state is 0")
+                        pl_state = 0
+                    }
+                }
+                return pl_state;
+            }
 
             setInterval(() => {
-                let v = Math.random();
-                if (v < 0.2) {
+                pl_state = determinePacketLoss(pl_state, p, q);
+                if (pl_state === 0) {
+                    console.log("mute");
                     audio3.muted = true;
-                    console.log(v, "muted");
                 } else {
                     audio3.muted = false;
-                    console.log(v, "nou muted");
                 }
-            }, 1000)
+            }, 1000);
+
+
+            // setInterval(() => {
+            //     let v = Math.random();
+            //     if (v < 0.2) {
+            //         audio3.muted = true;.
+            //         console.log(v, "muted");
+            //     } else {
+            //         audio3.muted = false;
+            //         console.log(v, "not muted");
+            //     }
+            // }, 1000)
         }
     };
 
@@ -605,7 +648,7 @@ function sendData() {
     function hideTooltip(btn) {
         setTimeout(function () {
             btn.tooltip('hide');
-        }, 1000);
+        }, 5000);
     }
 
     // Clipboard
@@ -699,102 +742,4 @@ function sendData() {
         };
     }
 }
-
-
-/*
-
-// gotremotestream -- roomnumber 2
-function gotRemoteStream(event) {
-
-    // Setup Web Audio components
-    setupLocalMediaStreamsFromFile('./assets/test_file.mp3');
-}
-
-async function setupLocalMediaStreamsFromFile(filepath) {
-    return new Promise(async (resolve, reject) => {
-        // AudioContext gets suspended if created before
-        // a user interaction https://goo.gl/7K7WLu
-        context.resume();
-
-        // Create media source
-        // This is attached to the HTML audio element and can be fed arbitrary buffers of audio
-        // TODO: Make sure we can support MIME other than audio/mpeg
-        let mediaSource = new MediaSource();
-        console.log('Created MediaSource.');
-        console.dir(mediaSource);
-
-        // Can't call addSourceBuffer until it's open
-        mediaSource.addEventListener('sourceopen', async () => {
-            console.log('MediaSource open.');
-
-            // Corner case for file:// protocol since fetch won't like it
-
-            let buffer = mediaSource.addSourceBuffer('audio/mpeg');
-
-            console.log('Fetching data...');
-            let data;
-            let resp = await fetch(filepath);
-            console.log("filepath", filepath);
-            data = await resp.arrayBuffer();
-            console.dir(data);
-            buffer.appendBuffer(data);
-            console.log('Data loaded.');
-
-        });
-
-        // We need a media stream for WebRTC
-        // so run our MediaSource through a muted HTML audio element
-        // and grab its stream via captureStream()
-        audioContainer = document.createElement("audio");
-        audioContainer.setAttribute("width", "max-content");
-        audioContainer.setAttribute("autoplay", true);
-
-        let audiofile = new Audio();
-        audiofile.autoplay = true;
-        audiofile.muted = false;
-
-        // Only grab stream after it has loaded; won't have tracks if grabbed too early
-        audiofile.addEventListener('canplaythrough', () => {
-            try {
-                let localStream = audiofile.captureStream();
-                console.log("localStream inside cantplaythrough", localStream);
-                gotLocalMediaStream(localStream);
-            } catch (e) {
-                console.warn(`Failed to captureStream() on audio elem. Assuming unsupported. Switching to receiver only.`, e);
-            }
-            resolve();
-        });
-
-
-        audioContainer.appendChild(audiofile);
-
-        // srcObject doesn't work here ?
-        audiofile.src = URL.createObjectURL(mediaSource);
-        audiofile.load();
-        console.log("inside the setup func", audioContainer);
-        console.log(audiofile);
-    });
-}
-
-function gotLocalMediaStream(mediaStream) {
-    // Disconnect our old one if we get a new one
-    // and a different audio source
-
-    console.log("localStreamNode", localStreamNode);
-
-    if (localStreamNode) {
-        localStreamNode.disconnect();
-    }
-    console.log("web audio", mediaStream);
-
-    localStreamNode = context.createMediaStreamSource(mediaStream);
-    localStreamNode.connect(outgoingRemoteGainNode);
-
-    console.log('Connected localStreamNode.');
-}
-
-*/
-
-
-// record and playback
 
