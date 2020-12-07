@@ -12,7 +12,7 @@ const startButton = document.querySelector('button#startButton');
 const acceptButton = document.querySelector('button#acceptButton');
 const duration = document.getElementById('progress');
 
-duration.style.visibility= "hidden";
+duration.style.visibility = "hidden";
 // table.style.visibility = 'hidden';
 callButton.disabled = true;
 callButton.onclick = startCall;
@@ -170,6 +170,7 @@ let pl = false;
 let pl_state = 1;
 let ppl = 0.8;
 let burstRate = 3;
+let audio4 = new Audio();
 
 const url = window.location.href;
 console.log("url", url);
@@ -200,17 +201,22 @@ function startCall() {
     socket.emit("ready", roomNumber);
 }
 
-socket.on("accept_call", function(){
+socket.on("accept_call", function () {
     $('#callModal').modal('show');
+    if (!isCaller) {
+        audio4.src = "../../assets/classic_cell_phone.mp3";
+        audio4.play();
+    }
     acceptButton.onclick = acceptCall;
 })
 
-function acceptCall(){
+function acceptCall() {
     socket.emit("ready", roomNumber);
-
+    audio4.pause();
+    audio4.currentTime = 0;
 }
 
-socket.on("called", function(){
+socket.on("called", function () {
     callButton.disabled = true;
 })
 
@@ -275,7 +281,7 @@ socket.on("joined", function (room) {
         }
     );
     console.log("room joined, track added local", roomNumber);
-    
+
     // socket.emit("ready", roomNumber);
     // $('.started').toast('show');
 });
@@ -285,6 +291,12 @@ socket.on("user_joined", function () {
     if (isCaller) {
         callButton.disabled = false;
         console.log("inside user_joined");
+    }
+})
+
+socket.on("endCall", function () {
+    if (isCaller) {
+        hangup();
     }
 })
 
@@ -652,6 +664,7 @@ rtcPeerConnection.oniceconnectionstatechange = function () {
 // call hangup
 function hangup() {
     console.log('Ending call');
+    socket.emit("hangup", roomNumber);
     // localStream.stop();
     rtcPeerConnection.iceConnectionState == 'closed';
     localStream.getTracks().forEach(track => track.stop());

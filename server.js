@@ -43,7 +43,7 @@ app.use(bodyParser.raw());
 let connectionUrl =
   "mongodb+srv://pavan:" +
   process.env.DB_PASS +
-  "@cluster0.0il5v.mongodb.net/"  + process.env.DB_NAME + "?retryWrites=true&w=majority";
+  "@cluster0.0il5v.mongodb.net/" + process.env.DB_NAME + "?retryWrites=true&w=majority";
 mongoose.connect(connectionUrl, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -242,6 +242,10 @@ app.get(
   }
 );
 
+// Model for entering the data into database
+
+// rooms and socket IO
+
 let rooms = [];
 
 io.on("connection", function (socket) {
@@ -269,7 +273,7 @@ io.on("connection", function (socket) {
     }
   });
 
-  socket.on("caller_ready", function(room){
+  socket.on("caller_ready", function (room) {
     socket.emit("called", room);
     socket.broadcast.to(room).emit("accept_call");
   })
@@ -277,6 +281,10 @@ io.on("connection", function (socket) {
   socket.on("ready", function (room) {
     socket.broadcast.to(room).emit("ready");
   });
+
+  socket.on("hangup", function (room) {
+    socket.broadcast.to(room).emit("endCall");
+  })
 
   socket.on("candidate", function (event) {
     socket.broadcast.to(event.room).emit("candidate", event);
