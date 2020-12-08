@@ -129,8 +129,30 @@ a#viewSource {
   height: 60px;
 }
 
-.qualification_test {
+/* .qualification_test {
   display: flex;
+}
+
+.qual-iframe{
   width: 100vw !important;
   height: 100vh !important;
+} */
+
+tr.selected {
+  background: #ddd;
+}
+
+.question {
+  margin-top: 30px;
+  height: max-content;
+}
+
+/* div#audio>div {
+  margin: 0 0 20px 0;
+} */
+
+div.label {
+  display: inline-block;
+  font-weight: 400;
+  width: 120px;
 }

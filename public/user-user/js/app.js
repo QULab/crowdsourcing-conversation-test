@@ -2,20 +2,22 @@
 
 const localAudio = document.querySelector('audio#local-audio');
 const hangupButton = document.querySelector('button#hangupButton');
-//const divSelectRoom = document.getElementById("select-room");
 const divConsultingRoom = document.getElementById("consulting-room");
-// const inputRoomNumber = document.getElementById("room-number");
-// const btnGoRoom = document.getElementById("go-room");
-// const table = document.getElementById("table-stats");
 const callButton = document.querySelector('button#callButton');
 const startButton = document.querySelector('button#startButton');
 const acceptButton = document.querySelector('button#acceptButton');
 const duration = document.getElementById('progress');
+const question = document.getElementById('question');
+const answerButton = document.querySelector('button#answerButton');
+const buttons = document.getElementById('buttons');
+const instructions = document.getElementById('instructions');
+const studyInstructions = document.getElementById('study-instructions');
 
+question.style.visibility = "hidden";
 duration.style.visibility = "hidden";
-// table.style.visibility = 'hidden';
 callButton.disabled = true;
 callButton.onclick = startCall;
+
 // startButton.style.visibility = 'hidden';
 
 // for call hangup
@@ -84,7 +86,7 @@ console.log(window.navigator.userAgent.toLowerCase() + "\n" + browser);
 browser = browser.toString();
 console.log(browser);
 
-const browsers = ['edge', 'chome-edge', 'opera', 'safari'];
+const browsers = ['edge', 'chrome-edge', 'opera', 'safari'];
 
 if (browser === 'ie') {
     supported = false;
@@ -295,9 +297,10 @@ socket.on("user_joined", function () {
 })
 
 socket.on("endCall", function () {
-    if (isCaller) {
+    if (!isCaller) {
         hangup();
     }
+    hangup;
 })
 
 // for caller - on emit ready
@@ -666,7 +669,7 @@ function hangup() {
     console.log('Ending call');
     socket.emit("hangup", roomNumber);
     // localStream.stop();
-    rtcPeerConnection.iceConnectionState == 'closed';
+    // rtcPeerConnection.iceConnectionState = 'closed';
     localStream.getTracks().forEach(track => track.stop());
     // if (oscillator) {
     //     oscillator.stop();
@@ -678,8 +681,29 @@ function hangup() {
     rtcPeerConnection = null;
 
     hangupButton.disabled = true;
+    buttons.style.display = "none";
+    duration.style.display = "none";
+    hangupButton.style.display = "none";
+    instructions.style.display = "none";
+    studyInstructions.style.display = "none";
+    question.style.visibility = "visible";
+    studyInstructions.style.display = "none";
+    // answerButton.onclick = sendData;
+    // document.getElementById("rating_page").style.display = "block";
     //table.style.visibility = 'hidden';
-    sendData();
+    // sendData();
+}
+
+function answer() {
+    let form = document.getElementById('question');
+    form.onsubmit = function (event) {
+        event.preventDefault();
+        console.log("answer", form.elements["rating"].value);
+        let answer = form.elements["rating"].value;
+        console.log({answer});
+
+        sendData(answer);
+    }
 }
 
 function sendData() {

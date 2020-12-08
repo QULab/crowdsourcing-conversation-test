@@ -2,17 +2,16 @@
     font-family: Arial,
         Helvetica Neue,
         Helvetica,
-        sans-serif;
+        sans-serif; 
 }
 
 h1,h5{
-    margin: 0 auto;
     text-align: center;
 }
 
-.description{
+/* .description{
     margin-top: 30px;
-}
+} */
 
 .start-test{
     display: block;
@@ -21,3 +20,9 @@ h1,h5{
 .tab {
     display: none;
 }
+
+.agree{
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+

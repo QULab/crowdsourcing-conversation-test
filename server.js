@@ -289,6 +289,7 @@ io.on("connection", function (socket) {
 
   socket.on("hangup", function (room) {
     socket.broadcast.to(room).emit("endCall");
+    socket.emit("endCall", room);
   })
 
   socket.on("candidate", function (event) {

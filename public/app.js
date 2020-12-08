@@ -1,3 +1,9 @@
+const qualTest = document.getElementById('qualification_test');
+const description = document.getElementById('description');
+const title = document.getElementById('title');
+const agree = document.getElementById('agree');
+
+qualTest.style.display = "none";
 let browser = (function (agent) {
     switch (true) {
         case agent.indexOf("edge") > -1: return "edge";
@@ -22,14 +28,14 @@ console.log("queryString", queryString);
 let consent;
 let supported = true;
 
-if(browser === 'ie'){
+if (browser === 'ie') {
     supported = false;
     location.href = "../unsupported.html";
-} 
+}
 else if (browsers.includes(browser)) {
     supported = false;
     location.href = "../unsupported.html";
-} 
+}
 
 let os = "Unknown OS";
 if (navigator.userAgent.indexOf("Win") != -1) os =
@@ -72,8 +78,8 @@ if (localStorage.hasOwnProperty('consent')) {
     console.log("localStorage consent found", consent);
 
     if (roomNumber != null && type.toString() == "USER2USER") {
-        if(supported){
-        location.href = "../user-user/" + queryString;
+        if (supported) {
+            location.href = "../user-user/" + queryString;
         } else {
             location.href = "../unsupported.html";
         }
@@ -86,29 +92,52 @@ if (localStorage.hasOwnProperty('consent')) {
             location.href = "../unsupported.html";
         }
     }
-} else{
+} else {
 
-if (roomNumber != null && type.toString() == "USER2USER") {
-    document.getElementById("start").onclick = function () {
-        if(supported){
-            // consent = 1;
-            localStorage.setItem("consent", "1");
-            location.href = "../user-user/" + queryString;
-        }else{
-            location.href = "../unsupported.html";
+    function answer() {
+        let form = document.getElementById('question');
+        form.onsubmit = function (event) {
+            event.preventDefault();
+            //send Data
+            if (supported) {
+                // consent = 1;
+                localStorage.setItem("consent", "1");
+                location.href = "../user-user/" + queryString;
+            } else {
+                location.href = "../unsupported.html";
+            }
         }
-    };
+    }
+
+    if (roomNumber != null && type.toString() == "USER2USER") {
+
+        document.getElementById("start").onclick = function () {
+            // if (supported) {
+            //     // consent = 1;
+            //     localStorage.setItem("consent", "1");
+            //     location.href = "../user-user/" + queryString;
+            // } else {
+            //     location.href = "../unsupported.html";
+            // }
+            qualTest.style.display = "block";
+            description.style.display = "none";
+            title.style.display = "none";
+            agree.style.display = "none";
+        };
+    }
+
+    if (fileName != null && type == "USER2FILE") {
+        document.getElementById("start").onclick = function () {
+            if (supported) {
+                localStorage.setItem("consent", "1");
+                location.href = "../user-test/" + queryString;
+            }
+            else {
+                location.href = "../unsupported.html";
+            }
+        };
+    }
 }
 
-if (fileName != null && type == "USER2FILE") {
-    document.getElementById("start").onclick = function () {
-        if(supported){
-            localStorage.setItem("consent", "1");
-            location.href = "../user-test/" + queryString;
-        }
-        else{
-            location.href = "../unsupported.html";
-        }
-    };
-}
-}
+
+

@@ -14,13 +14,12 @@ exports.getJobConfig = async function getJobConfig(query, page, limit) {
     }
 }
 
-exports.createJobConfig = async function createJobConfig(query) {
+exports.createJobConfig = async function createJobConfig(data) {
     try {
-        console.log("query", query);
-        let id = await create({
-            
-        });
-        return id;
+        console.log("query", data);
+        let job = new JobConfig(data);
+        job.save();
+        // return id;
     } catch (e) {
         // Log Errors
         throw Error('Error while creating config', e)

@@ -29,7 +29,7 @@ let JobConfigSchema = new schema({
             attenuation: Number,
         }
     ]
-},{ collection: "job_config", timestamps: true });
+}, { collection: "job_config", timestamps: true, strict: false  });
 
 const JobConfig = mongoose.model("JobConfig", JobConfigSchema);
 module.exports = JobConfig;
