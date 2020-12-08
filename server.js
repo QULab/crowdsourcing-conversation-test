@@ -24,6 +24,7 @@ const redisClient = redis.createClient(6379, "webrtc-redis");
 // const redisClient = redis.createClient();
 const dotenv = require("dotenv").config();
 let sessionID;
+const jobConfigController = require("./controllers/jobConfigController");
 
 const port = process.env.PORT || 3000;
 let ipAdress;
@@ -34,6 +35,8 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.raw());
+app.use(router);
+
 
 // change for server docker
 // mongoose.connect('mongodb://mongo:27017/webrtc', {
@@ -242,7 +245,9 @@ app.get(
   }
 );
 
-// Model for entering the data into database
+router.get("/jobConfig", jobConfigController.getJobConfig);
+router.post("/jobConfig", jobConfigController.createJobConfig);
+
 
 // rooms and socket IO
 
