@@ -156,3 +156,11 @@ div.label {
   font-weight: 400;
   width: 120px;
 }
+
+#caller-iframe{
+  height: 500px;
+}
+
+#receiver-iframe{
+  height: 500px;
+}

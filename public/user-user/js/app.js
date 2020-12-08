@@ -12,6 +12,11 @@ const answerButton = document.querySelector('button#answerButton');
 const buttons = document.getElementById('buttons');
 const instructions = document.getElementById('instructions');
 const studyInstructions = document.getElementById('study-instructions');
+const callerIframe = document.getElementById('caller-iframe');
+const receiverIframe = document.getElementById('receiver-iframe');
+
+callerIframe.style.display = "none";
+receiverIframe.style.display = "none";
 
 question.style.visibility = "hidden";
 duration.style.visibility = "hidden";
@@ -216,6 +221,7 @@ function acceptCall() {
     socket.emit("ready", roomNumber);
     audio4.pause();
     audio4.currentTime = 0;
+    receiverIframe.style.display = "block";
 }
 
 socket.on("called", function () {
@@ -308,7 +314,7 @@ socket.on("ready", function () {
 
 
     if (isCaller) {
-
+        callerIframe.style.display = "block";
         rtcPeerConnection.onicecandidate = onIceCandidate;
         rtcPeerConnection.ontrack = onAddStream;
 
@@ -421,6 +427,7 @@ function onAddStream(event) {
     hangupButton.style.visibility = 'visible';
     duration.style.visibility = "visible";
     hangupButton.disabled = false;
+    location.href = "#scenario-iframe";
 
     console.log("ondAddStream", event.streams);
     // add delay using webaudio
