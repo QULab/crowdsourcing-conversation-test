@@ -150,6 +150,7 @@ const schema = mongoose.Schema;
 
 let statSchema = new schema({
   url: { type: String },
+  config: { type: JSON, required: true },
   roomNumber: { type: Number },
   verificationCode: { type: String, required: true },
   timestamp: { type: Date, default: Date.now },
@@ -162,13 +163,15 @@ let statSchema = new schema({
   ipAdress: { type: String },
   testDuration: { type: Number },
   sessionID: { type: String },
-});
+}, { collection: "webrtc-stats", timestamps: true, strict: false });
 
 // let statSchema = new mongoose.Schema({},
 //   {strict:false }
 // );
 
-let statModel = mongoose.model("webrtc-stats", statSchema);
+let statModel = mongoose.model( "StatModel", statSchema);
+
+
 
 // post to mongodb
 
@@ -178,13 +181,15 @@ app.post("/stats", async (req, res) => {
   let browserType = req.get("user-agent");
   console.log("Got body:", req.body);
   let body = req.body;
-  const stats = new statModel(req.body);
+  body.ipAdress = ipAdress;
+  body.sessionID = sessionID;
+  let stats = new statModel(body);
+  
 
   try {
-    stats.ipAdress = ipAdress;
-    stats.sessionID = sessionID;
+   
     await stats.save();
-    res.send(stats);
+    res.status(200).send(status);
   } catch (err) {
     res.status(500).send(err);
   }

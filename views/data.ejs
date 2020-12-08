@@ -71,7 +71,7 @@
                                             <span><%= element.statistics.AverageTotalTripTime %></span>
                                         </p>
                                         <p>Average Packet Loss:
-                                            <span><%= element.statistics.averagePacktLoss %></span>
+                                            <span><%= element.statistics.averagePacketLoss %></span>
                                         </p>
                                         <p>Sum Total Trip Time:
                                             <span><%= element.statistics.sumOfRTT %></span>
@@ -87,6 +87,54 @@
                                         </p>
                                         <p>sessionID:
                                             <span><%= element.sessionID %></span>
+                                        </p>
+                                        <h5>Config</h5>
+                                        <p>Study Name: 
+                                            <span><%= element.config.study_name %> </span>
+                                        </p>
+                                        <p>
+                                            Instruction Html:
+                                            <span><%= element.config.instruction_html %> </span>
+                                        </p>
+                                        <p>
+                                            Html_party_caller:
+                                            <span><%= element.config.html_party_caller %> </span>
+                                        </p>
+                                        <p> Html_party_receiver: 
+                                            <span><%= element.config.html_party_receiver %> </span>
+                                        </p>
+                                        <p> rating_scale_html: 
+                                            <span><%= element.config.rating_scale_html %> </span>
+                                        </p>
+                                        <p> scenario:
+                                            <span><%= element.config.scenario %> </span>
+                                        </p>
+                                        <p> isCaller: 
+                                            <span><%= element.config.isCaller %> </span>
+                                        </p>
+                                        <p> noise: 
+                                            <span><%= element.config.noise %> </span>
+                                        </p>
+                                        <p> delay: 
+                                            <span><% element.config.delay %> </span>
+                                        </p>
+                                        <p> SNR_DB: 
+                                            <span><%= element.config.SNR_DB %> </span>
+                                        </p>
+                                        <p> delay_time_sec: 
+                                            <span><%= element.config.delay_time_sec %> </span>
+                                        </p>
+                                        <p> burst_rate: 
+                                            <span><%= element.config.burst_rate %> </span>
+                                        </p>
+                                        <p> echo: 
+                                            <span><%= element.config?.echo %> </span>
+                                        </p>
+                                        <p> attenuation: 
+                                            <span><%= element.config.attenuation %> </span>
+                                        </p>
+                                        <p> delay_echo_time_sec: 
+                                            <span><%= element.config.delay_echo_time_sec %> </span>
                                         </p>
                                     </div>
                                 </td>
