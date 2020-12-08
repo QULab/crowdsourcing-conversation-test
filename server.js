@@ -189,7 +189,7 @@ app.post("/stats", async (req, res) => {
   try {
    
     await stats.save();
-    res.status(200).send(status);
+    res.send(status);
   } catch (err) {
     res.status(500).send(err);
   }

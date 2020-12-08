@@ -19,7 +19,7 @@
             <div class="col-12 p-0">
                 <div class="jumbotron min-vh-100 text-center m-0 bg-light d-flex flex-column">
                     <h1>Conversation Test Statistics</h1>
-                    <!-- <%= data %> -->
+                    
                     <a href='/exporttocsv' type="button" id="download" class="btn btn-primary btn-sm"
                         style="width: 200px;">Export to CSV</a>
                     <table class="table table-hover" style="border-collapse:collapse; margin-top: 30px;">
@@ -116,7 +116,7 @@
                                             <span><%= element.config.noise %> </span>
                                         </p>
                                         <p> delay: 
-                                            <span><% element.config.delay %> </span>
+                                            <span><%= element.config.delay %> </span>
                                         </p>
                                         <p> SNR_DB: 
                                             <span><%= element.config.SNR_DB %> </span>
@@ -128,7 +128,7 @@
                                             <span><%= element.config.burst_rate %> </span>
                                         </p>
                                         <p> echo: 
-                                            <span><%= element.config?.echo %> </span>
+                                            <span><%= element.config.echo %> </span>
                                         </p>
                                         <p> attenuation: 
                                             <span><%= element.config.attenuation %> </span>
