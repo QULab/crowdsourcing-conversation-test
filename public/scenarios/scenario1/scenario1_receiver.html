@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receiver Scenario 1</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <style>
+        html, body {
+            margin: 20px;
+        }
+        .instructions {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .scenario {
+            text-align: center;
+            align-items: center;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        table.center {
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container" class="container h-100">
+        <div class="row h-100">
+            <div class="col-12">
+                <div class="instructions">
+                    <h2>Symbols Info</h2>
+                    <img src="../../../assets/ITU/receiver.PNG" alt=""> <label>You are the receiver</label><br><br>
+                    <img src="../../../assets/ITU/details_for_partner_receiver.PNG" alt=""> <label>Next to this symbol
+                        is information from which you should select the details that your
+                        partner requires (e.g., train ticket prices for adults, children, special conditions for
+                        students).</label><br>
+                    <img src="../../../assets/ITU/required_info_caller.PNG" alt=""> <label>Next to this symbol you
+                        should write down all the information you require from your
+                        partner.</label><br>
+                    <img src="../../../assets/ITU/both.PNG" alt=""><label>Next to this symbol is a question to which
+                        neither you nor your partner will have
+                        information. You should discuss the question briefly and find a solution that is acceptable
+                        to both of you.</label><br>
+                </div>
+                <div class="scenario text-center">
+                    <form id="form" onsubmit="return false">
+                        <img src="../../../assets/ITU/receiver.PNG" alt="">
+                        <h1>Practice: Travel Agent</h1>
+                        <h2>Your name: Thomas Cook travel agent</h2>
+                        <img src="../../../assets/ITU/details_for_partner_receiver.PNG" alt="">
+                        <h3>One week last minute trip
+                            from Liverpool or Manchester</h3>
+                        <img src="../../../assets/ITU/condition_for_exchange.PNG" alt="">
+                        <p>Departing tomorrow</p>
+                        <p>Not to Spain</p>
+                        <p>As cheap as possible</p>
+                        <div>
+                            <table class="table center">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Destination</th>
+                                        <th scope="col">Departure Today</th>
+                                        <th scope="col">Departure Tomorrow</th>
+                                        <th scope="col">Departure the day
+                                            after tomorrow</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Spain (Mallorca)</td>
+                                        <td>£90</td>
+                                        <td>£150</td>
+                                        <td>@£308</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Hotel Playas Arenal</td>
+                                        <td>Dep. 19:30 h</td>
+                                        <td>Dep. 10:15 h</td>
+                                        <td>Dep. 10:15 h</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Half board</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Italy (Sicily)</td>
+                                        <td>£140</td>
+                                        <td>£160</td>
+                                        <td>£290</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Hotel Città del Mare</td>
+                                        <td>Dep. 19:10 h</td>
+                                        <td>Dep. 8:50 h</td>
+                                        <td>Dep. 8:50 h</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Full board</td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+
+
+                        <img src="../../../assets/ITU/required_info_caller.PNG" alt="">
+                        <p>Reservation: </p>
+                        <p>Name : <input type="text" class="form-control" aria-label="Small"
+                                aria-describedby="inputGroup-sizing-sm"></p>
+                        <p>Credit Card</p>
+                        <p>Credit card number: <input type="text" class="form-control" aria-label="Small"
+                                aria-describedby="inputGroup-sizing-sm"> </p>
+                        <p>Valid till: <input type="text" class="form-control" aria-label="Small"
+                                aria-describedby="inputGroup-sizing-sm"></p>
+                        <p>Flying From: <input type="text" class="form-control" aria-label="Small"
+                                aria-describedby="inputGroup-sizing-sm"></p>
+                        <img src="../../../assets/ITU/both.PNG" alt="">
+                        <p><input type="text" class="form-control" aria-label="Small"
+                                aria-describedby="inputGroup-sizing-sm"></p>
+                        <div>
+                            <button type="submit" id="answerButton" class="btn btn-outline-success" onclick="answer()">Submit</button>
+                        </div>        
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

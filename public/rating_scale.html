@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rating Scale</title>
+</head>
+<body>
+    <div class="question card border-light mb-3">
+        <div class="card-body text-dark">
+            <form id="question">
+                <h6 class="card-title">1. How do you rate the
+                    <b>overall quality</b> of the conversation you had?</h6>
+                <table class="table table-borderless" id="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Quality of the Speech</th>
+                            <th scope="col">Score</th>
+                        </tr>
+                    </thead>
+                    <tbody class="answer-options">
+                        <tr>
+                            <td>
+                                <label for="Excellent"><input type="radio" name="rating" id="" value="Excellent" required>
+                                    Excellent</label></td>
+                            <td>5</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="Good"><input type="radio" name="rating" id="" value="Good">
+                                    Good</label></td>
+                            <td>4</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="Fair"><input type="radio" name="rating" id="" value="Fair">
+                                    Fair</label> </td>
+                            <td>3</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="Poor"><input type="radio" name="rating" id="" value="Poor">
+                                    Poor</label> </td>
+                            <td>2</td>
+                        </tr>
+                        <tr>
+                            <td> <label for="Poor"><input type="radio" name="rating" id="" value="Bad">
+                                    Bad</label>
+                            </td>
+                            <td>1</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button type="submit" id="answerButton" class="btn btn-outline-success" onclick="answer()">Submit</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

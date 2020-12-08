@@ -90,7 +90,9 @@ app.use("/user-test", express.static("public/user-test"));
 
 app.use("/delay", express.static("public/delay"));
 
-app.use("/scenarios", express.static("public/conversation-test"));
+// app.use("/scenarios/scenario1/caller", express.static("public/conversation-test/scenario1/caller.html"));
+
+// app.use("/scenarios/scenario1/receiver", express.static("public/conversation-test/scenario1/receiver.html"));
 
 //app.use('/newapp', express.static('public/restructure-html'));
 

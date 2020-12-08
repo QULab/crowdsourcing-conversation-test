@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receiver Scenario 1</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <style>
+        html,
+        body {
+            margin: 20px;
+        }
+
+        .instructions {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .scenario {
+            text-align: center;
+            align-items: center;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        table.center {
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container" class="container h-100">
+        <div class="row h-100">
+            <div class="col-12">
+                <div class="instructions">
+                    <h2>Symbols Info</h2>
+                    <img src="../../../assets/ITU/receiver.PNG" alt=""> <label>You are the receiver</label><br><br>
+                    <img src="../../../assets/ITU/details_for_partner_receiver.PNG" alt=""> <label>Next to this symbol
+                        is information from which you should select the details that your
+                        partner requires (e.g., train ticket prices for adults, children, special conditions for
+                        students).</label><br>
+                    <img src="../../../assets/ITU/required_info_caller.PNG" alt=""> <label>Next to this symbol you
+                        should write down all the information you require from your
+                        partner.</label><br>
+                    <img src="../../../assets/ITU/both.PNG" alt=""><label>Next to this symbol is a question to which
+                        neither you nor your partner will have
+                        information. You should discuss the question briefly and find a solution that is acceptable
+                        to both of you.</label><br>
+                </div>
+                <div class="scenario text-center">
+                    <form id="form" onsubmit="return false">
+                        <img src="../../../assets/ITU/receiver.PNG" alt="">
+                        <h1>British Rail travel information</h1>
+                        <h2>Your name: British Rail travel service</h2>
+                        <img src="../../../assets/ITU/details_for_partner_receiver.PNG" alt="">
+                        <h3>Timetable: London to Inverness</h3>
+                        <img src="../../../assets/ITU/condition_for_exchange.PNG" alt="">
+                        <div>
+                            <table class="table center">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Train number</th>
+                                        <th scope="col"></th>
+                                        <th scope="col">IC 1127</th>
+                                        <th scope="col">IC 829</th>
+                                        <th scope="col">IC 1511</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>London King's Cross</td>
+                                        <td>Dep.</td>
+                                        <td>19:18 h</td>
+                                        <td>20:50 h</td>
+                                        <td>22:09 h</td>
+                                    </tr>
+                                    <tr>
+                                        <td>York</td>
+                                        <td>Arr.</td>
+                                        <td></td>
+                                        <td>21:49 h</td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+
+                        <img src="../../../assets/ITU/required_info_caller.PNG" alt="">
+                        <p>Reservation: </p>
+                        <p>Name : <input type="text" class="form-control" aria-label="Small"
+                                aria-describedby="inputGroup-sizing-sm"></p>
+                        <p>Number of berths: <input type="text" class="form-control" aria-label="Small"
+                                aria-describedby="inputGroup-sizing-sm"> </p>
+                        <p>Class: <input type="text" class="form-control" aria-label="Small"
+                                aria-describedby="inputGroup-sizing-sm"></p>
+                        <p>Smoker: <input type="text" class="form-control" aria-label="Small"
+                                aria-describedby="inputGroup-sizing-sm"></p>                    
+                        <img src="../../../assets/ITU/both.PNG" alt="">
+                        <p><input type="text" class="form-control" aria-label="Small"
+                                aria-describedby="inputGroup-sizing-sm"></p>
+                        <div>
+                            <button type="submit" id="answerButton" class="btn btn-outline-success"
+                                onclick="answer()">Submit</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
