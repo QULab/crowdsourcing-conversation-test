@@ -695,6 +695,8 @@ function hangup() {
     studyInstructions.style.display = "none";
     question.style.visibility = "visible";
     studyInstructions.style.display = "none";
+    callerIframe.style.display = "none";
+    receiverIframe.style.display = "none";
     // answerButton.onclick = sendData;
     // document.getElementById("rating_page").style.display = "block";
     //table.style.visibility = 'hidden';
@@ -708,7 +710,7 @@ function answer() {
         console.log("answer", form.elements["rating"].value);
         let answer = form.elements["rating"].value;
         console.log({answer});
-
+        
         sendData(answer);
     }
 }

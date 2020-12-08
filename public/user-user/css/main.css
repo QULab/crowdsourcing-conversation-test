@@ -158,9 +158,9 @@ div.label {
 }
 
 #caller-iframe{
-  height: 500px;
+  height: 100vh;
 }
 
 #receiver-iframe{
-  height: 500px;
+  height: 100vh;
 }
