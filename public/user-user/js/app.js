@@ -118,6 +118,7 @@ os = os.toString();
 
 $('.ended').toast('hide');
 
+let scaleAnswer;
 let noise = false;
 let oscillate = false;
 let slapback = false;
@@ -555,7 +556,7 @@ function onAddStream(event) {
 
             const recvAudioSource = context.createMediaStreamSource(audio3.srcObject);
             const delayNode = context.createDelay(1);
-            delayNode.delayTime.value = 0.5; // delay by 1 second
+            delayNode.delayTime.value = delayEchoTime; // delay by 1 second
             recvAudioSource.connect(delayNode);
             delayNode.connect(context.destination);
 
@@ -644,6 +645,10 @@ function onAddStream(event) {
             console.log({ ppl });
             console.log({ burstRate });
             let p, q;
+            q = (1 - ppl) / burstRate;
+            console.log({ q });
+            p = (ppl * q) / (1 - ppl);
+            console.log({ p });
 
             function determinePacketLoss(pl_state, p, q) {
 
@@ -666,10 +671,7 @@ function onAddStream(event) {
             }
 
             setInterval(() => {
-                q = (1 - ppl) / burstRate;
-                console.log({ q });
-                p = (ppl * q) / (1 - ppl);
-                console.log({ p });
+                
 
                 pl_state = determinePacketLoss(pl_state, p, q);
                 if (pl_state == 0) {
@@ -792,7 +794,8 @@ function answer() {
         let answer = form.elements["rating"].value;
         console.log({ answer });
 
-        sendData(answer);
+        scaleAnswer = answer;
+        sendData();
     }
 }
 
@@ -881,6 +884,7 @@ function sendData() {
             browser: browser,
             os: os,
             type: "USER2USER",
+            scaleAnswer: scaleAnswer,
         };
         console.log("data sent", data);
         let localPost = 'http://localhost:3000/stats';
