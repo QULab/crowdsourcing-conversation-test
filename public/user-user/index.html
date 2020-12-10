@@ -102,39 +102,37 @@
                                 accusantium nemo repellendus illo recusandae voluptate molestiae.</p>
                         </div>
                     </div>
-                    <div class="card border-light mb-3" id="buttons">
-                        <div class="callButton"><button id="callButton" data-toggle="tooltip" data-placement="right"
-                                title="Call">
-                                <img id="image-call" src="../assets/call-white-48dp.svg" />
-                            </button></div>
-                        <div id="audio" class="card-body text-dark" style="text-align: center;">
-
-                            <audio id="local-audio" controls autoplay muted style="display: none;"></audio>
-
-                            <div id="progress"><label>Duration</label>&nbsp;&nbsp;<span id="timer">
-                                    00:00</span>&nbsp;&nbsp;
-                                <!-- <button id="hangupButton" class="btn btn-outline-danger">Hang Up</button> -->
+                    <div class="callButton"><button id="callButton" data-toggle="tooltip" data-placement="right"
+                            title="Call">
+                            <img id="image-call" src="../assets/call-white-48dp.svg" />
+                        </button></div>
+                    <audio id="local-audio" controls autoplay muted style="display: none;"></audio>
+                    <div class="audio-buttons" id="audio-buttons">
+                        <div id="progress"><label>Duration</label>&nbsp;&nbsp;<span id="timer">
+                                00:00</span>&nbsp;&nbsp;
+                            <!-- <button id="hangupButton" class="btn btn-outline-danger">Hang Up</button> -->
 
 
-                                <!-- <div>
-                                    <div class="label">Remote Audio</div>
-                                        <audio id="remote-audio" controls autoplay></audio>
-                                    </div> 
-                                 </div> -->
-                            </div>
-                            <div class="hangupButton"><button id="hangupButton" data-toggle="tooltip"
-                                    data-placement="right" title="Hangup">
-                                    <img id="image-end" src="../assets/call_end-white-48dp.svg" />
-                                </button></div>
+                            <!-- <div>
+                                                                                            <div class="label">Remote Audio</div>
+                                                                                                <audio id="remote-audio" controls autoplay></audio>
+                                                                                            </div> 
+                                                                                         </div> -->
                         </div>
-                        <div id="statediv"></div>
-                        </td>
-                        <td>
-                            <div id="div"></div><br>
-                            <div id="statsdiv"></div>
-                        </td>
-                        </tr>
+                        <div class="hangupButton"><button id="hangupButton" data-toggle="tooltip" data-placement="right"
+                                title="Hangup">
+                                <img id="image-end" src="../assets/call_end-white-48dp.svg" />
+                            </button></div>
                     </div>
+
+
+                    <!-- <div id="statediv"></div>
+                    <td>
+                        <div id="div"></div><br>
+                        <div id="statsdiv"></div>
+                    </td>
+                    </tr> -->
+
                     <div class="modal fade" id="callModal" tabindex="-1" role="dialog"
                         aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog" role="document">
@@ -197,20 +195,39 @@
                     </div> -->
                     <section id="scenario-iframe">
                         <div id="caller-iframe">
-                            <iframe src="../scenarios/scenario1/scenario1_caller.html" style="overflow:hidden;height:100%;width:100%"
-                                height="100%" width="100%" frameborder="0"></iframe>
+                            <iframe src="../scenarios/scenario1/scenario1_caller.html"
+                                style="overflow:hidden;height:100%;width:100%" height="100%" width="100%"
+                                frameborder="0"></iframe>
                         </div>
                         <div id="receiver-iframe">
-                            <iframe src="../scenarios/scenario1/scenario1_receiver.html" style="overflow:hidden;height:100%;width:100%"
-                                height="100%" width="100%" frameborder="0"></iframe>
+                            <iframe src="../scenarios/scenario1/scenario1_receiver.html"
+                                style="overflow:hidden;height:100%;width:100%" height="100%" width="100%"
+                                frameborder="0"></iframe>
                         </div>
                     </section>
-                    
-                    <div class="question card border-light mb-3">
+                    <div class="feedback card border-light" id="feedback-div">
                         <div class="card-body text-dark">
+                            <form id="feedback" class="form-group" onsubmit="return false">
+                                <h3>Please leave feedback about the session</h3>
+                                <h6 class="card-title">1. Were you able to follow the test instructions?</h6>
 
+                                <p><label for="Yes"><input type="radio" name="feedback" id="" value="Yes">
+                                        Yes</label></p>
+                                <p><label for="No"><input type="radio" name="feedback" id="" value="No">
+                                        No</label></p>
+                                <p><textarea rows="4" class="form-control" name="comment" form="feedback"
+                                        placeholder="Enter your comments here"></textarea>
+                                    <small id="passwordHelpBlock" class="form-text text-muted">
+                                        Please enter feedback on your conversation test and tasks
+                                    </small></p>
+
+                            </form>
+                        </div>
+                    </div>
+                    <div class="question card border-light " id="question-div">
+                        <div class="card-body text-dark">
                             <form id="question" onsubmit="return false">
-                                <h3>Rate the experience!</h3>
+                                <h3>Rate the Conversation Quality!</h3>
                                 <h6 class="card-title">1. How do you rate the
                                     <b>overall quality</b> of the conversation you had?</h6>
                                 <table class="table table-borderless" id="table">

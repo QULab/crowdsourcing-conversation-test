@@ -1,6 +1,6 @@
 'use strict';
 
-const localAudio = document.querySelector('audio#local-audio');
+
 const hangupButton = document.querySelector('button#hangupButton');
 const divConsultingRoom = document.getElementById("consulting-room");
 const callButton = document.querySelector('button#callButton');
@@ -14,11 +14,22 @@ const instructions = document.getElementById('instructions');
 const studyInstructions = document.getElementById('study-instructions');
 const callerIframe = document.getElementById('caller-iframe');
 const receiverIframe = document.getElementById('receiver-iframe');
+const audioButtons = document.getElementById('audio-buttons');
+const feedbackDiv = document.getElementById('feedback-div');
+const questionDiv = document.getElementById('question-div');
+
+let statInterval;
+let hangupCounter = 0;
+
+let localAudio = new Audio;
+localAudio = document.querySelector('audio#local-audio');
 
 callerIframe.style.display = "none";
 receiverIframe.style.display = "none";
 
-question.style.visibility = "hidden";
+questionDiv.style.display = "none";
+feedbackDiv.style.display = "none";
+// question.style.visibility = "hidden";
 duration.style.visibility = "hidden";
 callButton.disabled = true;
 callButton.onclick = startCall;
@@ -27,8 +38,10 @@ callButton.onclick = startCall;
 
 // for call hangup
 hangupButton.disabled = true;
-hangupButton.style.visibility = 'hidden';
-hangupButton.onclick = hangup;
+audioButtons.style.display = 'none';
+// hangupButton.style.display = 'none';
+// hangupButton.style.visibility = 'hidden';
+hangupButton.onclick = endCall;
 
 // for call begin
 
@@ -40,7 +53,7 @@ let remoteStream;
 let iceServers = iceServers1;
 
 let streamConstraints = { audio: { echoCancellation: true, } };
-let isCaller;
+let isCaller = false;
 let latencyArray = [];
 
 let audioContainer;
@@ -123,7 +136,7 @@ let noise = false;
 let oscillate = false;
 let slapback = false;
 let delay = false;
-let feedback = false;
+let echoFeedback = false;
 let echo = false;
 let pl = false;
 let pl_state = 0;
@@ -381,16 +394,16 @@ socket.on("user_joined", function () {
     }
 })
 
+function endCall(){
+    socket.emit("hangup", roomNumber);
+}
+
 socket.on("endCall", function () {
-    if (!isCaller) {
         hangup();
-    }
-    hangup;
 })
 
 // for caller - on emit ready
 socket.on("ready", function () {
-
 
     if (isCaller) {
         callerIframe.style.display = "block";
@@ -476,7 +489,9 @@ function onIceCandidate(event) {
             room: roomNumber
         });
         //table.style.visibility = 'visible';
-        hangupButton.style.visibility = 'visible';
+        // hangupButton.style.visibility = 'visible';
+        // hangupButton.style.display = 'block';
+        audioButtons.style.display = 'block';
         hangupButton.disabled = false;
     }
 }
@@ -503,7 +518,8 @@ function setLocalAnswer(sessionDescription) {
 
 function onAddStream(event) {
     callButton.style.visibility = 'hidden';
-    hangupButton.style.visibility = 'visible';
+    // hangupButton.style.visibility = 'visible';
+    // hangupButton.style.display = "block";
     duration.style.visibility = "visible";
     hangupButton.disabled = false;
     location.href = "#scenario-iframe";
@@ -628,7 +644,7 @@ function onAddStream(event) {
             anotherGain.connect(context.destination);
         }
 
-        else if (feedback) {
+        else if (echoFeedback) {
             audio3.muted = true;
 
             const input = context.createMediaStreamSource(audio3.srcObject);
@@ -642,28 +658,28 @@ function onAddStream(event) {
         else if (pl) {
             // stream.getAudioTracks()[0].enabled = true
             // Et El Raake.
-            console.log({ ppl });
-            console.log({ burstRate });
+            // console.log({ ppl });
+            // console.log({ burstRate });
             let p, q;
             q = (1 - ppl) / burstRate;
-            console.log({ q });
+            // console.log({ q });
             p = (ppl * q) / (1 - ppl);
-            console.log({ p });
+            // console.log({ p });
 
             function determinePacketLoss(pl_state, p, q) {
 
-                console.log({ pl_state }, { p }, { q });
+                // console.log({ pl_state }, { p }, { q });
                 if (pl_state == 0) {
-                    console.log("pl_state is 0");
+                    // console.log("pl_state is 0");
                     if (Math.random() < p) {
-                        console.log("pl_state is 1");
+                        // console.log("pl_state is 1");
                         pl_state = 1;
                     }
                 }
                 else if (pl_state == 1) {
-                    console.log("pl_state is 1");
+                    // console.log("pl_state is 1");
                     if (Math.random() < q) {
-                        console.log("pl_state is 0")
+                        // console.log("pl_state is 0")
                         pl_state = 0
                     }
                 }
@@ -675,7 +691,7 @@ function onAddStream(event) {
 
                 pl_state = determinePacketLoss(pl_state, p, q);
                 if (pl_state == 0) {
-                    console.log("mute");
+                    // console.log("mute");
                     audio3.muted = true;
                 } else {
                     audio3.muted = false;
@@ -698,7 +714,7 @@ function onAddStream(event) {
 
     // console.log("local stream", localStream);
 
-    setInterval(() => {
+   statInterval = setInterval(() => {
         rtcPeerConnection.getStats(null).then(showStats, err =>
             console.log(err)
         );
@@ -754,36 +770,58 @@ rtcPeerConnection.oniceconnectionstatechange = function () {
     }
 }
 
+
 // call hangup
 function hangup() {
-    console.log('Ending call');
-    socket.emit("hangup", roomNumber);
-    // localStream.stop();
-    // rtcPeerConnection.iceConnectionState = 'closed';
-    localStream.getTracks().forEach(track => track.stop());
-    // if (oscillator) {
-    //     oscillator.stop();
-    // }
-    // audioContainer = null;
-    localAudio.srcObject = null;
 
-    rtcPeerConnection.close();
-    rtcPeerConnection = null;
+    if(hangupCounter == 0){
+        console.log('Ending call');
+        clearInterval(statInterval);
+        if (rtcPeerConnection) {
+            rtcPeerConnection.ontrack = null;
+            rtcPeerConnection.onremovetrack = null;
+            rtcPeerConnection.onremovestream = null;
+            rtcPeerConnection.onicecandidate = null;
+            rtcPeerConnection.oniceconnectionstatechange = null;
+            rtcPeerConnection.onsignalingstatechange = null;
+            rtcPeerConnection.onicegatheringstatechange = null;
+            rtcPeerConnection.onnegotiationneeded = null;
 
-    hangupButton.disabled = true;
-    buttons.style.display = "none";
-    duration.style.display = "none";
-    hangupButton.style.display = "none";
-    instructions.style.display = "none";
-    studyInstructions.style.display = "none";
-    question.style.visibility = "visible";
-    studyInstructions.style.display = "none";
-    callerIframe.style.display = "none";
-    receiverIframe.style.display = "none";
+            if (localAudio.srcObject) {
+                localAudio.pause();
+            }
+
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+            }
+
+            rtcPeerConnection.close();
+            rtcPeerConnection = null;
+
+            localAudio.removeAttribute("src");
+            localAudio.removeAttribute("srcObject");
+        }
+
+        hangupButton.disabled = true;
+        // buttons.style.display = "none";
+        duration.style.display = "none";
+        audioButtons.style.display = 'none';
+        hangupButton.style.display = "none";
+        instructions.style.display = "none";
+        studyInstructions.style.display = "none";
+        feedbackDiv.style.display = "block";
+        questionDiv.style.display = "block";
+        // question.style.visibility = "visible";
+        studyInstructions.style.display = "none";
+        callerIframe.style.display = "none";
+        receiverIframe.style.display = "none";
+        hangupCounter = 0;
     // answerButton.onclick = sendData;
     // document.getElementById("rating_page").style.display = "block";
     //table.style.visibility = 'hidden';
     // sendData();
+    }
+    
 }
 
 function answer() {
