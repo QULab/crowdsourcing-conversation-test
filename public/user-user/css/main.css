@@ -1,7 +1,3 @@
-body {
-  /* margin: 10px; */
-}
-
 .container {
   font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
 }
@@ -158,6 +154,11 @@ div.label {
   width: 120px;
 }
 
-#audio-buttons{
-  display: inline-block;
+#audio-buttons {
+  display: block;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  right: 0;
+  margin-bottom: 20px;
 }

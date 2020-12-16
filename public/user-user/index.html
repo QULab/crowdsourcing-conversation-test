@@ -72,8 +72,9 @@
                             the instructions.
                         </p>
                         <p>
-                            During the test you will be given a conversation scenario and  Study instructions, please go
-                            through the <b>Study instructions</b> before you start the conversation. During the call you have
+                            During the test you will be given a conversation scenario and Study instructions, please go
+                            through the <b>Study instructions</b> before you start the conversation. During the call you
+                            have
                             to talk about the scenario and ask questions to the other person in call. Also, you need to
                             answer the questions he ask. Once all the questions and you are done speaking, please click
                             the <b>Hangup button</b> to end the call.
@@ -129,7 +130,30 @@
                         <div id="statsdiv"></div>
                     </td>
                     </tr> -->
-
+                    <!-- Modal verification code -->
+                    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Thank you for the Participation</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body" id="myModalBody">
+                                    <div id="modalBodyMessage">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button id="copy" data-clipboard-target="#verificationCode" class="btn btn-secondary mr-auto">
+                                        Copy</button>
+                                    <button type="button" id="modalButton" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="modal fade" id="callModal" tabindex="-1" role="dialog"
                         aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog" role="document">
@@ -164,14 +188,25 @@
                     </div>
 
                     <section id="scenario-iframe">
-                        <div id="caller-iframe" style="height: 100vh;overflow: hidden;">
-                            <iframe id="caller" src="" style="overflow:hidden;height:100%;width:100%" height="100%"
-                                width="100%" frameborder="0"></iframe>
+                        <div>
+                            <form id="scenario-form" class="scenario-form" onsubmit="return false">
+
+                                <div id="caller-iframe" style="height: 100vh;width: 100vw;overflow: hidden;">
+
+                                    <iframe id="caller" src="" style="overflow:hidden;height:100%;width:100%"
+                                        height="150%" width="150%" frameborder="0"></iframe>
+                                </div>
+                                <div id="receiver-iframe" style="height: 100vh;width: 100vw;overflow: hidden;">
+                                    <iframe id="receiver" src="" style="overflow:hidden;height:100%;width:100%"
+                                        height="150%" width="150%" frameborder="0"></iframe>
+                                </div>
+
+                                <div style="text-align: center;" id="scenario-button-div"><button type="submit"
+                                        id="scenario-button" onclick="scenarioAnswer()"
+                                        class="btn btn-outline-success">Submit</button></div>
+                            </form>
                         </div>
-                        <div id="receiver-iframe" style="height: 100vh;overflow: hidden;">
-                            <iframe id="receiver" src="" style="overflow:hidden;height:100%;width:100%" height="100%"
-                                width="100%" frameborder="0"></iframe>
-                        </div>
+
                     </section>
 
                     <div class="feedback card border-light" id="feedback-div">

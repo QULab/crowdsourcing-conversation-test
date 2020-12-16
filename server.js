@@ -165,6 +165,8 @@ let statSchema = new schema({
   sessionID: { type: String },
   scaleAnswer: { type: String },
   feedback: { type: String }, 
+  callerAnswers: { type: JSON },
+  receiverAnswers: { type: JSON },
 }, { collection: "webrtc-stats", timestamps: true, strict: false });
 
 
@@ -256,6 +258,10 @@ app.get(
 router.get("/jobConfig", jobConfigController.getJobConfig);
 router.post("/jobConfig", jobConfigController.createJobConfig);
 
+app.post("/scenarioAnswers", async(req, res)=>{
+  console.log("Got query:", req.query);
+  console.log("Got body", req.body);
+})
 
 // rooms and socket IO
 

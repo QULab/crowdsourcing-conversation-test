@@ -18,7 +18,7 @@ const audioButtons = document.getElementById('audio-buttons');
 const feedbackDiv = document.getElementById('feedback-div');
 const questionDiv = document.getElementById('question-div');
 const scenarioButtonDiv = document.getElementById('scenario-button-div');
-const scenarioButton = document.getElementById('scenario-button');
+const scenarioForm = document.getElementById('scenario-form');
 const callButtonDiv = document.getElementById('call-button');
 
 let statInterval;
@@ -27,7 +27,7 @@ let hangupCounter = 0;
 let localAudio = new Audio;
 localAudio = document.querySelector('audio#local-audio');
 
-// scenarioButtonDiv.style.display = "none";
+scenarioButtonDiv.style.display = "none";
 callerIframe.style.display = "none";
 receiverIframe.style.display = "none";
 
@@ -88,6 +88,8 @@ let resultArr = [];
 let packetsLost;
 let packetLossArray = [];
 let averagePacketLoss;
+let rArray = [];
+        let cArray = [];
 
 let browser = (function (agent) {
     switch (true) {
@@ -327,7 +329,7 @@ function acceptCall() {
     audio4.currentTime = 0;
     receiverIframe.style.display = "block";
     instructions.style.display = "none";
-    // scenarioButtonDiv.style.display = "block";
+    
 }
 
 socket.on("called", function () {
@@ -538,6 +540,7 @@ function onAddStream(event) {
     callButton.style.visibility = 'hidden';
     callButtonDiv.style.display = "none";
     instructions.style.display = "none";
+    scenarioButtonDiv.style.display = "block";
     // hangupButton.style.visibility = 'visible';
     // hangupButton.style.display = "block";
     duration.style.visibility = "visible";
@@ -740,6 +743,11 @@ rtcPeerConnection.oniceconnectionstatechange = function () {
 
 // call hangup
 function hangup() {
+    // let a = $("#caller").contents().find("form");
+    
+    // let b = $("#receiver").contents().find("form");
+    // console.log(a);
+
 
     if (hangupCounter == 0) {
         console.log('Ending call');
@@ -782,7 +790,7 @@ function hangup() {
         // question.style.visibility = "visible";
         studyInstructions.style.display = "none";
         callerIframe.style.display = "none";
-        // scenarioButtonDiv.style.display = "none";
+        scenarioButtonDiv.style.display = "none";
         receiverIframe.style.display = "none";
         hangupCounter = 0;
         // answerButton.onclick = sendData;
@@ -793,26 +801,42 @@ function hangup() {
 
 }
 
-$('#caller-iframe').load(function () {
-    $(this).contents().find('form').submit(function () {
-        let x = JSON.stringify($("form").serializeArray());
-        console.log({ x });
-        return false;
-    });
-});
+// $('#caller').load(function () {
+    
+//         let x = JSON.stringify($("body").serializeArray());
+//         console.log({ x });
+//         return false;
+    
+// });
 
 function scenarioAnswer() {
     let form = document.getElementById('scenario-form');
     // let x = document.querySelector('scenario-form.scenario-form').elements;
     form.onsubmit = function (event) {
         event.preventDefault();
-
-        let x = JSON.stringify($("#scenario-form").serializeArray());
-        console.log({ x });
         
+        $("#caller").contents().find('input').each(function(){
+            let p = {
+                name: this.name,
+                value: this.value
+            }
+            cArray.push(p);
+        });
+
+
+        $("#receiver").contents().find('input').each(function () {
+            let p = {
+                name: this.name,
+                value: this.value
+            }
+            rArray.push(p);
+        });
+        // let x = JSON.stringify($("#caller").serializeArray());
+        console.log({cArray});
+        console.log({ rArray });
+        hangup();
     }
-    questionDiv.style.display = "block";
-    feedbackDiv.style.display = "none";
+    
 }
 
 function feedBackAnswer() {
@@ -821,7 +845,7 @@ function feedBackAnswer() {
         event.preventDefault();
         console.log("form elements", form.elements);
         let x = JSON.stringify($("form").serializeArray());
-       ;
+       
         x = JSON.parse(x);
         console.log({ x })
         // console.log("answer", form.elements["feedback"].value);
@@ -860,7 +884,7 @@ function sendData() {
     $('#modalBodyMessage')
         .html("Verification code: " + "<div id='verificationCode' style='color: #0275d8;'> " + hash + "</div>");
     //$('#modalBodyVerificationCode').html(hash);
-    $('#exampleModal').modal('show');
+    // $('#exampleModal').modal('show');
 
     // Tooltip
 
@@ -903,7 +927,7 @@ function sendData() {
         hideTooltip(btn);
     });
 
-    if (rttArr.length) {
+    // if (rttArr.length) {
         // post data to backend after hangup
         const data = {
             verificationCode: fullhash,
@@ -937,6 +961,8 @@ function sendData() {
             os: os,
             type: "USER2USER",
             scaleAnswer: scaleAnswer,
+            receiverAnswers: rArray,
+            callerAnswers: cArray,
             feedback: feedback
         };
         console.log("data sent", data);
@@ -944,7 +970,7 @@ function sendData() {
         let serverPost1 = 'https://conversation-test.qulab.org/stats';
         let serverPost2 = 'https://webrtc.pavanct.com/stats';
 
-        fetch(serverPost2, {
+        fetch(localPost, {
             method: 'POST', // or 'PUT'
             headers: {
                 'Content-Type': 'application/json',
@@ -958,12 +984,12 @@ function sendData() {
             .catch((error) => {
                 console.error('Error:', error);
             });
-
-        document.getElementById("modalButton").onclick = function () {
-            console.log("task completed");
-            location.href = "../taskcompleted.html";
-        };
-    }
+        location.href = `../taskcompleted.html?code=${hash}`;
+        // document.getElementById("modalButton").onclick = function () {
+        //     console.log("task completed");
+        //     location.href = `../taskcompleted.html?code=${hash}`;
+        // };
+    // }
 }
 
 

@@ -8,19 +8,20 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <style>
-        html, body {
-            margin: 20px;
+        html,
+
+
+        #container {
+            width: 90vw;
         }
+
         .instructions {
             text-align: center;
             margin-bottom: 30px;
         }
 
         .scenario {
-            text-align: center;
-            align-items: center;
-            margin-left: auto;
-            margin-right: auto;
+            width: fit-content;
         }
 
         table.center {
@@ -31,97 +32,96 @@
 </head>
 
 <body>
-    <div id="container" class="container h-100">
-        <div class="row h-100">
-            <div class="col-12">
-                <div class="scenario text-center">
-                    <form id="scenario-form" class="scenario-form" onsubmit="return false" target="_top">
-                        <img src="../../../assets/ITU/receiver.PNG" alt="">
-                        <h1>Practice: Travel Agent</h1>
-                        <h2>Your name: Thomas Cook travel agent</h2>
-                        <img src="../../../assets/ITU/details_for_partner_receiver.PNG" alt="">
-                        <h3>One week last minute trip
-                            from Liverpool or Manchester</h3>
-                        <img src="../../../assets/ITU/condition_for_exchange.PNG" alt="">
-                        <p>Departing tomorrow</p>
-                        <p>Not to Spain</p>
-                        <p>As cheap as possible</p>
-                        <div>
-                            <table class="table center">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Destination</th>
-                                        <th scope="col">Departure Today</th>
-                                        <th scope="col">Departure Tomorrow</th>
-                                        <th scope="col">Departure the day
-                                            after tomorrow</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Spain (Mallorca)</td>
-                                        <td>£90</td>
-                                        <td>£150</td>
-                                        <td>@£308</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Hotel Playas Arenal</td>
-                                        <td>Dep. 19:30 h</td>
-                                        <td>Dep. 10:15 h</td>
-                                        <td>Dep. 10:15 h</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Half board</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Italy (Sicily)</td>
-                                        <td>£140</td>
-                                        <td>£160</td>
-                                        <td>£290</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Hotel Città del Mare</td>
-                                        <td>Dep. 19:10 h</td>
-                                        <td>Dep. 8:50 h</td>
-                                        <td>Dep. 8:50 h</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Full board</td>
-                                    </tr>
+    <div id="container">
 
-                                </tbody>
-                            </table>
-                        </div>
+        <div class="scenario ">
+            <img src="../../../assets/ITU/receiver.PNG" alt="">
+            <h1>Practice: Travel Agent</h1>
+            <h2>Your name: Thomas Cook travel agent</h2>
+            <img src="../../../assets/ITU/details_for_partner_receiver.PNG" alt="">
+            <h3>One week last minute trip
+                from Liverpool or Manchester</h3>
+            <img src="../../../assets/ITU/condition_for_exchange.PNG" alt="">
+            <p>Departing tomorrow</p>
+            <p>Not to Spain</p>
+            <p>As cheap as possible</p>
+            <div>
+                <table class="table center">
+                    <thead>
+                        <tr>
+                            <th scope="col">Destination</th>
+                            <th scope="col">Departure Today</th>
+                            <th scope="col">Departure Tomorrow</th>
+                            <th scope="col">Departure the day
+                                after tomorrow</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Spain (Mallorca)</td>
+                            <td>£90</td>
+                            <td>£150</td>
+                            <td>@£308</td>
+                        </tr>
+                        <tr>
+                            <td>Hotel Playas Arenal</td>
+                            <td>Dep. 19:30 h</td>
+                            <td>Dep. 10:15 h</td>
+                            <td>Dep. 10:15 h</td>
+                        </tr>
+                        <tr>
+                            <td>Half board</td>
+                        </tr>
+                        <tr>
+                            <td>Italy (Sicily)</td>
+                            <td>£140</td>
+                            <td>£160</td>
+                            <td>£290</td>
+                        </tr>
+                        <tr>
+                            <td>Hotel Città del Mare</td>
+                            <td>Dep. 19:10 h</td>
+                            <td>Dep. 8:50 h</td>
+                            <td>Dep. 8:50 h</td>
+                        </tr>
+                        <tr>
+                            <td>Full board</td>
+                        </tr>
 
-
-                        <img src="../../../assets/ITU/required_info_caller.PNG" alt="">
-                        <p>Reservation: </p>
-                        <p>Name : <input type="text" class="form-control" aria-label="Small"
-                                aria-describedby="inputGroup-sizing-sm"></p>
-                        <p>Credit Card</p>
-                        <p>Credit card number: <input type="text" class="form-control" aria-label="Small"
-                                aria-describedby="inputGroup-sizing-sm"> </p>
-                        <p>Valid till: <input type="text" class="form-control" aria-label="Small"
-                                aria-describedby="inputGroup-sizing-sm"></p>
-                        <p>Flying From: <input type="text" class="form-control" aria-label="Small"
-                                aria-describedby="inputGroup-sizing-sm"></p>
-                        <img src="../../../assets/ITU/both.PNG" alt="">
-                    <p><input type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm"></p>
-                    <div style="text-align: center;" id="scenario-button-div"><button type="submit" id="scenario-button"
-                            onclick="submitScenarioAnswer()" class="btn btn-outline-success">Submit</button></div>
-                       </form>     
-                </div>
+                    </tbody>
+                </table>
             </div>
+
+
+            <img src="../../../assets/ITU/required_info_caller.PNG" alt="">
+            <p>Reservation: </p>
+            <p>Name : <input type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm"
+                    name="name"></p>
+            <p>Credit Card</p>
+            <p>Credit card number: <input type="text" class="form-control" aria-label="Small"
+                    aria-describedby="inputGroup-sizing-sm" name="card-number"> </p>
+            <p>Valid till: <input type="text" class="form-control" aria-label="Small"
+                    aria-describedby="inputGroup-sizing-sm" name="valid-till"></p>
+            <p>Flying From: <input type="text" class="form-control" aria-label="Small"
+                    aria-describedby="inputGroup-sizing-sm" name="flying-from"></p>
+            <img src="../../../assets/ITU/both.PNG" alt="">
+            <p><input type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm"
+                    name="comments">
+            </p>
+            <!-- <div style="text-align: center;" id="scenario-button-div"><button type="submit" id="scenario-button"
+                        onclick="submitScenarioAnswer()" class="btn btn-outline-success">Submit</button></div> -->
         </div>
+
     </div>
 </body>
 <script>
     function submitScenarioAnswer() {
-            let form = document.getElementById('scenario-form');
-            form.onsubmit = function (event) {
-                event.preventDefault();
-                console.log("form elements", form.elements);
-            }
+        let form = document.getElementById('scenario-form');
+        form.onsubmit = function (event) {
+            event.preventDefault();
+            console.log("form elements", form.elements);
         }
+    }
 </script>
+
 </html>
