@@ -1,5 +1,5 @@
 body {
-  margin: 10px;
+  /* margin: 10px; */
 }
 
 .container {
@@ -62,7 +62,7 @@ a#viewSource {
   right: 0;
   top: 0;
   background: #23c552;
-  font-size: large;
+  font-size: medium;
   width: 200px;
   /* height: 200px; */
   border: black 1px solid;
@@ -73,7 +73,7 @@ a#viewSource {
   right: 0;
   top: 0;
   background: #23c552;
-  font-size: large;
+  font-size: medium;
   width: 200px;
   border: black 1px solid;
 }
@@ -83,7 +83,7 @@ a#viewSource {
   right: 0;
   top: 0;
   background: firebrick;
-  font-size: large;
+  font-size: medium;
   width: 200px;
   border: black 1px solid;
 }
@@ -158,10 +158,6 @@ div.label {
   width: 120px;
 }
 
-#caller-iframe{
-  height: 100vh;
-}
-
-#receiver-iframe{
-  height: 100vh;
+#audio-buttons{
+  display: inline-block;
 }

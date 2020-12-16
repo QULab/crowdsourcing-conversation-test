@@ -17,6 +17,9 @@ const receiverIframe = document.getElementById('receiver-iframe');
 const audioButtons = document.getElementById('audio-buttons');
 const feedbackDiv = document.getElementById('feedback-div');
 const questionDiv = document.getElementById('question-div');
+const scenarioButtonDiv = document.getElementById('scenario-button-div');
+const scenarioButton = document.getElementById('scenario-button');
+const callButtonDiv = document.getElementById('call-button');
 
 let statInterval;
 let hangupCounter = 0;
@@ -24,6 +27,7 @@ let hangupCounter = 0;
 let localAudio = new Audio;
 localAudio = document.querySelector('audio#local-audio');
 
+// scenarioButtonDiv.style.display = "none";
 callerIframe.style.display = "none";
 receiverIframe.style.display = "none";
 
@@ -42,6 +46,8 @@ audioButtons.style.display = 'none';
 // hangupButton.style.display = 'none';
 // hangupButton.style.visibility = 'hidden';
 hangupButton.onclick = endCall;
+
+
 
 // for call begin
 
@@ -156,7 +162,8 @@ let scenario;
 let attenuation;
 let noiseFileName;
 let loadConfig = false;
-let dArray= [];
+let feedback = new Object;
+let dArray = [];
 
 const url = window.location.href;
 console.log("url", url);
@@ -221,16 +228,16 @@ async function fetchJobConfig() {
     let serverUrl = "https://webrtc.pavanct.com/jobConfig"
     const response = await fetch(serverUrl);
     const data = await response.json();
-    console.log({data});
+    console.log({ data });
     data.data.forEach(e => {
-                console.log({study_name});
-                console.log({e});
-                if (e.study_name === String(study_name)) {
-                    jobConfig = e;
-                }
-            });
-            console.log({ jobConfig });
-            loadConfig = setJobConfig(jobConfig);
+        console.log({ study_name });
+        console.log({ e });
+        if (e.study_name === String(study_name)) {
+            jobConfig = e;
+        }
+    });
+    console.log({ jobConfig });
+    loadConfig = setJobConfig(jobConfig);
 
     // fetch(serverUrl, {
     //     method: 'GET',
@@ -261,8 +268,14 @@ function setJobConfig(jobConfig) {
     htmlPartyCaller = jobConfig.html_party_caller;
     htmlPartyReceiver = jobConfig.html_party_receiver;
     ratingScaleHtml = jobConfig.rating_scale_html;
-    // SNR_DB = jobConfig.SNR_DB;
-    // delayTime = jobConfig.delayTime;
+    if (instructionHtml) {
+        document.getElementById('study-instructions-iframe').setAttribute("src", instructionHtml);
+    }
+
+    if (htmlPartyCaller && htmlPartyReceiver) {
+        document.getElementById('caller').setAttribute("src", htmlPartyCaller);
+        document.getElementById('receiver').setAttribute("src", htmlPartyReceiver);
+    }
     scenario = jobConfig.scenario;
     // attenuation = jobConfig.attenuation;
     jobConfig.config_details.forEach(e => {
@@ -272,7 +285,7 @@ function setJobConfig(jobConfig) {
             noiseFileName = e.noise_file;
         } else if (e.condition_type == "delay") {
             delay = true;
-            delayTime = Number(e.delay_time_sec) ;
+            delayTime = Number(e.delay_time_sec);
         } else if (e.condition_type == "packet_loss") {
             pl = true;
             ppl = e.probability;
@@ -305,6 +318,7 @@ socket.on("accept_call", function () {
         audio4.play();
     }
     acceptButton.onclick = acceptCall;
+
 })
 
 function acceptCall() {
@@ -312,6 +326,8 @@ function acceptCall() {
     audio4.pause();
     audio4.currentTime = 0;
     receiverIframe.style.display = "block";
+    instructions.style.display = "none";
+    // scenarioButtonDiv.style.display = "block";
 }
 
 socket.on("called", function () {
@@ -357,6 +373,7 @@ socket.on("created", function (room) {
 // when someone joins - call receiver
 socket.on("joined", function (room) {
     fetchJobConfig();
+
     // $('.started').toast('show');
     console.log("Remote User - receiver");
     navigator.mediaDevices.getUserMedia(streamConstraints).then(
@@ -392,14 +409,17 @@ socket.on("user_joined", function () {
         callButton.disabled = false;
         console.log("inside user_joined");
     }
+    let audio5 = new Audio;
+    audio5.src = "../../assets/notification.mp3";
+    audio5.play();
 })
 
-function endCall(){
+function endCall() {
     socket.emit("hangup", roomNumber);
 }
 
 socket.on("endCall", function () {
-        hangup();
+    hangup();
 })
 
 // for caller - on emit ready
@@ -407,6 +427,7 @@ socket.on("ready", function () {
 
     if (isCaller) {
         callerIframe.style.display = "block";
+        // scenarioButtonDiv.style.display = "block";
         rtcPeerConnection.onicecandidate = onIceCandidate;
         rtcPeerConnection.ontrack = onAddStream;
 
@@ -462,19 +483,15 @@ socket.on("candidate", function (event) {
 
 // when socket is full
 socket.on("full", function (message) {
-    if (divSelectRoom.contains(document.getElementById("error-message"))) {
-        document.getElementById("error-message").remove();
-    }
-
-    divSelectRoom.style = "display: block";
-    divConsultingRoom.style = "display: none";
 
     var errorMessage = document.createElement("p");
     errorMessage.setAttribute("id", "error-message");
     errorMessage.style = "color: red;";
     errorMessage.innerText = message;
 
-    divSelectRoom.appendChild(errorMessage);
+    alert(errorMessage);
+
+    // divSelectRoom.appendChild(errorMessage);
 });
 
 function onIceCandidate(event) {
@@ -517,45 +534,22 @@ function setLocalAnswer(sessionDescription) {
 }
 
 function onAddStream(event) {
+    $('.connected').toast('show');
     callButton.style.visibility = 'hidden';
+    callButtonDiv.style.display = "none";
+    instructions.style.display = "none";
     // hangupButton.style.visibility = 'visible';
     // hangupButton.style.display = "block";
     duration.style.visibility = "visible";
     hangupButton.disabled = false;
-    location.href = "#scenario-iframe";
+    // location.href = "#scenario-iframe";
 
     console.log("ondAddStream", event.streams);
-    // add delay using webaudio
 
-    // Add additional 2 seconds of buffering
-    // const [audioReceiver] = rtcPeerConnection.getReceivers();
-    // console.log(audioReceiver);
-    // setInterval(async () => {
-    //     audioReceiver.playoutDelayHint = audioReceiver.jitterBufferDelayHint = 0.4;
-    // }, 1);
-
-    // audioContainer = document.createElement("audio");
-    // audioContainer.setAttribute("width", "max-content");
-    // audioContainer.setAttribute("autoplay", true);
-    // audioContainer.srcObject = event.streams[0].clone();
-    // let audio2 = new Audio();
-    // audio2.srcObject = event.streams[0].clone();
-    // audio2.autoplay = true;    
-    // divConsultingRoom.appendChild(audioContainer);
     let audio3 = new Audio();
     audio3.srcObject = event.streams[0];
     audio3.autoplay = true;
     audio3.muted = true;
-    // let cStream = audio3.captureStream();
-    // let n = context.createMediaStreamSource(cStream);
-    // n.connect(context.destination);
-
-    // const delayNode = context.createDelay(1);
-    // delayNode.delayTime.value = 1;
-    // n.connect(delayNode);
-    // let pannerNode = context.createPanner();
-    // delayNode.connect(pannerNode);
-    // pannerNode.connect(context.destination);
 
     // delayNode.connect(context.destination);
     audio3.onloadedmetadata = () => {
@@ -576,33 +570,6 @@ function onAddStream(event) {
             recvAudioSource.connect(delayNode);
             delayNode.connect(context.destination);
 
-            // var streamNode;
-            // var masterNode;
-            // var bypassNode;
-            // var delayNode;
-            // var feedbackNode;
-
-            // streamNode = context.createMediaStreamSource(event.streams[0]);
-            // delayNode = context.createDelay(10)
-            // feedbackNode = context.createGain();
-            // bypassNode = context.createGain();
-            // masterNode = context.createGain();
-
-            // //controls
-            // delayNode.delayTime.value = 1;
-            // feedbackNode.gain.value = 0.8;
-            // bypassNode.gain.value = 1;
-
-            // //wire up nodes
-            // streamNode.connect(delayNode);
-            // delayNode.connect(feedbackNode);
-            // feedbackNode.connect(delayNode);
-
-            // delayNode.connect(bypassNode);
-            // bypassNode.connect(masterNode);
-            // streamNode.connect(masterNode);
-
-            // masterNode.connect(context.destination);
         }
         else if (noise) {
             const input = context.createMediaStreamSource(audio3.srcObject);
@@ -687,7 +654,7 @@ function onAddStream(event) {
             }
 
             setInterval(() => {
-                
+
 
                 pl_state = determinePacketLoss(pl_state, p, q);
                 if (pl_state == 0) {
@@ -714,7 +681,7 @@ function onAddStream(event) {
 
     // console.log("local stream", localStream);
 
-   statInterval = setInterval(() => {
+    statInterval = setInterval(() => {
         rtcPeerConnection.getStats(null).then(showStats, err =>
             console.log(err)
         );
@@ -774,9 +741,10 @@ rtcPeerConnection.oniceconnectionstatechange = function () {
 // call hangup
 function hangup() {
 
-    if(hangupCounter == 0){
+    if (hangupCounter == 0) {
         console.log('Ending call');
         clearInterval(statInterval);
+        $('.ended').toast('show');
         if (rtcPeerConnection) {
             rtcPeerConnection.ontrack = null;
             rtcPeerConnection.onremovetrack = null;
@@ -810,28 +778,74 @@ function hangup() {
         instructions.style.display = "none";
         studyInstructions.style.display = "none";
         feedbackDiv.style.display = "block";
-        questionDiv.style.display = "block";
+
         // question.style.visibility = "visible";
         studyInstructions.style.display = "none";
         callerIframe.style.display = "none";
+        // scenarioButtonDiv.style.display = "none";
         receiverIframe.style.display = "none";
         hangupCounter = 0;
-    // answerButton.onclick = sendData;
-    // document.getElementById("rating_page").style.display = "block";
-    //table.style.visibility = 'hidden';
-    // sendData();
+        // answerButton.onclick = sendData;
+        // document.getElementById("rating_page").style.display = "block";
+        //table.style.visibility = 'hidden';
+        // sendData();
     }
-    
+
 }
 
-function answer() {
+$('#caller-iframe').load(function () {
+    $(this).contents().find('form').submit(function () {
+        let x = JSON.stringify($("form").serializeArray());
+        console.log({ x });
+        return false;
+    });
+});
+
+function scenarioAnswer() {
+    let form = document.getElementById('scenario-form');
+    // let x = document.querySelector('scenario-form.scenario-form').elements;
+    form.onsubmit = function (event) {
+        event.preventDefault();
+
+        let x = JSON.stringify($("#scenario-form").serializeArray());
+        console.log({ x });
+        
+    }
+    questionDiv.style.display = "block";
+    feedbackDiv.style.display = "none";
+}
+
+function feedBackAnswer() {
+    let form = document.getElementById('feedback');
+    form.onsubmit = function (event) {
+        event.preventDefault();
+        console.log("form elements", form.elements);
+        let x = JSON.stringify($("form").serializeArray());
+       ;
+        x = JSON.parse(x);
+        console.log({ x })
+        // console.log("answer", form.elements["feedback"].value);
+        let follow = x.find(a => a.name === "follow");
+        let outScope = x.find(a=> a.name === "out-scope");
+        let text = x.find(a=> a.name === "comment");
+        feedback = {
+            follow: follow,
+            outScope: outScope,
+            comment: text
+        }
+        console.log({ feedback });
+        questionDiv.style.display = "block";
+        feedbackDiv.style.display = "none";
+    }
+}
+
+function ratingAnswer() {
     let form = document.getElementById('question');
     form.onsubmit = function (event) {
         event.preventDefault();
         console.log("answer", form.elements["rating"].value);
         let answer = form.elements["rating"].value;
         console.log({ answer });
-
         scaleAnswer = answer;
         sendData();
     }
@@ -895,17 +909,17 @@ function sendData() {
             verificationCode: fullhash,
             config: {
                 study_name: study_name,
-                instruction_html : instructionHtml,
-                html_party_caller : htmlPartyCaller,
-                html_party_receiver : htmlPartyReceiver,
-                rating_scale_html : ratingScaleHtml,
-                scenario : jobConfig.scenario,
-                isCaller : isCaller,
+                instruction_html: instructionHtml,
+                html_party_caller: htmlPartyCaller,
+                html_party_receiver: htmlPartyReceiver,
+                rating_scale_html: ratingScaleHtml,
+                scenario: jobConfig.scenario,
+                isCaller: isCaller,
                 noise: noise,
                 delay: delay,
                 SNR_DB: SNR_DB,
-                delay_time_sec : delayTime,
-                packet_loss : pl,
+                delay_time_sec: delayTime,
+                packet_loss: pl,
                 probability_packet_loss: ppl,
                 burst_rate: burstRate,
                 echo: echo,
@@ -923,6 +937,7 @@ function sendData() {
             os: os,
             type: "USER2USER",
             scaleAnswer: scaleAnswer,
+            feedback: feedback
         };
         console.log("data sent", data);
         let localPost = 'http://localhost:3000/stats';
@@ -943,35 +958,6 @@ function sendData() {
             .catch((error) => {
                 console.error('Error:', error);
             });
-        // always change to listen to server specific before docker build
-        // fetch('https://conversation-test.qulab.org/stats', {   
-        //     method: 'POST', // or 'PUT'
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify(data),
-        // })
-        //     .then((response) => response.json())
-        //     .then((data) => {
-        //         console.log('Success:', data);
-        //     })
-        //     .catch((error) => {
-        //         console.error('Error:', error);
-        //     });
-        // fetch('http://localhost:3000/stats', {
-        //     method: 'POST', // or 'PUT'
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify(data),
-        // })
-        //     .then((response) => response.json())
-        //     .then((data) => {
-        //         console.log('Success:', data);
-        //     })
-        //     .catch((error) => {
-        //         console.error('Error:', error);
-        //     });
 
         document.getElementById("modalButton").onclick = function () {
             console.log("task completed");
@@ -979,4 +965,6 @@ function sendData() {
         };
     }
 }
+
+
 

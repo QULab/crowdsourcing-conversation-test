@@ -36,64 +36,56 @@
     <div id="container" class="container h-100">
         <div class="row h-100">
             <div class="col-12">
-                <div class="instructions">
-                    <h2>Symbols Info</h2>
-                    <img src="../../../assets/ITU/caller.PNG" alt=""> <label>You are the Caller</label><br><br>
-                    <img src="../../../assets/ITU/reason_for_call.PNG" alt=""><label>Next to this symbol, the reason for
-                        your call is given (e.g., I would like to buy a ticket)</label><br>
-                    <img src="../../../assets/ITU/condition_for_exchange.PNG" alt=""><label>Next to this symbol is a
-                        condition which should be applied to the exchange of information
-                        (e.g., I would like to buy a ticket→ but as cheaply as possible).</label>
-                    <img src="../../../assets/ITU/details_for_partner_receiver.PNG" alt=""> <label>Next to this symbol
-                        is information from which you should select the details that your
-                        partner requires (e.g., train ticket prices for adults, children, special conditions for
-                        students).</label><br>
-                    <img src="../../../assets/ITU/required_info_caller.PNG" alt=""> <label>Next to this symbol you
-                        should write down all the information you require from your
-                        partner.</label><br>
-                    <img src="../../../assets/ITU/pass_info_to_reciver_from_caller.PNG" alt=""><label>Next to this
-                        symbol is all the information your partner requires and which you will pass on
-                        to him/her.</label><br>
-                    <img src="../../../assets/ITU/both.PNG" alt=""><label>Next to this symbol is a question to which
-                        neither you nor your partner will have
-                        information. You should discuss the question briefly and find a solution that is acceptable
-                        to both of you.</label><br>
-                </div>
                 <div class="scenario">
-                    <img src="../../../assets/ITU/Caller.PNG" alt="">
-                    <h1>Practice: Travel Agent</h1>
-                    <h2>Your name: Walker</h2>
-                    <img src="../../../assets/ITU/reason_for_call.PNG" alt="">
-                    <span>One week last minute trip to the Mediterranean</span><br>
-                    <img src="../../../assets/ITU/condition_for_exchange.PNG" alt="">
-                    <p>Departing tomorrow</p>
-                    <p>Not to Spain</p>
-                    <p>As cheap as possible</p>
-                    <img src="../../../assets/ITU/required_info_caller.PNG" alt="">
-                    <p>Price : <input type="text" class="form-control" aria-label="Small"
-                            aria-describedby="inputGroup-sizing-sm"> £</p>
-                    <p>Day of departure : <input type="text" class="form-control" aria-label="Small"
-                            aria-describedby="inputGroup-sizing-sm"> at <input type="text" class="form-control"
-                            aria-label="Small" aria-describedby="inputGroup-sizing-sm"></p>
-                    <p>Destination: <input type="text" class="form-control" aria-label="Small"
-                            aria-describedby="inputGroup-sizing-sm"></p>
-                    <p>Hotel: <input type="text" class="form-control" aria-label="Small"
-                            aria-describedby="inputGroup-sizing-sm"></p>
-                    <img src="../../../assets/ITU/pass_info_to_reciver_from_caller.PNG" alt="">
-                    <p>Reservation:
-                    <p>Flying from Manchester</p>
-                    <p>Mastercard</p>
-                    <p>Credit card number: 9685 4712 0951 2781</p>
-                    <p>Valid till 10/99</p>
-                    </p>
-                    <img src="../../../assets/ITU/both.PNG" alt="">
-                    <p>How long before the departure time do I have to check in?</p>
-                    <p><input type="text" class="form-control" aria-label="Small"
-                            aria-describedby="inputGroup-sizing-sm"></p>
+                    <form id="scenario-form" class="scenario-form" onsubmit="return false" target="_top">
+
+                        <img src="../../../assets/ITU/Caller.PNG" alt="">
+                        <h1>Practice: Travel Agent</h1>
+                        <h2>Your name: Walker</h2>
+                        <img src="../../../assets/ITU/reason_for_call.PNG" alt="">
+                        <span>One week last minute trip to the Mediterranean</span><br>
+                        <img src="../../../assets/ITU/condition_for_exchange.PNG" alt="">
+                        <p>Departing tomorrow</p>
+                        <p>Not to Spain</p>
+                        <p>As cheap as possible</p>
+                        <img src="../../../assets/ITU/required_info_caller.PNG" alt="">
+                        <p>Price : <input type="text" class="form-control" aria-label="Small"
+                                aria-describedby="inputGroup-sizing-sm"> £</p>
+                        <p>Day of departure : <input type="text" class="form-control" aria-label="Small"
+                                aria-describedby="inputGroup-sizing-sm"> at <input type="text" class="form-control"
+                                aria-label="Small" aria-describedby="inputGroup-sizing-sm"></p>
+                        <p>Destination: <input type="text" class="form-control" aria-label="Small"
+                                aria-describedby="inputGroup-sizing-sm"></p>
+                        <p>Hotel: <input type="text" class="form-control" aria-label="Small"
+                                aria-describedby="inputGroup-sizing-sm"></p>
+                        <img src="../../../assets/ITU/pass_info_to_reciver_from_caller.PNG" alt="">
+                        <p>Reservation:
+                        <p>Flying from Manchester</p>
+                        <p>Mastercard</p>
+                        <p>Credit card number: 9685 4712 0951 2781</p>
+                        <p>Valid till 10/99</p>
+                        </p>
+                        <img src="../../../assets/ITU/both.PNG" alt="">
+                        <p>How long before the departure time do I have to check in?</p>
+                        <p><input type="text" class="form-control" aria-label="Small"
+                                aria-describedby="inputGroup-sizing-sm"></p>
+                        <div style="text-align: center;" id="scenario-button-div"><button type="submit"
+                                id="scenario-button" onclick="submitScenarioAnswer()"
+                                class="btn btn-outline-success">Submit</button></div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 </body>
+<script>
+    function submitScenarioAnswer() {
+        let form = document.getElementById('scenario-form');
+        form.onsubmit = function (event) {
+            event.preventDefault();
+            console.log("form elements", form.elements);
+        }
+    }
+</script>
 
 </html>

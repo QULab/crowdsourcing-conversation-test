@@ -163,11 +163,10 @@ let statSchema = new schema({
   ipAdress: { type: String },
   testDuration: { type: Number },
   sessionID: { type: String },
+  scaleAnswer: { type: String },
+  feedback: { type: String }, 
 }, { collection: "webrtc-stats", timestamps: true, strict: false });
 
-// let statSchema = new mongoose.Schema({},
-//   {strict:false }
-// );
 
 let statModel = mongoose.model( "StatModel", statSchema);
 
@@ -301,7 +300,7 @@ io.on("connection", function (socket) {
     socket.emit("endCall", room);
   })
 
-  socket.on("candidate", function (event) {
+    socket.on("candidate", function (event) {
     socket.broadcast.to(event.room).emit("candidate", event);
   });
 

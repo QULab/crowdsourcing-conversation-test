@@ -34,23 +34,8 @@
     <div id="container" class="container h-100">
         <div class="row h-100">
             <div class="col-12">
-                <div class="instructions">
-                    <h2>Symbols Info</h2>
-                    <img src="../../../assets/ITU/receiver.PNG" alt=""> <label>You are the receiver</label><br><br>
-                    <img src="../../../assets/ITU/details_for_partner_receiver.PNG" alt=""> <label>Next to this symbol
-                        is information from which you should select the details that your
-                        partner requires (e.g., train ticket prices for adults, children, special conditions for
-                        students).</label><br>
-                    <img src="../../../assets/ITU/required_info_caller.PNG" alt=""> <label>Next to this symbol you
-                        should write down all the information you require from your
-                        partner.</label><br>
-                    <img src="../../../assets/ITU/both.PNG" alt=""><label>Next to this symbol is a question to which
-                        neither you nor your partner will have
-                        information. You should discuss the question briefly and find a solution that is acceptable
-                        to both of you.</label><br>
-                </div>
                 <div class="scenario text-center">
-                    <form id="form" onsubmit="return false">
+                    <form id="scenario-form" class="scenario-form" onsubmit="return false" target="_top">
                         <img src="../../../assets/ITU/receiver.PNG" alt="">
                         <h1>Practice: Travel Agent</h1>
                         <h2>Your name: Thomas Cook travel agent</h2>
@@ -121,17 +106,22 @@
                         <p>Flying From: <input type="text" class="form-control" aria-label="Small"
                                 aria-describedby="inputGroup-sizing-sm"></p>
                         <img src="../../../assets/ITU/both.PNG" alt="">
-                        <p><input type="text" class="form-control" aria-label="Small"
-                                aria-describedby="inputGroup-sizing-sm"></p>
-                        <div>
-                            <button type="submit" id="answerButton" class="btn btn-outline-success" onclick="answer()">Submit</button>
-                        </div>        
-                    </form>
-
+                    <p><input type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm"></p>
+                    <div style="text-align: center;" id="scenario-button-div"><button type="submit" id="scenario-button"
+                            onclick="submitScenarioAnswer()" class="btn btn-outline-success">Submit</button></div>
+                       </form>     
                 </div>
             </div>
         </div>
     </div>
 </body>
-
+<script>
+    function submitScenarioAnswer() {
+            let form = document.getElementById('scenario-form');
+            form.onsubmit = function (event) {
+                event.preventDefault();
+                console.log("form elements", form.elements);
+            }
+        }
+</script>
 </html>

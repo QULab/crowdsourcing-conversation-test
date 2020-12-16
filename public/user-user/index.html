@@ -29,15 +29,6 @@
     <div id="container" class="container h-100">
         <div class="row h-100">
             <div class="col-12 ">
-                <!-- <div class="qualification_test" id="qualification_test">
-                    <form id="question" class="qualification_form" onsubmit="return false">
-                        <iframe src="../../401_env/qual_and_setup.html" frameborder="0" style="overflow:hidden;height:100%;width:100%"
-                            height="100%" width="100%" class="qual-iframe"></iframe>
-                        <div class="text-center"><button type="submit" id="answerButton" class="btn btn-outline-success"
-                                onclick="answer()">Submit</button>
-                        </div>
-                    </form>
-                </div> -->
 
                 <div class="toast started" role="alert" aria-live="assertive" aria-atomic="true" data-delay="8000"
                     data-animation="true">
@@ -62,62 +53,68 @@
                 <div>
                     <h1 style="text-align: center;">Conversation test</h1>
                     <div class="instructions" id="instructions">
-                        <div class="card border-dark mb-3" style="margin-top: 30px">
-                            <div class="card-body text-dark">
-                                <h5 class="card-title text-center"><b>Instructions</b></h5>
-                                <h6 class="card-title text-center" style="color: firebrick;"><b>Please read the
-                                        instructions carefully!</b></h6><br>
-                                <p class="">
-                                    The Test requires media permissions from browser,
-                                    so please allow microphone settings when prompted by the browser.
-                                    For the research purposes, your audio maybe recorded and used to determine
-                                    quality of the audio conversation.
-                                    <br />
-                                    Please wait for the other person to join, once the person joins you will see a <b
-                                        style="color: #23C552;">Call Connected!</b> notification.
-                                    Adjust your volume in your device and please use <b>Chrome browser</b> or <b>Firefox
-                                        browser</b> for taking the test.
-                                </p>
-                                <p class="">
-                                    After the audio conversation test is complete, you can press the button
-                                    <b>Hangup</b>, and you will see the notification <b style="color: firebrick">Call
-                                        disconnected!</b>.
-                                    Please select the rating for question about the quality of the audio and click
-                                    submit answer button. After answer is submitted you
-                                    will be provided with a <b>Verification code</b>, please copy the code and paste it
-                                    to
-                                    <b>Amazon Mechanical Turk</b>.
-                                </p>
-                            </div>
+                        <!-- <div class="card border-dark mb-3" style="margin-top: 30px"> -->
+                        <!-- <div class="card-body text-dark"> -->
+                        <h3 class="card-title "><b>General Instructions</b></h3>
+                        <h6 class="card-title " style="color: firebrick;"><b>Please read the
+                                instructions carefully!</b></h6><br>
+                        <p class="">
+                            The Test requires media permissions from browser,
+                            so please allow microphone settings when prompted by the browser.
+                            For the research purposes, your audio maybe recorded and used to determine
+                            quality of the audio conversation.
+                            <br />
+                            Please wait for the other person to join, once the person joins you will see a <b
+                                style="color: #23C552;">User Joined!</b> notification and a notification sound.
+                            Adjust your volume in your device and please use <b>Chrome browser</b> or <b>Firefox
+                                browser</b> for taking the test.
+                            Please press the call button after the person joins and once you are finished with reading
+                            the instructions.
+                        </p>
+                        <p>
+                            During the test you will be given a conversation scenario and  Study instructions, please go
+                            through the <b>Study instructions</b> before you start the conversation. During the call you have
+                            to talk about the scenario and ask questions to the other person in call. Also, you need to
+                            answer the questions he ask. Once all the questions and you are done speaking, please click
+                            the <b>Hangup button</b> to end the call.
+                        </p>
+                        <p class="">
+                            Please give the feedback for the session after the call. Please select the rating for
+                            question about the quality of the call and click
+                            submit answer button. After answer is submitted you
+                            will be provided with a <b>Verification code</b>, please copy the code and paste it
+                            to
+                            <b>Amazon Mechanical Turk</b>.
+                        </p>
+                        <!-- </div> -->
+                        <!-- </div> -->
+                    </div>
+
+                    <!-- <div class="card border-dark mb-3" style="margin-top: 30px" id="study-instructions" style="height: 100vh"> -->
+                    <div id="study-instructions">
+                        <h3>Study Instructions</h3>
+                        <p>Please go through the study instructions below and once you are in the call you
+                            will receive a scenario on what you have to speak about, please answer the questions
+                            after having the conversation with each other. And submit the answers before you hangup
+                            the call.</p>
+
+                        <!-- </div> -->
+                        <div style="height: 100vh">
+                            <iframe id="study-instructions-iframe" src="" frameborder="0"
+                                style="overflow:hidden;height:100%;width:100%" height="100%" width="100%"></iframe>
                         </div>
                     </div>
 
-                    <div class="card border-dark mb-3" style="margin-top: 30px" id="study-instructions">
-                        <div class="card-body text-dark">
-                            <h5 class="card-title text-center"><b>Study Specific Instructions</b></h5>
-                            <h6 class="card-title text-center" style="color: firebrick;"><b>Please read the
-                                    instructions carefully!</b></h6><br>
-                            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Velit totam asperiores
-                                veritatis excepturi, alias porro quod, dicta sapiente amet quae dolorem beatae sed
-                                accusantium nemo repellendus illo recusandae voluptate molestiae.</p>
-                        </div>
-                    </div>
-                    <div class="callButton"><button id="callButton" data-toggle="tooltip" data-placement="right"
-                            title="Call">
+                    <div class="callButton" id="call-button" style="padding-bottom: 20px;">
+                        <h5>Call</h5>
+                        <button id="callButton" data-toggle="tooltip" data-placement="right" title="Call">
                             <img id="image-call" src="../assets/call-white-48dp.svg" />
-                        </button></div>
+                        </button>
+                    </div>
                     <audio id="local-audio" controls autoplay muted style="display: none;"></audio>
                     <div class="audio-buttons" id="audio-buttons">
                         <div id="progress"><label>Duration</label>&nbsp;&nbsp;<span id="timer">
                                 00:00</span>&nbsp;&nbsp;
-                            <!-- <button id="hangupButton" class="btn btn-outline-danger">Hang Up</button> -->
-
-
-                            <!-- <div>
-                                                                                            <div class="label">Remote Audio</div>
-                                                                                                <audio id="remote-audio" controls autoplay></audio>
-                                                                                            </div> 
-                                                                                         </div> -->
                         </div>
                         <div class="hangupButton"><button id="hangupButton" data-toggle="tooltip" data-placement="right"
                                 title="Hangup">
@@ -155,32 +152,7 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Modal verification code -->
-                    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
-                        aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLabel">Thank you for the Participation</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body" id="myModalBody">
-                                    <div id="modalBodyMessage">
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button id="copy" data-clipboard-target="#verificationCode"
-                                        class="btn btn-secondary mr-auto">
-                                        Copy</button>
-                                    <button type="button" id="modalButton" class="btn btn-secondary"
-                                        data-dismiss="modal">Close</button>
-                                    <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+
                     <div class="toast ended" role="alert" aria-live="assertive" aria-atomic="true" data-delay="6000"
                         data-animation="true">
                         <div class="toast-header">
@@ -190,38 +162,47 @@
                             </button>
                         </div>
                     </div>
-                    <!-- <div id="rating_page" style="display: none;">
-                        <iframe src="./conversation-test/rating_scale.html" style="overflow:hidden;height:100%;width:100%" height="100%" width="100%" frameborder="0"></iframe>
-                    </div> -->
+
                     <section id="scenario-iframe">
-                        <div id="caller-iframe">
-                            <iframe src="../scenarios/scenario1/scenario1_caller.html"
-                                style="overflow:hidden;height:100%;width:100%" height="100%" width="100%"
-                                frameborder="0"></iframe>
+                        <div id="caller-iframe" style="height: 100vh;overflow: hidden;">
+                            <iframe id="caller" src="" style="overflow:hidden;height:100%;width:100%" height="100%"
+                                width="100%" frameborder="0"></iframe>
                         </div>
-                        <div id="receiver-iframe">
-                            <iframe src="../scenarios/scenario1/scenario1_receiver.html"
-                                style="overflow:hidden;height:100%;width:100%" height="100%" width="100%"
-                                frameborder="0"></iframe>
+                        <div id="receiver-iframe" style="height: 100vh;overflow: hidden;">
+                            <iframe id="receiver" src="" style="overflow:hidden;height:100%;width:100%" height="100%"
+                                width="100%" frameborder="0"></iframe>
                         </div>
                     </section>
+
                     <div class="feedback card border-light" id="feedback-div">
                         <div class="card-body text-dark">
-                            <form id="feedback" class="form-group" onsubmit="return false">
-                                <h3>Please leave feedback about the session</h3>
-                                <h6 class="card-title">1. Were you able to follow the test instructions?</h6>
+                            <h2>Feedback about the test</h1>
+                                <form id="feedback" class="form-group" onsubmit="return false">
+                                    <h5>Please answer the questions below.</h5>
+                                    <h6 class="card-title">1. Were you able to follow the test instructions?</h6>
 
-                                <p><label for="Yes"><input type="radio" name="feedback" id="" value="Yes">
-                                        Yes</label></p>
-                                <p><label for="No"><input type="radio" name="feedback" id="" value="No">
-                                        No</label></p>
-                                <p><textarea rows="4" class="form-control" name="comment" form="feedback"
-                                        placeholder="Enter your comments here"></textarea>
-                                    <small id="passwordHelpBlock" class="form-text text-muted">
-                                        Please enter feedback on your conversation test and tasks
-                                    </small></p>
+                                    <p><label for="Yes"><input type="radio" name="follow" id="" value="Yes" required />
+                                            Yes</label></p>
+                                    <p><label for="No"><input type="radio" name="follow" id="" value="No">
+                                            No</label></p>
 
-                            </form>
+                                    <h6>2. Did the other person in the call stick to given scenarios?</h6>
+                                    <p><label for="Yes"><input type="radio" name="out-scope" id="" value="Yes"
+                                                required />
+                                            Yes</label></p>
+                                    <p><label for="No"><input type="radio" name="out-scope" id="" value="No">
+                                            No</label></p>
+
+                                    <h6>3. Please give feedback about the session</h6>
+                                    <p><textarea rows="4" class="form-control" name="comment" form="feedback"
+                                            placeholder="Enter your comments here" required></textarea>
+                                        <small id="passwordHelpBlock" class="form-text text-muted">
+                                            Please enter feedback on your conversation test and tasks
+                                        </small>
+                                    </p>
+                                    <p><button type="submit" id="feedBackButton" class="btn btn-outline-success"
+                                            onclick="feedBackAnswer()">Submit</button></p>
+                                </form>
                         </div>
                     </div>
                     <div class="question card border-light " id="question-div">
@@ -229,7 +210,8 @@
                             <form id="question" onsubmit="return false">
                                 <h3>Rate the Conversation Quality!</h3>
                                 <h6 class="card-title">1. How do you rate the
-                                    <b>overall quality</b> of the conversation you had?</h6>
+                                    <b>overall quality</b> of the conversation you had?
+                                </h6>
                                 <table class="table table-borderless" id="table">
                                     <thead>
                                         <tr>
@@ -242,25 +224,29 @@
                                             <td>
                                                 <label for="Excellent"><input type="radio" name="rating" id=""
                                                         value="Excellent" required>
-                                                    Excellent</label></td>
+                                                    Excellent</label>
+                                            </td>
                                             <td>5</td>
                                         </tr>
                                         <tr>
                                             <td>
                                                 <label for="Good"><input type="radio" name="rating" id="" value="Good">
-                                                    Good</label></td>
+                                                    Good</label>
+                                            </td>
                                             <td>4</td>
                                         </tr>
                                         <tr>
                                             <td>
                                                 <label for="Fair"><input type="radio" name="rating" id="" value="Fair">
-                                                    Fair</label> </td>
+                                                    Fair</label>
+                                            </td>
                                             <td>3</td>
                                         </tr>
                                         <tr>
                                             <td>
                                                 <label for="Poor"><input type="radio" name="rating" id="" value="Poor">
-                                                    Poor</label> </td>
+                                                    Poor</label>
+                                            </td>
                                             <td>2</td>
                                         </tr>
                                         <tr>
@@ -272,7 +258,7 @@
                                     </tbody>
                                 </table>
                                 <button type="submit" id="answerButton" class="btn btn-outline-success"
-                                    onclick="answer()">Submit</button>
+                                    onclick="ratingAnswer()">Submit</button>
                             </form>
                         </div>
                     </div>
