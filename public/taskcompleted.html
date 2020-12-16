@@ -43,10 +43,20 @@
             </div>
         <h1 class="mr-3 pr-3 align-top border-right inline-block align-content-center">Success</h1>
         <div class="inline-block align-middle">
+            <h2>Please copy the verification code: <p id="code"></p></h2>
             <h2 class="font-weight-normal lead" id="desc">The task completed, please go back to Amazon Mturk.</h2>
         </div>
     </div>
-    <script src="./user-user/js/app.js"></script>
+    <!-- <script src="./user-user/js/app.js"></script> -->
 </body>
-
+<script>
+    const queryString = window.location.search;
+    // console.log("queryString", queryString);
+    const urlParams = new URLSearchParams(queryString);
+    let hash = urlParams.get('code');
+    //  $('#modalBodyMessage')
+    //         .html("Verification code: " + "<div id='verificationCode' style='color: #0275d8;'> " + hash + "</div>");
+    //  $('#exampleModal').modal('show');   
+    document.getElementById('code').innerHTML = hash;     
+</script>
 </html>
