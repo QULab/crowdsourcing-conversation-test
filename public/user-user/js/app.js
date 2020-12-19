@@ -89,7 +89,7 @@ let packetsLost;
 let packetLossArray = [];
 let averagePacketLoss;
 let rArray = [];
-        let cArray = [];
+let cArray = [];
 
 let browser = (function (agent) {
     switch (true) {
@@ -166,6 +166,7 @@ let noiseFileName;
 let loadConfig = false;
 let feedback = new Object;
 let dArray = [];
+let qual_answers;
 
 const url = window.location.href;
 console.log("url", url);
@@ -228,7 +229,7 @@ class MyDelayNode extends GainNode {
 async function fetchJobConfig() {
     let localUrl = "http://localhost:3000/jobConfig";
     let serverUrl = "https://webrtc.pavanct.com/jobConfig"
-    const response = await fetch(serverUrl);
+    const response = await fetch(localUrl);
     const data = await response.json();
     console.log({ data });
     data.data.forEach(e => {
@@ -329,7 +330,7 @@ function acceptCall() {
     audio4.currentTime = 0;
     receiverIframe.style.display = "block";
     instructions.style.display = "none";
-    
+
 }
 
 socket.on("called", function () {
@@ -744,7 +745,7 @@ rtcPeerConnection.oniceconnectionstatechange = function () {
 // call hangup
 function hangup() {
     // let a = $("#caller").contents().find("form");
-    
+
     // let b = $("#receiver").contents().find("form");
     // console.log(a);
 
@@ -802,11 +803,11 @@ function hangup() {
 }
 
 // $('#caller').load(function () {
-    
+
 //         let x = JSON.stringify($("body").serializeArray());
 //         console.log({ x });
 //         return false;
-    
+
 // });
 
 function scenarioAnswer() {
@@ -814,8 +815,8 @@ function scenarioAnswer() {
     // let x = document.querySelector('scenario-form.scenario-form').elements;
     form.onsubmit = function (event) {
         event.preventDefault();
-        
-        $("#caller").contents().find('input').each(function(){
+
+        $("#caller").contents().find('input').each(function () {
             let p = {
                 name: this.name,
                 value: this.value
@@ -832,11 +833,11 @@ function scenarioAnswer() {
             rArray.push(p);
         });
         // let x = JSON.stringify($("#caller").serializeArray());
-        console.log({cArray});
+        console.log({ cArray });
         console.log({ rArray });
         hangup();
     }
-    
+
 }
 
 function feedBackAnswer() {
@@ -845,13 +846,13 @@ function feedBackAnswer() {
         event.preventDefault();
         console.log("form elements", form.elements);
         let x = JSON.stringify($("form").serializeArray());
-       
+
         x = JSON.parse(x);
         console.log({ x })
         // console.log("answer", form.elements["feedback"].value);
         let follow = x.find(a => a.name === "follow");
-        let outScope = x.find(a=> a.name === "out-scope");
-        let text = x.find(a=> a.name === "comment");
+        let outScope = x.find(a => a.name === "out-scope");
+        let text = x.find(a => a.name === "comment");
         feedback = {
             follow: follow,
             outScope: outScope,
@@ -928,68 +929,76 @@ function sendData() {
     });
 
     // if (rttArr.length) {
-        // post data to backend after hangup
-        const data = {
-            verificationCode: fullhash,
-            config: {
-                study_name: study_name,
-                instruction_html: instructionHtml,
-                html_party_caller: htmlPartyCaller,
-                html_party_receiver: htmlPartyReceiver,
-                rating_scale_html: ratingScaleHtml,
-                scenario: jobConfig.scenario,
-                isCaller: isCaller,
-                noise: noise,
-                delay: delay,
-                SNR_DB: SNR_DB,
-                delay_time_sec: delayTime,
-                packet_loss: pl,
-                probability_packet_loss: ppl,
-                burst_rate: burstRate,
-                echo: echo,
-                attenuation: attenuation,
-                delay_echo_time_sec: delayEchoTime,
-            },
-            statistics: {
-                AverageTotalTripTime: averageLatency,
-                rttArr: rttArr,
-                averagePacketLoss: averagePacketLoss,
-            },
-            url: url,
-            roomNumber: roomNumber,
-            browser: browser,
-            os: os,
-            type: "USER2USER",
-            scaleAnswer: scaleAnswer,
-            receiverAnswers: rArray,
-            callerAnswers: cArray,
-            feedback: feedback
-        };
-        console.log("data sent", data);
-        let localPost = 'http://localhost:3000/stats';
-        let serverPost1 = 'https://conversation-test.qulab.org/stats';
-        let serverPost2 = 'https://webrtc.pavanct.com/stats';
+    // post data to backend after hangup
+    const data = {
+        verificationCode: fullhash,
+        config: {
+            study_name: study_name,
+            instruction_html: instructionHtml,
+            html_party_caller: htmlPartyCaller,
+            html_party_receiver: htmlPartyReceiver,
+            rating_scale_html: ratingScaleHtml,
+            scenario: jobConfig.scenario,
+            isCaller: isCaller,
+            noise: noise,
+            delay: delay,
+            SNR_DB: SNR_DB,
+            delay_time_sec: delayTime,
+            packet_loss: pl,
+            probability_packet_loss: ppl,
+            burst_rate: burstRate,
+            echo: echo,
+            attenuation: attenuation,
+            delay_echo_time_sec: delayEchoTime,
+        },
+        statistics: {
+            AverageTotalTripTime: averageLatency,
+            rttArr: rttArr,
+            averagePacketLoss: averagePacketLoss,
+        },
+        url: url,
+        roomNumber: roomNumber,
+        browser: browser,
+        os: os,
+        type: "USER2USER",
+        scaleAnswer: scaleAnswer,
+        receiverAnswers: rArray,
+        callerAnswers: cArray,
+        feedback: feedback,
+        qualification_answers: qual_answers,
+    };
+    console.log("data sent", data);
+    let localPost = 'http://localhost:3000/stats';
+    let serverPost1 = 'https://conversation-test.qulab.org/stats';
+    let serverPost2 = 'https://webrtc.pavanct.com/stats';
 
-        fetch(localPost, {
-            method: 'POST', // or 'PUT'
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
+    fetch(localPost, {
+        method: 'POST', // or 'PUT'
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            console.log('Success:', data);
         })
-            .then((response) => response.json())
-            .then((data) => {
-                console.log('Success:', data);
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-        location.href = `../taskcompleted.html?code=${hash}`;
-        // document.getElementById("modalButton").onclick = function () {
-        //     console.log("task completed");
-        //     location.href = `../taskcompleted.html?code=${hash}`;
-        // };
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    location.href = `../taskcompleted.html?code=${hash}`;
+    // document.getElementById("modalButton").onclick = function () {
+    //     console.log("task completed");
+    //     location.href = `../taskcompleted.html?code=${hash}`;
+    // };
     // }
+}
+
+function getQualAnswers() {
+    if(sessionStorage.hasOwnProperty('qual_test')){
+        let answers = sessionStorage.getItem('qual_test');
+        qual_answers = JSON.parse(answers);
+    } 
 }
 
 

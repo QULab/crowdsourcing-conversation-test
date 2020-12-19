@@ -35,35 +35,114 @@
                             Please complete the <b>Qualification test</b> before moving onto the conversation test.
                         </p>
                     </div>
+                    <div class="agree" id="agree">
+                        <div class="text-center">
+                            <span>
+                                <input type="checkbox" name="terms" onclick="change_button(this,'start')">
+                                <label for="terms" style="color:#337ab7">
+                                    <a href="#" rel="noopener noreferrer">I agree to participate
+                                        in the test and agree the to terms presented above</a>
+                                </label>
+                            </span>
+                            <span class="start-test">
+                                <button type="button" name="Start Test" id="start" disabled="disabled"
+                                    class="btn btn-outline-success">
+                                    Start Test
+                                </button>
+                            </span>
+
+                        </div>
+                    </div>
                 </div>
                 <div class="qualification_test" id="qualification_test">
-                    <form id="question" class="qualification_form" onsubmit="return false">
+                    <!-- <form id="question" class="qualification_form" onsubmit="return false">
                         <iframe src="./401_env/qual_and_setup.html" frameborder="0"
                             style="overflow:hidden;height:100%;width:100%" height="100%" width="100%"
                             class="qual-iframe"></iframe>
                         <div class="text-center"><button type="submit" id="answerButton" class="btn btn-outline-success"
                                 onclick="answer()">Submit</button>
                         </div>
+                    </form> -->
+                    <form id="question" class="qualification_form" onsubmit="return false">
+                        <fieldset class="qualificationFieldset"><label>1.&nbsp;What is your gender?</label>
+                            <div class="radio">
+                                <label><input type="radio" name="1_gender" value="M" required> Male</label>
+                            </div>
+                            <div class="radio">
+                                <label><input type="radio" name="1_gender" value="F"> Female</label>
+                            </div>
+                            <div class="radio disabled">
+                                <label><input type="radio" name="1_gender" value="O"> Other</label>
+                            </div>
+                        </fieldset>
+                        <fieldset class="qualificationFieldset"><label>2.&nbsp;In what year were you born? </label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="2_birth_year" required>
+                            </div>
+                        </fieldset>
+
+                        <fieldset class="qualificationFieldset"><label>3.&nbsp;What is your mother tongue? </label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="3_mother_tongue" required>
+                            </div>
+                        </fieldset>
+                        <fieldset class="setupFieldset">
+                            <h3>Setup Test</h3>
+                            <label>Please adjust the level of your computer to <b>a
+                                    comfortable level</b> so
+                                that you hear the following audio sample very well.</label>
+
+                            <p> <span class="baudio" id="volume2">
+                                <audio src="https://audiosamplesp808.blob.core.windows.net/p808-assets/clips/signal_level.wav" controls></audio>
+                                </span>
+                            </p>
+
+                            <div class="alert alert-danger" role="alert">
+                                <b>NOTE:</b> Missing this step can strongly affect quality of your answer.
+                            </div>
+
+                            <div class="alert alert-warning" role="alert">
+                                After adjusting the level, you are not allowed to change the volume anymore. Otherwise
+                                your response will be
+                                rejected.
+                            </div>
+                        </fieldset>
+                        <!-- Device Check -->
+
+                        <div class="device-check">
+                            <div>
+                                <h3>
+                                    <a data-target="#device_check">Listening device check</a>
+                                </h3>
+                            </div>
+                            <div id="device_check">
+                                <div>
+                                    <b>Introduction</b>
+                                    <p>We need to check your listening device. It is an automated test using your
+                                        Web-browser functionality.
+                                        Please click on <b>Start</b>.
+                                        After that, you might see a popup message from your browser asking for allowance
+                                        to
+                                        use your
+                                        microphone.
+                                        Please click on <b>Allow</b> (on some of smartphones there will be no message).
+                                        <u>We do not process
+                                            or record any audio with your microphone</u>.
+                                    <div class="center">
+                                        <button type="button" class="btn btn-primary center"
+                                            onclick="startHeadsetCheck()">Start</button>
+                                        <div id="status"> </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!-- Device Check ends-->
+                        <button type="submit" id="answerButton" class="btn btn-outline-success"
+                                onclick="answer()">Continue</button>
                     </form>
                 </div>
-                <div class="agree" id="agree">
-                    <div class="text-center">
-                        <span>
-                            <input type="checkbox" name="terms" onclick="change_button(this,'start')">
-                            <label for="terms" style="color:#337ab7">
-                                <a href="#" rel="noopener noreferrer">I agree to participate
-                                    in the test and agree the to terms presented above</a>
-                            </label>
-                        </span>
-                        <span class="start-test">
-                            <button type="button" name="Start Test" id="start" disabled="disabled"
-                                class="btn btn-outline-success">
-                                Start Test
-                            </button>
-                        </span>
 
-                    </div>
-                </div>
             </div>
         </div>
     </div>

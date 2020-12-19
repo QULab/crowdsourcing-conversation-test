@@ -108,20 +108,9 @@
             <p><input type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm"
                     name="comments">
             </p>
-            <!-- <div style="text-align: center;" id="scenario-button-div"><button type="submit" id="scenario-button"
-                        onclick="submitScenarioAnswer()" class="btn btn-outline-success">Submit</button></div> -->
         </div>
 
     </div>
 </body>
-<script>
-    function submitScenarioAnswer() {
-        let form = document.getElementById('scenario-form');
-        form.onsubmit = function (event) {
-            event.preventDefault();
-            console.log("form elements", form.elements);
-        }
-    }
-</script>
 
 </html>

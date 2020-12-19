@@ -2,6 +2,7 @@ const qualTest = document.getElementById('qualification_test');
 const description = document.getElementById('description');
 const title = document.getElementById('title');
 const agree = document.getElementById('agree');
+let qual_test = false;
 
 qualTest.style.display = "none";
 let browser = (function (agent) {
@@ -26,7 +27,7 @@ const queryString = window.location.search;
 console.log("queryString", queryString);
 
 let consent;
-let supported = true;
+let supported = false;
 
 if (browser === 'ie') {
     supported = false;
@@ -64,6 +65,9 @@ console.log(roomNumber);
 let type = urlParams.get('type');
 console.log(type);
 
+if (sessionStorage.hasOwnProperty('qual_test'))
+    sessionStorage.removeItem("qual_test");
+
 function change_button(checkbx, button_id) {
     var btn = document.getElementById(button_id);
     if (checkbx.checked == true) {
@@ -78,11 +82,12 @@ if (localStorage.hasOwnProperty('consent')) {
     console.log("localStorage consent found", consent);
 
     if (roomNumber != null && type.toString() == "USER2USER") {
-        if (supported) {
-            location.href = "../user-user/" + queryString;
-        } else {
-            location.href = "../unsupported.html";
-        }
+
+        // if (supported) {
+        location.href = "../user-user/" + queryString;
+        // } else {
+        //     location.href = "../unsupported.html";
+        // } 
     }
 
     if (fileName != null && type.toString() == "USER2FILE") {
@@ -94,20 +99,7 @@ if (localStorage.hasOwnProperty('consent')) {
     }
 } else {
 
-    function answer() {
-        let form = document.getElementById('question');
-        form.onsubmit = function (event) {
-            event.preventDefault();
-            //send Data
-            if (supported) {
-                // consent = 1;
-                localStorage.setItem("consent", "1");
-                location.href = "../user-user/" + queryString;
-            } else {
-                location.href = "../unsupported.html";
-            }
-        }
-    }
+    // no consent
 
     if (roomNumber != null && type.toString() == "USER2USER") {
 
@@ -136,6 +128,69 @@ if (localStorage.hasOwnProperty('consent')) {
                 location.href = "../unsupported.html";
             }
         };
+    }
+}
+
+const constraints = {
+    audio: true,
+    video: false
+};
+
+/*
+    functions responsible to headset check
+*/
+function isHeadsetOn(webrtc_raw) {
+    keywords = ["headphone", "headset", "airpod", "usb audio device"]
+    for (var i = 0; i < keywords.length; i++) {
+        if (webrtc_raw.includes(keywords[i])) {
+            qual_test = true;
+            document.getElementById('answerButton').disabled = false;
+            return true;
+        }
+
+    }
+    return false;
+}
+
+document.getElementById('answerButton').disabled = true;
+
+const startHeadsetCheck = async function () {
+    $('#status').html("waiting for allowance...")
+    await navigator.mediaDevices.getUserMedia(constraints);
+
+    navigator.mediaDevices.enumerateDevices()
+        .then(devices => {
+            console.log({ devices });
+            var device_list = "";
+            for (var i = 0; i < devices.length; i++) {
+                if (devices[i].kind.startsWith('audio')) {
+                    device_list = device_list + devices[i].kind + ":" + devices[i].label.toLowerCase() + "+";
+                }
+            }
+            headsetDetected = isHeadsetOn(device_list);
+            $("#webrtc_raw").val(device_list);
+            $("#use_headset").val(headsetDetected);
+            $("#status").html("Done. Please continue.");
+
+        });
+}
+
+function answer() {
+    let form = document.getElementById('question');
+    form.onsubmit = function (event) {
+        event.preventDefault();
+        let x = JSON.stringify($(form).serializeArray());
+        x = JSON.parse(x);
+        console.log(x);
+        x = JSON.stringify(x);
+        if (qual_test) {
+            // consent = 1;
+            // localStorage.setItem("consent", "1");
+            sessionStorage.setItem("qual_test", x);
+            location.href = "../user-user/" + queryString;
+        } else {
+            location.href = "../unsupported.html";
+        }
     }
 }
 

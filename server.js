@@ -167,6 +167,7 @@ let statSchema = new schema({
   feedback: { type: String }, 
   callerAnswers: { type: JSON },
   receiverAnswers: { type: JSON },
+  qualification_answers: { type: JSON },
 }, { collection: "webrtc-stats", timestamps: true, strict: false });
 
 
