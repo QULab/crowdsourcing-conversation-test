@@ -4,16 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Caller Scenario 1</title>
+    <title>Information on flights</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <style>
-        html,
-        body {
-            margin: 20px;
+        body{
+            margin: 10px;
         }
-
-       .scenario {
+        .scenario {
             width: fit-content;
             padding: 10px;
         }
@@ -37,45 +35,50 @@
             width: 200px;
         }
     </style>
-</head>
+    </head>
 
 <body>
+    
     <div class="scenario">
-        <h3>British Rail Travel Information</h3>
-        <h4>Your name: Thompson</h4>
-        <h5>Intended journey: London King's Cross to Inverness</h5>
-        <h5>
-            <p>Date: July 20th</p>
-            <p>Night train connection, sleeper
+        <h3>Topic: Information on Flights</h3>
+        <h5>Your name is Parker</h5>
+        <h5>Your intended journey is from New York JFK to London Heathrow</h5>
+        <p>These are details of your travel</p>
+        <h6 style="margin-bottom: 20px;">
+            <p>
+                Date: June 23rd
             </p>
-            <p>Through train if possible
+            <p>
+                Morning Flight
             </p>
-        </h5>
+            <p>Direct Flight</p>
+        </h6>
         <p>
             Please listen to the agent and fill the boxes below
         </p>
-        <div class="get-info">
+        <div class="get-info" >
             <div>
-                <label>Price : </label><input type="text" class="form-control" aria-label="Small" name="price"
-                    aria-describedby="inputGroup-sizing-sm">&nbsp;£
+                <label for="departure"><b>Departure: </b></label><input type="text" placeholder="time" class="form-control"
+                    aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="departure">&nbsp; h
             </div>
             <div>
-                <label>Departure time : </label><input type="text" class="form-control" aria-label="Small"
-                    name="departure" aria-describedby="inputGroup-sizing-sm">&nbsp;h
+                <label for="arrival"><b>Arrival: </b></label><input type="text" class="form-control"
+                    aria-label="Small" placeholder="time" aria-describedby="inputGroup-sizing-sm" name="arrival">&nbsp; h
             </div>
-            <div>
-                <label>Arrival Time: </label><input type="text" class="form-control" aria-label="Small" name="arrival"
-                    aria-describedby="inputGroup-sizing-sm">&nbsp;h
-            </div>
-            <div>
-                <label>Train Number: </label><input type="text" class="form-control" aria-label="Small"
-                    name="train-number" aria-describedby="inputGroup-sizing-sm">
-            </div>
+            <div><label for="fight-number"><b>Flight number: </b></label><input type="text" name="flight-number" class="form-control"
+                    aria-label="Small" aria-describedby="inputGroup-sizing-sm"></div>
         </div>
         <p>Please give these reservation details to agent when he asks you</p>
-        <h6>Reservation: One berth in a sleeping-car</h6>
-        <h6>First class</h6>
-        <h6>Non-smoker</h6>
+        <div class="reservation-info">
+            <h6>Reservation: One Seat, Economy Class</h6>
+            <h6>Address: 47 Downtown New Jersey</h6>
+        </div>
+        <p>Ask this question after you hear him say any other questions?</p>
+        <div class="question" style="display: block;width: 300px;">
+            <h6>How long is the flight and what are the best spots in the city?</h6>
+            <label for="answer"><textarea type="text" name="answer" class="form-control"  cols="60"
+                    aria-label="Small" aria-describedby="inputGroup-sizing-sm"></textarea></label>
+        </div>
     </div>
 </body>
 

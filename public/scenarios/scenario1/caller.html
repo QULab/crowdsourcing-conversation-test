@@ -9,65 +9,73 @@
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <style>
         html,
-
-        .instructions {
-            text-align: center;
-            margin-bottom: 30px;
+        body {
+            margin: 20px;
         }
 
-        #container {
-            width: 90vw;
-        }
-
-        .scenario {
+       .scenario {
             width: fit-content;
+            padding: 10px;
+        }
+        .get-info{
+            display: block;
+            margin-bottom: 20px;
+        }
+        .get-info > div{
+            display: flex;
+            flex: 1 1 1;
+            margin-bottom: 10px;
+            align-items: center;
         }
 
-        table.center {
-            margin-left: auto;
-            margin-right: auto;
+        .get-info > div > label{
+            width: 200px;
+        }
+
+        .get-info > div > input{
+            margin-left: 10px;
+            width: 200px;
         }
     </style>
 </head>
 
 <body>
-    <div id="container">
-
-        <div class="scenario">
-
-            <img src="../../../assets/ITU/Caller.PNG" alt="">
-            <h1>Practice: Travel Agent</h1>
-            <h2>Your name: Walker</h2>
-            <img src="../../../assets/ITU/reason_for_call.PNG" alt="">
-            <span>One week last minute trip to the Mediterranean</span><br>
-            <img src="../../../assets/ITU/condition_for_exchange.PNG" alt="">
-            <p>Departing tomorrow</p>
-            <p>Not to Spain</p>
-            <p>As cheap as possible</p>
-            <img src="../../../assets/ITU/required_info_caller.PNG" alt="">
-            <p>Price : <input type="text" class="form-control" aria-label="Small"
-                    aria-describedby="inputGroup-sizing-sm" name="price"> £</p>
-            <p>Day of departure : <input type="text" class="form-control" aria-label="Small"
-                    aria-describedby="inputGroup-sizing-sm" name="departure-date"> time <input type="text"
-                    class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm"
-                    name="departure-time"></p>
-            <p>Destination: <input type="text" class="form-control" aria-label="Small"
-                    aria-describedby="inputGroup-sizing-sm" name="destination"></p>
-            <p>Hotel: <input type="text" class="form-control" aria-label="Small" name="hotel-name"
-                    aria-describedby="inputGroup-sizing-sm"></p>
-            <img src="../../../assets/ITU/pass_info_to_reciver_from_caller.PNG" alt="">
-            <p>Reservation:
-            <p>Flying from Manchester</p>
-            <p>Mastercard</p>
-            <p>Credit card number: 9685 4712 0951 2781</p>
-            <p>Valid till 10/99</p>
+    <div class="scenario">
+        <h3>British Rail Travel Information</h3>
+        <h4>Your name: Thompson</h4>
+        <h5>Intended journey: London King's Cross to Inverness</h5>
+        <h5>
+            <p>Date: July 20th</p>
+            <p>Night train connection, sleeper
             </p>
-            <img src="../../../assets/ITU/both.PNG" alt="">
-            <p>How long before the departure time do I have to check in?</p>
-            <p><input type="text" class="form-control" name="departure-time" aria-label="Small"
-                    aria-describedby="inputGroup-sizing-sm">
+            <p>Through train if possible
             </p>
+        </h5>
+        <p>
+            Please listen to the agent and fill the boxes below
+        </p>
+        <div class="get-info">
+            <div>
+                <label>Price : </label><input type="text" class="form-control" aria-label="Small" name="price"
+                    aria-describedby="inputGroup-sizing-sm">&nbsp;£
+            </div>
+            <div>
+                <label>Departure time : </label><input type="text" class="form-control" aria-label="Small"
+                    name="departure" aria-describedby="inputGroup-sizing-sm">&nbsp;h
+            </div>
+            <div>
+                <label>Arrival Time: </label><input type="text" class="form-control" aria-label="Small" name="arrival"
+                    aria-describedby="inputGroup-sizing-sm">&nbsp;h
+            </div>
+            <div>
+                <label>Train Number: </label><input type="text" class="form-control" aria-label="Small"
+                    name="train-number" aria-describedby="inputGroup-sizing-sm">
+            </div>
         </div>
+        <p>Please give these reservation details to agent when he asks you</p>
+        <h6>Reservation: One berth in a sleeping-car</h6>
+        <h6>First class</h6>
+        <h6>Non-smoker</h6>
     </div>
 </body>
 

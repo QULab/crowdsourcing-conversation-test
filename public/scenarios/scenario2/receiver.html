@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Receiver Scenario 1</title>
+    <title>Information on flights</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <style>
-         body {
+        body {
             margin: 10px;
         }
     
@@ -37,72 +36,61 @@
         }
     </style>
 </head>
-
 <body>
-    <div id="container">
-
-
-        <div class="scenario">
-            <h4>British Rail travel information</h4>
-            <h5>Your name: British Rail travel service</h5>
-            <h6>Timetable: London to Inverness</h6>
+    <div class="scenario">
+        <h3>Topic: Information on Flights</h3>
+        <h5>Your name is NY JFK flight information Agent</h5>
+        <h5>Flight Flight schedule: New York JFK to London Heathrow</h5>
+        <table class="table center">
+            <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">Lufthansa</th>
+                    <th scope="col">British Airways</th>
+                    <th scope="col">Lufthansa</th>
+                </tr>
+                <tr>
+                    <td>Flight Number</td>
+                    <td>LH 2615</td>
+                    <td>BA 381</td>
+                    <td>LH 413</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td></td>
+                    <td>Dep. 19:30 h</td>
+                    <td>Dep. 10:15 h</td>
+                    <td>Dep. 10:15 h</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>
+            Please ask the customer and fill the boxes below
+        </p>
+        <div class="get-info">
+            <h6>Reservation</h6>
             <div>
-                <table class="table center">
-                    <thead>
-                        <tr>
-                            <th scope="col">Train number</th>
-                            <th scope="col"></th>
-                            <th scope="col">IC 1127</th>
-                            <th scope="col">IC 829</th>
-                            <th scope="col">IC 1511</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>London King's Cross</td>
-                            <td>Dep.</td>
-                            <td>19:18 h</td>
-                            <td>20:50 h</td>
-                            <td>22:09 h</td>
-                        </tr>
-                        <tr>
-                            <td>York</td>
-                            <td>Arr.</td>
-                            <td></td>
-                            <td>21:49 h</td>
-                            <td></td>
-                        </tr>
-                    </tbody>
-                </table>
+                <label for="departure"><b>Name: </b></label><input type="text"  class="form-control"
+                    aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="name">
             </div>
-            <p>
-                Please ask the customer and fill the boxes below
-            </p>
-            <div class="get-info">
-                <h5>Reservation: </h5>
-                <div>   
-                    <label>Name : </label><input type="text" class="form-control" aria-label="Small" name="name"
-                        aria-describedby="inputGroup-sizing-sm">
-                </div>
-                <div>
-                    <label>Number of berths: </label><input type="text" class="form-control" aria-label="Small" name="berths"
-                        aria-describedby="inputGroup-sizing-sm">
-                </div>
-                
-                <div>
-                    <label>Class: </label><input type="text" class="form-control" aria-label="Small" name="class"
-                        aria-describedby="inputGroup-sizing-sm">
-                </div>
-                <div>
-                    <label>Smoker: </label><input type="text" class="form-control" aria-label="Small" name="smoker"
-                        aria-describedby="inputGroup-sizing-sm">
-                </div>
-                
+            <div>
+                <label for="arrival"><b>Address: </b></label><input type="text" class="form-control" aria-label="Small"
+                     aria-describedby="inputGroup-sizing-sm" name="address">
             </div>
+            <div><label for="fight-number"><b>Telephone Number: </b></label><input type="text" name="number"
+                    class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm"></div>
+            <div><label for="fight-number"><b>Number of seats: </b></label><input type="text" name="seats" class="form-control"
+                    aria-label="Small" aria-describedby="inputGroup-sizing-sm"></div>
+                    <div><label for="fight-number"><b>Class: </b></label><input type="text" name="class" class="form-control"
+                            aria-label="Small" aria-describedby="inputGroup-sizing-sm"></div>
+        </div>
+
+        <p>Any other questions?</p>
+        <div class="question" style="display: block;width: 300px;">
+            <label for="answer"><textarea type="text" name="question" class="form-control" cols="60" aria-label="Small"
+                    aria-describedby="inputGroup-sizing-sm"></textarea></label>
         </div>
     </div>
-    </div>
-    </div>
 </body>
-
 </html>
