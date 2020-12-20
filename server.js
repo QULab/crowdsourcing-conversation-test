@@ -168,7 +168,7 @@ let statSchema = new schema({
   callerAnswers: { type: JSON },
   receiverAnswers: { type: JSON },
   qualification_answers: { type: JSON },
-}, { collection: "webrtc-stats", timestamps: true, strict: false });
+}, { collection: "stats", timestamps: true, strict: false });
 
 
 let statModel = mongoose.model( "StatModel", statSchema);
