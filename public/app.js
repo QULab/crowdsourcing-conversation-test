@@ -21,7 +21,7 @@ console.log(window.navigator.userAgent.toLowerCase() + "\n" + browser);
 browser = browser.toString();
 console.log(browser);
 
-const browsers = ['edge', 'chome-edge', 'opera', 'safari'];
+const browsers = ['edge', 'chrome-edge', 'opera', 'safari', 'chromium based edge (dev or canary)'];
 
 const queryString = window.location.search;
 console.log("queryString", queryString);
