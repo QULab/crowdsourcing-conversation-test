@@ -91,11 +91,11 @@ if (localStorage.hasOwnProperty('consent')) {
     }
 
     if (fileName != null && type.toString() == "USER2FILE") {
-        if (supported) {
+        // if (supported) {
             location.href = "../user-test/" + queryString;
-        } else {
-            location.href = "../unsupported.html";
-        }
+        // } else {
+        //     location.href = "../unsupported.html";
+        // }
     }
 } else {
 
@@ -120,13 +120,13 @@ if (localStorage.hasOwnProperty('consent')) {
 
     if (fileName != null && type == "USER2FILE") {
         document.getElementById("start").onclick = function () {
-            if (supported) {
+            // if (supported) {
                 localStorage.setItem("consent", "1");
                 location.href = "../user-test/" + queryString;
-            }
-            else {
-                location.href = "../unsupported.html";
-            }
+            // }
+            // else {
+            //     location.href = "../unsupported.html";
+            // }
         };
     }
 }
