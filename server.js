@@ -150,7 +150,7 @@ const schema = mongoose.Schema;
 
 let statSchema = new schema({
   url: { type: String },
-  config: { type: JSON, required: true },
+  config: { type: JSON },
   roomNumber: { type: Number },
   verificationCode: { type: String, required: true },
   timestamp: { type: Date, default: Date.now },
