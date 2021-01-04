@@ -37,6 +37,10 @@ Start a Redis server with docker and network webrtc
 docker run --name webrtc-redis -d --network webrtc-redis redis redis-server --appendonly yes 
 ```
 
+Before running the app, please change the redis client in server.js file to hostname webrtc and port 6379.
+
+To run the app
+
 ```sh
 git clone https://gitlab.tubit.tu-berlin.de/pavanct/conversation-tests-with-webrtc.git # or clone your own fork
 cd conversation-tests-with-webrtc
