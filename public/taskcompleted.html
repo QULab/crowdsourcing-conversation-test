@@ -17,11 +17,46 @@
 
 <body>
     <div class="d-flex justify-content-center align-items-center" id="main">
+            <!-- Modal verification code -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Thank you for the Participation</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body" id="myModalBody">
+                            <div id="modalBodyMessage">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="copy" data-clipboard-target="#verificationCode" class="btn btn-secondary mr-auto">
+                                Copy</button>
+                            <button type="button" id="modalButton" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
         <h1 class="mr-3 pr-3 align-top border-right inline-block align-content-center">Success</h1>
         <div class="inline-block align-middle">
+            <h2>Please copy the verification code: <p id="code"></p></h2>
             <h2 class="font-weight-normal lead" id="desc">The task completed, please go back to Amazon Mturk.</h2>
         </div>
     </div>
+    <!-- <script src="./user-user/js/app.js"></script> -->
 </body>
-
+<script>
+    const queryString = window.location.search;
+    // console.log("queryString", queryString);
+    const urlParams = new URLSearchParams(queryString);
+    let hash = urlParams.get('code');
+    //  $('#modalBodyMessage')
+    //         .html("Verification code: " + "<div id='verificationCode' style='color: #0275d8;'> " + hash + "</div>");
+    //  $('#exampleModal').modal('show');   
+    document.getElementById('code').innerHTML = hash;     
+</script>
 </html>

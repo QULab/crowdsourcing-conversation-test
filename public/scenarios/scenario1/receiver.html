@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receiver Scenario 1</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <style>
+         body {
+            margin: 10px;
+        }
+    
+        .scenario {
+            width: fit-content;
+            padding: 10px;
+        }
+    
+        .get-info {
+            display: block;
+            margin-bottom: 20px;
+        }
+    
+        .get-info>div {
+            display: flex;
+            flex: 1 1 1;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        .get-info > div > label{
+            width: 200px;
+        }
+        .get-info>div>input {
+            margin-left: 10px;
+            width: 200px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+
+
+        <div class="scenario">
+            <h4>British Rail travel information</h4>
+            <h5>Your name: British Rail travel service</h5>
+            <h6>Timetable: London to Inverness</h6>
+            <div>
+                <table class="table center">
+                    <thead>
+                        <tr>
+                            <th scope="col">Train number</th>
+                            <th scope="col"></th>
+                            <th scope="col">IC 1127</th>
+                            <th scope="col">IC 829</th>
+                            <th scope="col">IC 1511</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>London King's Cross</td>
+                            <td>Dep.</td>
+                            <td>19:18 h</td>
+                            <td>20:50 h</td>
+                            <td>22:09 h</td>
+                        </tr>
+                        <tr>
+                            <td>York</td>
+                            <td>Arr.</td>
+                            <td></td>
+                            <td>21:49 h</td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p>
+                Please ask the customer and fill the boxes below
+            </p>
+            <div class="get-info">
+                <h5>Reservation: </h5>
+                <div>   
+                    <label>Name : </label><input type="text" class="form-control" aria-label="Small" name="name"
+                        aria-describedby="inputGroup-sizing-sm">
+                </div>
+                <div>
+                    <label>Number of berths: </label><input type="text" class="form-control" aria-label="Small" name="berths"
+                        aria-describedby="inputGroup-sizing-sm">
+                </div>
+                
+                <div>
+                    <label>Class: </label><input type="text" class="form-control" aria-label="Small" name="class"
+                        aria-describedby="inputGroup-sizing-sm">
+                </div>
+                <div>
+                    <label>Smoker: </label><input type="text" class="form-control" aria-label="Small" name="smoker"
+                        aria-describedby="inputGroup-sizing-sm">
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+</body>
+
+</html>

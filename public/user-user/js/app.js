@@ -1,6 +1,6 @@
 'use strict';
 
-const localAudio = document.querySelector('audio#local-audio');
+
 const hangupButton = document.querySelector('button#hangupButton');
 const divConsultingRoom = document.getElementById("consulting-room");
 const callButton = document.querySelector('button#callButton');
@@ -12,8 +12,28 @@ const answerButton = document.querySelector('button#answerButton');
 const buttons = document.getElementById('buttons');
 const instructions = document.getElementById('instructions');
 const studyInstructions = document.getElementById('study-instructions');
+const callerIframe = document.getElementById('caller-iframe');
+const receiverIframe = document.getElementById('receiver-iframe');
+const audioButtons = document.getElementById('audio-buttons');
+const feedbackDiv = document.getElementById('feedback-div');
+const questionDiv = document.getElementById('question-div');
+const scenarioButtonDiv = document.getElementById('scenario-button-div');
+const scenarioForm = document.getElementById('scenario-form');
+const callButtonDiv = document.getElementById('call-button');
 
-question.style.visibility = "hidden";
+let statInterval;
+let hangupCounter = 0;
+
+let localAudio = new Audio;
+localAudio = document.querySelector('audio#local-audio');
+
+scenarioButtonDiv.style.display = "none";
+callerIframe.style.display = "none";
+receiverIframe.style.display = "none";
+
+questionDiv.style.display = "none";
+feedbackDiv.style.display = "none";
+// question.style.visibility = "hidden";
 duration.style.visibility = "hidden";
 callButton.disabled = true;
 callButton.onclick = startCall;
@@ -22,8 +42,12 @@ callButton.onclick = startCall;
 
 // for call hangup
 hangupButton.disabled = true;
-hangupButton.style.visibility = 'hidden';
-hangupButton.onclick = hangup;
+audioButtons.style.display = 'none';
+// hangupButton.style.display = 'none';
+// hangupButton.style.visibility = 'hidden';
+hangupButton.onclick = endCall;
+
+
 
 // for call begin
 
@@ -34,13 +58,8 @@ let remoteStream;
 
 let iceServers = iceServers1;
 
-let streamConstraints = {
-    audio: {
-        // latency: 0,
-        echoCancellation: true,
-    }
-};
-let isCaller;
+let streamConstraints = { audio: { echoCancellation: true, } };
+let isCaller = false;
 let latencyArray = [];
 
 let audioContainer;
@@ -68,7 +87,9 @@ let rttArr = [];
 let resultArr = [];
 let packetsLost;
 let packetLossArray = [];
-let averagePacktLoss;
+let averagePacketLoss;
+let rArray = [];
+let cArray = [];
 
 let browser = (function (agent) {
     switch (true) {
@@ -97,6 +118,72 @@ else if (browsers.includes(browser)) {
     location.href = "../unsupported.html";
 }
 // browser();
+
+let os = "Unknown OS";
+if (navigator.userAgent.indexOf("Win") != -1) os =
+    "Windows OS";
+if (navigator.userAgent.indexOf("Mac") != -1) os =
+    "Macintosh";
+if (navigator.userAgent.indexOf("Linux") != -1) os =
+    "Linux OS";
+if (navigator.userAgent.indexOf("Android") != -1) os =
+    "Android OS";
+if (navigator.userAgent.indexOf("like Mac") != -1) os =
+    "iOS";
+os = os.toString();
+
+
+// $('#local-audio').on('timeupdate', function () {
+//     $('#seekbar').attr("value", this.currentTime / this.duration);
+// })
+
+$('.ended').toast('hide');
+
+let scaleAnswer;
+let noise = false;
+let oscillate = false;
+let slapback = false;
+let delay = false;
+let echoFeedback = false;
+let echo = false;
+let pl = false;
+let pl_state = 0;
+let ppl = 0.1;
+let burstRate = 2;
+let audio4 = new Audio();
+let jobConfig;
+let study_name;
+let instructionHtml;
+let htmlPartyCaller;
+let htmlPartyReceiver;
+let ratingScaleHtml;
+let SNR_DB;
+let delayTime = 0;
+let delayEchoTime = 0;
+let scenario;
+let attenuation;
+let noiseFileName;
+let loadConfig = false;
+let feedback = new Object;
+let dArray = [];
+let qual_answers;
+
+const url = window.location.href;
+console.log("url", url);
+const queryString = window.location.search;
+console.log("queryString", queryString);
+const urlParams = new URLSearchParams(queryString);
+roomNumber = urlParams.get('roomNumber');
+// noise = urlParams.get('noise');
+// oscillate = urlParams.get('oscillate');
+// delay = urlParams.get('delay');
+// slapback = urlParams.get('slapback');
+// feedback = urlParams.get('feedback');
+// echo = urlParams.get('echo');
+// pl = urlParams.get('pl');
+// ppl = urlParams.get('ppl');
+// burstRate = urlParams.get('burstRate');
+study_name = urlParams.get('study_name');
 
 // myDelayNode
 
@@ -139,57 +226,81 @@ class MyDelayNode extends GainNode {
     }
 }
 
+async function fetchJobConfig() {
+    let localUrl = "http://localhost:3000/jobConfig";
+    let serverUrl = "https://webrtc.pavanct.com/jobConfig"
+    const response = await fetch(serverUrl);
+    const data = await response.json();
+    console.log({ data });
+    data.data.forEach(e => {
+        console.log({ study_name });
+        console.log({ e });
+        if (e.study_name === String(study_name)) {
+            jobConfig = e;
+        }
+    });
+    console.log({ jobConfig });
+    loadConfig = setJobConfig(jobConfig);
+
+    // fetch(serverUrl, {
+    //     method: 'GET',
+    //     headers: {
+    //         'Content-Type': 'application/json',
+    //     },
+    // })
+    //     .then((response) => response.json())
+    //     .then((data) => {
+    //         console.log('Success:', data);
+    //         dArray = data;
+    //         dArray.forEach(e => {
+    //             if (e.study_name == study_name) {
+    //                 jobConfig = e;
+    //             }
+    //         }),
+    //             console.log({ jobConfig }),
+    //             loadConfig = setJobConfig(jobConfig)
+    //     }).catch((error) => {
+    //         console.error('Error:', error);
+    //     });
+}
 
 
+function setJobConfig(jobConfig) {
+    // fetchJobConfig();
+    instructionHtml = jobConfig.instruction_html;
+    htmlPartyCaller = jobConfig.html_party_caller;
+    htmlPartyReceiver = jobConfig.html_party_receiver;
+    ratingScaleHtml = jobConfig.rating_scale_html;
+    if (instructionHtml) {
+        document.getElementById('study-instructions-iframe').setAttribute("src", instructionHtml);
+    }
 
-let os = "Unknown OS";
-if (navigator.userAgent.indexOf("Win") != -1) os =
-    "Windows OS";
-if (navigator.userAgent.indexOf("Mac") != -1) os =
-    "Macintosh";
-if (navigator.userAgent.indexOf("Linux") != -1) os =
-    "Linux OS";
-if (navigator.userAgent.indexOf("Android") != -1) os =
-    "Android OS";
-if (navigator.userAgent.indexOf("like Mac") != -1) os =
-    "iOS";
-os = os.toString();
-
-
-// $('#local-audio').on('timeupdate', function () {
-//     $('#seekbar').attr("value", this.currentTime / this.duration);
-// })
-
-$('.ended').toast('hide');
-
-let noise = false;
-let oscillate = false;
-let slapback = false;
-let delay = false;
-let feedback = false;
-let echo = false;
-let pl = false;
-let pl_state = 1;
-let ppl = 0.8;
-let burstRate = 3;
-let audio4 = new Audio();
-
-const url = window.location.href;
-console.log("url", url);
-const queryString = window.location.search;
-console.log("queryString", queryString);
-const urlParams = new URLSearchParams(queryString);
-roomNumber = urlParams.get('roomNumber');
-noise = urlParams.get('noise');
-oscillate = urlParams.get('oscillate');
-delay = urlParams.get('delay');
-slapback = urlParams.get('slapback');
-feedback = urlParams.get('feedback');
-echo = urlParams.get('echo');
-pl = urlParams.get('pl');
-ppl = urlParams.get('ppl');
-burstRate = urlParams.get('burstRate');
-
+    if (htmlPartyCaller && htmlPartyReceiver) {
+        document.getElementById('caller').setAttribute("src", htmlPartyCaller);
+        document.getElementById('receiver').setAttribute("src", htmlPartyReceiver);
+    }
+    scenario = jobConfig.scenario;
+    // attenuation = jobConfig.attenuation;
+    jobConfig.config_details.forEach(e => {
+        if (e.condition_type == "noise") {
+            noise = true;
+            SNR_DB = e.SNR_DB;
+            noiseFileName = e.noise_file;
+        } else if (e.condition_type == "delay") {
+            delay = true;
+            delayTime = Number(e.delay_time_sec);
+        } else if (e.condition_type == "packet_loss") {
+            pl = true;
+            ppl = e.probability;
+            burstRate = e.burst_ratio;
+        } else if (e.condition_type == "echo") {
+            echo = true;
+            attenuation = e.attenuation;
+            delayEchoTime = e.delay_time_sec;
+        }
+    })
+    return true;
+}
 
 console.log(roomNumber);
 if (roomNumber != null) {
@@ -210,12 +321,16 @@ socket.on("accept_call", function () {
         audio4.play();
     }
     acceptButton.onclick = acceptCall;
+
 })
 
 function acceptCall() {
     socket.emit("ready", roomNumber);
     audio4.pause();
     audio4.currentTime = 0;
+    receiverIframe.style.display = "block";
+    instructions.style.display = "none";
+
 }
 
 socket.on("called", function () {
@@ -225,6 +340,7 @@ socket.on("called", function () {
 
 // on creating the room - call initiator 
 socket.on("created", function (room) {
+    fetchJobConfig();
     console.log("Local User -- Caller");
     navigator.mediaDevices.getUserMedia(
         streamConstraints).then(
@@ -232,8 +348,8 @@ socket.on("created", function (room) {
                 // localStream = stream;
                 if (delay) {
                     let n = context.createMediaStreamSource(stream);
-                    let delayNode = context.createDelay(1);
-                    delayNode.delayTime.value = 1;
+                    let delayNode = context.createDelay(5);
+                    delayNode.delayTime.value = delayTime;
                     let dest = context.createMediaStreamDestination();
                     n.connect(delayNode);
                     delayNode.connect(dest);
@@ -259,6 +375,8 @@ socket.on("created", function (room) {
 
 // when someone joins - call receiver
 socket.on("joined", function (room) {
+    fetchJobConfig();
+
     // $('.started').toast('show');
     console.log("Remote User - receiver");
     navigator.mediaDevices.getUserMedia(streamConstraints).then(
@@ -268,8 +386,8 @@ socket.on("joined", function (room) {
             // localStream = stream;
             if (delay) {
                 let n = context.createMediaStreamSource(stream);
-                let delayNode = context.createDelay(1);
-                delayNode.delayTime.value = 1;
+                let delayNode = context.createDelay(5);
+                delayNode.delayTime.value = delayTime;
                 let dest = context.createMediaStreamDestination();
                 n.connect(delayNode);
                 delayNode.connect(dest);
@@ -294,21 +412,25 @@ socket.on("user_joined", function () {
         callButton.disabled = false;
         console.log("inside user_joined");
     }
+    let audio5 = new Audio;
+    audio5.src = "../../assets/notification.mp3";
+    audio5.play();
 })
 
+function endCall() {
+    socket.emit("hangup", roomNumber);
+}
+
 socket.on("endCall", function () {
-    if (!isCaller) {
-        hangup();
-    }
-    hangup;
+    hangup();
 })
 
 // for caller - on emit ready
 socket.on("ready", function () {
 
-
     if (isCaller) {
-
+        callerIframe.style.display = "block";
+        // scenarioButtonDiv.style.display = "block";
         rtcPeerConnection.onicecandidate = onIceCandidate;
         rtcPeerConnection.ontrack = onAddStream;
 
@@ -364,19 +486,15 @@ socket.on("candidate", function (event) {
 
 // when socket is full
 socket.on("full", function (message) {
-    if (divSelectRoom.contains(document.getElementById("error-message"))) {
-        document.getElementById("error-message").remove();
-    }
-
-    divSelectRoom.style = "display: block";
-    divConsultingRoom.style = "display: none";
 
     var errorMessage = document.createElement("p");
     errorMessage.setAttribute("id", "error-message");
     errorMessage.style = "color: red;";
     errorMessage.innerText = message;
 
-    divSelectRoom.appendChild(errorMessage);
+    alert(errorMessage);
+
+    // divSelectRoom.appendChild(errorMessage);
 });
 
 function onIceCandidate(event) {
@@ -391,7 +509,9 @@ function onIceCandidate(event) {
             room: roomNumber
         });
         //table.style.visibility = 'visible';
-        hangupButton.style.visibility = 'visible';
+        // hangupButton.style.visibility = 'visible';
+        // hangupButton.style.display = 'block';
+        audioButtons.style.display = 'block';
         hangupButton.disabled = false;
     }
 }
@@ -417,43 +537,23 @@ function setLocalAnswer(sessionDescription) {
 }
 
 function onAddStream(event) {
+    $('.connected').toast('show');
     callButton.style.visibility = 'hidden';
-    hangupButton.style.visibility = 'visible';
+    callButtonDiv.style.display = "none";
+    instructions.style.display = "none";
+    scenarioButtonDiv.style.display = "block";
+    // hangupButton.style.visibility = 'visible';
+    // hangupButton.style.display = "block";
     duration.style.visibility = "visible";
     hangupButton.disabled = false;
+    // location.href = "#scenario-iframe";
 
     console.log("ondAddStream", event.streams);
-    // add delay using webaudio
 
-    // Add additional 2 seconds of buffering
-    // const [audioReceiver] = rtcPeerConnection.getReceivers();
-    // console.log(audioReceiver);
-    // setInterval(async () => {
-    //     audioReceiver.playoutDelayHint = audioReceiver.jitterBufferDelayHint = 0.4;
-    // }, 1);
-
-    // audioContainer = document.createElement("audio");
-    // audioContainer.setAttribute("width", "max-content");
-    // audioContainer.setAttribute("autoplay", true);
-    // audioContainer.srcObject = event.streams[0].clone();
-    // let audio2 = new Audio();
-    // audio2.srcObject = event.streams[0].clone();
-    // audio2.autoplay = true;    
-    // divConsultingRoom.appendChild(audioContainer);
     let audio3 = new Audio();
     audio3.srcObject = event.streams[0];
     audio3.autoplay = true;
     audio3.muted = true;
-    // let cStream = audio3.captureStream();
-    // let n = context.createMediaStreamSource(cStream);
-    // n.connect(context.destination);
-
-    // const delayNode = context.createDelay(1);
-    // delayNode.delayTime.value = 1;
-    // n.connect(delayNode);
-    // let pannerNode = context.createPanner();
-    // delayNode.connect(pannerNode);
-    // pannerNode.connect(context.destination);
 
     // delayNode.connect(context.destination);
     audio3.onloadedmetadata = () => {
@@ -470,44 +570,23 @@ function onAddStream(event) {
 
             const recvAudioSource = context.createMediaStreamSource(audio3.srcObject);
             const delayNode = context.createDelay(1);
-            delayNode.delayTime.value = 0.5; // delay by 1 second
+            delayNode.delayTime.value = delayEchoTime; // delay by 1 second
             recvAudioSource.connect(delayNode);
             delayNode.connect(context.destination);
 
-            // var streamNode;
-            // var masterNode;
-            // var bypassNode;
-            // var delayNode;
-            // var feedbackNode;
-
-            // streamNode = context.createMediaStreamSource(event.streams[0]);
-            // delayNode = context.createDelay(10)
-            // feedbackNode = context.createGain();
-            // bypassNode = context.createGain();
-            // masterNode = context.createGain();
-
-            // //controls
-            // delayNode.delayTime.value = 1;
-            // feedbackNode.gain.value = 0.8;
-            // bypassNode.gain.value = 1;
-
-            // //wire up nodes
-            // streamNode.connect(delayNode);
-            // delayNode.connect(feedbackNode);
-            // feedbackNode.connect(delayNode);
-
-            // delayNode.connect(bypassNode);
-            // bypassNode.connect(masterNode);
-            // streamNode.connect(masterNode);
-
-            // masterNode.connect(context.destination);
         }
         else if (noise) {
+            
+            // noise degradation implementation
+            // TODO playing noise using file
+
             const input = context.createMediaStreamSource(audio3.srcObject);
             const whiteNoiseNode = new AudioWorkletNode(context, 'white-noise-processor');
             input.connect(gainNode);
             whiteNoiseNode.connect(gainNode);
             gainNode.connect(context.destination);
+
+
         }
 
         // oscillator
@@ -542,7 +621,7 @@ function onAddStream(event) {
             anotherGain.connect(context.destination);
         }
 
-        else if (feedback) {
+        else if (echoFeedback) {
             audio3.muted = true;
 
             const input = context.createMediaStreamSource(audio3.srcObject);
@@ -552,30 +631,25 @@ function onAddStream(event) {
             input.connect(myDelay).connect(vol).connect(context.destination);
         }
 
-        // packet loss based on a Paper Raake Et Al. 
+
         else if (pl) {
-            // stream.getAudioTracks()[0].enabled = true
-            // Et El Raake.
-            console.log({ ppl });
-            console.log({ burstRate });
-            let q = (1 - ppl) / burstRate;
-            console.log({ q });
-            let p = (ppl * q) / (1 - ppl);
-            console.log({ p });
+
+
+            // ppl = packet loss probability, pl_state is packet loss state which is 0 initially
+            // ppl, burstRate values are read from Job configuration 
+            let p, q;
+            q = (1 - ppl) / burstRate;
+            p = (ppl * q) / (1 - ppl);
 
             function determinePacketLoss(pl_state, p, q) {
-                console.log({ pl_state }, { p }, { q });
-                if (pl_state === 0) {
-                    console.log("pl_state is 0");
+
+                if (pl_state == 0) {
                     if (Math.random() < p) {
-                        console.log("pl_state is 1");
                         pl_state = 1;
                     }
                 }
-                else if (pl_state === 1) {
-                    console.log("pl_state is 1");
+                else if (pl_state == 1) {
                     if (Math.random() < q) {
-                        console.log("pl_state is 0")
                         pl_state = 0
                     }
                 }
@@ -583,14 +657,15 @@ function onAddStream(event) {
             }
 
             setInterval(() => {
+
+
                 pl_state = determinePacketLoss(pl_state, p, q);
-                if (pl_state === 0) {
-                    console.log("mute");
+                if (pl_state == 0) {
                     audio3.muted = true;
                 } else {
                     audio3.muted = false;
                 }
-            }, 1000);
+            }, 400);
 
 
             // setInterval(() => {
@@ -608,7 +683,7 @@ function onAddStream(event) {
 
     // console.log("local stream", localStream);
 
-    setInterval(() => {
+    statInterval = setInterval(() => {
         rtcPeerConnection.getStats(null).then(showStats, err =>
             console.log(err)
         );
@@ -652,7 +727,7 @@ function showStats(results) {
             // packetsLost = element.packetsLost;
             packetLossArray.push(element.packetsLost);
             averageArray = arr => arr.reduce((prev, curr) => prev + curr) / arr.length;
-            averagePacktLoss = averageArray(packetLossArray);
+            averagePacketLoss = averageArray(packetLossArray);
         }
     });
 }
@@ -664,45 +739,134 @@ rtcPeerConnection.oniceconnectionstatechange = function () {
     }
 }
 
+
 // call hangup
 function hangup() {
-    console.log('Ending call');
-    socket.emit("hangup", roomNumber);
-    // localStream.stop();
-    // rtcPeerConnection.iceConnectionState = 'closed';
-    localStream.getTracks().forEach(track => track.stop());
-    // if (oscillator) {
-    //     oscillator.stop();
-    // }
-    // audioContainer = null;
-    localAudio.srcObject = null;
 
-    rtcPeerConnection.close();
-    rtcPeerConnection = null;
 
-    hangupButton.disabled = true;
-    buttons.style.display = "none";
-    duration.style.display = "none";
-    hangupButton.style.display = "none";
-    instructions.style.display = "none";
-    studyInstructions.style.display = "none";
-    question.style.visibility = "visible";
-    studyInstructions.style.display = "none";
-    // answerButton.onclick = sendData;
-    // document.getElementById("rating_page").style.display = "block";
-    //table.style.visibility = 'hidden';
-    // sendData();
+    if (hangupCounter == 0) {
+        console.log('Ending call');
+        clearInterval(statInterval);
+        $('.ended').toast('show');
+        if (rtcPeerConnection) {
+            rtcPeerConnection.ontrack = null;
+            rtcPeerConnection.onremovetrack = null;
+            rtcPeerConnection.onremovestream = null;
+            rtcPeerConnection.onicecandidate = null;
+            rtcPeerConnection.oniceconnectionstatechange = null;
+            rtcPeerConnection.onsignalingstatechange = null;
+            rtcPeerConnection.onicegatheringstatechange = null;
+            rtcPeerConnection.onnegotiationneeded = null;
+
+            if (localAudio.srcObject) {
+                localAudio.pause();
+            }
+
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+            }
+
+            rtcPeerConnection.close();
+            rtcPeerConnection = null;
+
+            localAudio.removeAttribute("src");
+            localAudio.removeAttribute("srcObject");
+        }
+
+        hangupButton.disabled = true;
+        // buttons.style.display = "none";
+        duration.style.display = "none";
+        audioButtons.style.display = 'none';
+        hangupButton.style.display = "none";
+        instructions.style.display = "none";
+        studyInstructions.style.display = "none";
+        feedbackDiv.style.display = "block";
+
+        // question.style.visibility = "visible";
+        studyInstructions.style.display = "none";
+        callerIframe.style.display = "none";
+        scenarioButtonDiv.style.display = "none";
+        receiverIframe.style.display = "none";
+        hangupCounter = 0;
+        // answerButton.onclick = sendData;
+        // document.getElementById("rating_page").style.display = "block";
+        //table.style.visibility = 'hidden';
+        // sendData();
+    }
+
 }
 
-function answer() {
+// $('#caller').load(function () {
+
+//         let x = JSON.stringify($("body").serializeArray());
+//         console.log({ x });
+//         return false;
+
+// });
+
+function scenarioAnswer() {
+    let form = document.getElementById('scenario-form');
+    // let x = document.querySelector('scenario-form.scenario-form').elements;
+    form.onsubmit = function (event) {
+        event.preventDefault();
+
+        $("#caller").contents().find('input').each(function () {
+            let p = {
+                name: this.name,
+                value: this.value
+            }
+            cArray.push(p);
+        });
+
+
+        $("#receiver").contents().find('input').each(function () {
+            let p = {
+                name: this.name,
+                value: this.value
+            }
+            rArray.push(p);
+        });
+        // let x = JSON.stringify($("#caller").serializeArray());
+        console.log({ cArray });
+        console.log({ rArray });
+        hangup();
+    }
+
+}
+
+function feedBackAnswer() {
+    let form = document.getElementById('feedback');
+    form.onsubmit = function (event) {
+        event.preventDefault();
+        console.log("form elements", form.elements);
+        let x = JSON.stringify($("form").serializeArray());
+
+        x = JSON.parse(x);
+        console.log({ x })
+        // console.log("answer", form.elements["feedback"].value);
+        let follow = x.find(a => a.name === "follow");
+        let outScope = x.find(a => a.name === "out-scope");
+        let text = x.find(a => a.name === "comment");
+        feedback = {
+            follow: follow,
+            outScope: outScope,
+            comment: text
+        }
+        console.log({ feedback });
+        questionDiv.style.display = "block";
+        feedbackDiv.style.display = "none";
+    }
+}
+
+function ratingAnswer() {
     let form = document.getElementById('question');
     form.onsubmit = function (event) {
         event.preventDefault();
         console.log("answer", form.elements["rating"].value);
         let answer = form.elements["rating"].value;
-        console.log({answer});
-
-        sendData(answer);
+        console.log({ answer });
+        scaleAnswer = answer;
+        sendData();
     }
 }
 
@@ -715,7 +879,7 @@ function sendData() {
     $('#modalBodyMessage')
         .html("Verification code: " + "<div id='verificationCode' style='color: #0275d8;'> " + hash + "</div>");
     //$('#modalBodyVerificationCode').html(hash);
-    $('#exampleModal').modal('show');
+    // $('#exampleModal').modal('show');
 
     // Tooltip
 
@@ -758,74 +922,78 @@ function sendData() {
         hideTooltip(btn);
     });
 
-    if (rttArr.length) {
-        // post data to backend after hangup
-        const data = {
-            verificationCode: fullhash,
-            statistics: {
-                AverageTotalTripTime: averageLatency,
-                rttArr: rttArr,
-                averagePacktLoss: averagePacktLoss,
-            },
-            url: url,
-            roomNumber: roomNumber,
-            browser: browser,
-            os: os,
-            type: "USER2USER",
-        };
-        console.log("data sent", data);
-        let localPost = 'http://localhost:3000/stats';
-        let serverPost1 = 'https://conversation-test.qulab.org/stats';
-        let serverPost2 = 'https://webrtc.pavanct.com/stats';
+    // if (rttArr.length) {
+    // post data to backend after hangup
+    const data = {
+        verificationCode: fullhash,
+        config: {
+            study_name: study_name,
+            instruction_html: instructionHtml,
+            html_party_caller: htmlPartyCaller,
+            html_party_receiver: htmlPartyReceiver,
+            rating_scale_html: ratingScaleHtml,
+            scenario: jobConfig.scenario,
+            noise: noise,
+            delay: delay,
+            SNR_DB: SNR_DB,
+            delay_time_sec: delayTime,
+            packet_loss: pl,
+            probability_packet_loss: ppl,
+            burst_rate: burstRate,
+            echo: echo,
+            attenuation: attenuation,
+            delay_echo_time_sec: delayEchoTime,
+        },
+        statistics: {
+            AverageTotalTripTime: averageLatency,
+            rttArr: rttArr,
+            averagePacketLoss: averagePacketLoss,
+        },
+        url: url,
+        isCaller: isCaller,
+        roomNumber: roomNumber,
+        browser: browser,
+        os: os,
+        type: "USER2USER",
+        scaleAnswer: scaleAnswer,
+        receiverAnswers: rArray,
+        callerAnswers: cArray,
+        feedback: feedback,
+        qualification_answers: qual_answers,
+    };
+    console.log("data sent", data);
+    let localPost = 'http://localhost:3000/stats';
+    let serverPost1 = 'https://conversation-test.qulab.org/stats';
+    let serverPost2 = 'https://webrtc.pavanct.com/stats';
 
-        fetch(serverPost2, {
-            method: 'POST', // or 'PUT'
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
+    fetch(serverPost1, {
+        method: 'POST', // or 'PUT'
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            console.log('Success:', data);
         })
-            .then((response) => response.json())
-            .then((data) => {
-                console.log('Success:', data);
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-        // always change to listen to server specific before docker build
-        // fetch('https://conversation-test.qulab.org/stats', {   
-        //     method: 'POST', // or 'PUT'
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify(data),
-        // })
-        //     .then((response) => response.json())
-        //     .then((data) => {
-        //         console.log('Success:', data);
-        //     })
-        //     .catch((error) => {
-        //         console.error('Error:', error);
-        //     });
-        // fetch('http://localhost:3000/stats', {
-        //     method: 'POST', // or 'PUT'
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify(data),
-        // })
-        //     .then((response) => response.json())
-        //     .then((data) => {
-        //         console.log('Success:', data);
-        //     })
-        //     .catch((error) => {
-        //         console.error('Error:', error);
-        //     });
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    location.href = `../taskcompleted.html?code=${hash}`;
+    // document.getElementById("modalButton").onclick = function () {
+    //     console.log("task completed");
+    //     location.href = `../taskcompleted.html?code=${hash}`;
+    // };
+    // }
+}
 
-        document.getElementById("modalButton").onclick = function () {
-            console.log("task completed");
-            location.href = "../taskcompleted.html";
-        };
+function getQualAnswers() {
+    if (sessionStorage.hasOwnProperty('qual_test')) {
+        let answers = sessionStorage.getItem('qual_test');
+        qual_answers = JSON.parse(answers);
     }
 }
+
+
 

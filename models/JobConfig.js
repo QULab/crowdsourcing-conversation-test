@@ -9,6 +9,7 @@ let JobConfigSchema = new schema({
     instruction_html: String,
     rating_scale_html: String,
     html_party_caller: String,
+    html_party_receiver: String,
     condition: [
         {
             condition_name: String,
@@ -25,7 +26,6 @@ let JobConfigSchema = new schema({
             delay_time_sec: Number,
             probability: Number,
             burst_ratio: Number,
-            burst_ratio_pattern: String,
             attenuation: Number,
         }
     ]

@@ -19,7 +19,9 @@ const userAgent =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.122 Safari/537.36";
 const moment = require("moment");
 // const csv = require('csv-express');
-const json2csv = require("json-2-csv");
+// const json2csv = require("json-2-csv");
+const json2csv = require("json2csv");
+const { Parser } = require('json2csv');
 const redisClient = redis.createClient(6379, "webrtc-redis");
 // const redisClient = redis.createClient();
 const dotenv = require("dotenv").config();
@@ -38,15 +40,10 @@ app.use(bodyParser.raw());
 app.use(router);
 
 
-// change for server docker
-// mongoose.connect('mongodb://mongo:27017/webrtc', {
-//   useNewUrlParser: true
-// });
+let connectionUrl = "mongodb+srv://" + process.env.DB_USER + ":" +
+  process.env.DB_PASS + "@" + process.env.HOST_NAME + "/"
+  + process.env.DB_NAME + "?retryWrites=true&w=majority";
 
-let connectionUrl =
-  "mongodb+srv://pavan:" +
-  process.env.DB_PASS +
-  "@cluster0.0il5v.mongodb.net/" + process.env.DB_NAME + "?retryWrites=true&w=majority";
 mongoose.connect(connectionUrl, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -89,6 +86,10 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/user-test", express.static("public/user-test"));
 
 app.use("/delay", express.static("public/delay"));
+
+// app.use("/scenarios/scenario1/caller", express.static("public/conversation-test/scenario1/caller.html"));
+
+// app.use("/scenarios/scenario1/receiver", express.static("public/conversation-test/scenario1/receiver.html"));
 
 //app.use('/newapp', express.static('public/restructure-html'));
 
@@ -146,6 +147,7 @@ const schema = mongoose.Schema;
 
 let statSchema = new schema({
   url: { type: String },
+  config: { type: JSON },
   roomNumber: { type: Number },
   verificationCode: { type: String, required: true },
   timestamp: { type: Date, default: Date.now },
@@ -158,13 +160,17 @@ let statSchema = new schema({
   ipAdress: { type: String },
   testDuration: { type: Number },
   sessionID: { type: String },
-});
+  scaleAnswer: { type: String },
+  feedback: { type: String },
+  callerAnswers: { type: JSON },
+  receiverAnswers: { type: JSON },
+  qualification_answers: { type: JSON },
+}, { collection: process.env.STATISTICS_COL, timestamps: true, strict: false });
 
-// let statSchema = new mongoose.Schema({},
-//   {strict:false }
-// );
 
-let statModel = mongoose.model("webrtc-stats", statSchema);
+let statModel = mongoose.model("StatModel", statSchema);
+
+
 
 // post to mongodb
 
@@ -174,13 +180,15 @@ app.post("/stats", async (req, res) => {
   let browserType = req.get("user-agent");
   console.log("Got body:", req.body);
   let body = req.body;
-  const stats = new statModel(req.body);
+  body.ipAdress = ipAdress;
+  body.sessionID = sessionID;
+  let stats = new statModel(body);
+
 
   try {
-    stats.ipAdress = ipAdress;
-    stats.sessionID = sessionID;
+
     await stats.save();
-    res.send(stats);
+    res.send(status);
   } catch (err) {
     res.status(500).send(err);
   }
@@ -209,6 +217,11 @@ app.get(
   }
 );
 
+// const fields = ['field1', 'field2', 'field3'];
+// const opts = { fields };
+
+
+
 app.get(
   "/exporttocsv",
   basicAuth({
@@ -227,19 +240,32 @@ app.get(
       .lean()
       .exec({})
       .then((data) => {
-        json2csv.json2csv({ data: data }, function (err, csvStr) {
-          if (err) {
-            console.log(err);
-            res.statusCode = 500;
-            return res.end(err.message);
-          }
+        // json2csv.json2csv({ data: data }, function (err, csvStr) {
+        //   if (err) {
+        //     console.log(err);
+        //     res.statusCode = 500;
+        //     return res.end(err.message);
+        //   }
+        //   res.setHeader("Content-Type", "text/csv");
+        //   res.setHeader(
+        //     "Content-Disposition",
+        //     "attachment; filename=" + filename
+        //   );
+        //   res.status(200).send(csvStr);
+        // });
+        try {
+          const parser = new Parser();
+          const csv = parser.parse(data);
+          // console.log(csv);
           res.setHeader("Content-Type", "text/csv");
           res.setHeader(
             "Content-Disposition",
             "attachment; filename=" + filename
           );
-          res.status(200).send(csvStr);
-        });
+          res.status(200).send(csv);
+        } catch (err) {
+          console.error(err);
+        }
       })
       .catch(res.status(500));
   }
@@ -248,6 +274,10 @@ app.get(
 router.get("/jobConfig", jobConfigController.getJobConfig);
 router.post("/jobConfig", jobConfigController.createJobConfig);
 
+app.post("/scenarioAnswers", async (req, res) => {
+  console.log("Got query:", req.query);
+  console.log("Got body", req.body);
+})
 
 // rooms and socket IO
 
