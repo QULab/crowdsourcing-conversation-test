@@ -576,11 +576,17 @@ function onAddStream(event) {
 
         }
         else if (noise) {
+            
+            // noise degradation implementation
+            // TODO playing noise using file
+
             const input = context.createMediaStreamSource(audio3.srcObject);
             const whiteNoiseNode = new AudioWorkletNode(context, 'white-noise-processor');
             input.connect(gainNode);
             whiteNoiseNode.connect(gainNode);
             gainNode.connect(context.destination);
+
+
         }
 
         // oscillator
@@ -625,32 +631,25 @@ function onAddStream(event) {
             input.connect(myDelay).connect(vol).connect(context.destination);
         }
 
-        // packet loss based on a Paper Raake Et Al. 
+
         else if (pl) {
-            // stream.getAudioTracks()[0].enabled = true
-            // Et El Raake.
-            // console.log({ ppl });
-            // console.log({ burstRate });
+
+
+            // ppl = packet loss probability, pl_state is packet loss state which is 0 initially
+            // ppl, burstRate values are read from Job configuration 
             let p, q;
             q = (1 - ppl) / burstRate;
-            // console.log({ q });
             p = (ppl * q) / (1 - ppl);
-            // console.log({ p });
 
             function determinePacketLoss(pl_state, p, q) {
 
-                // console.log({ pl_state }, { p }, { q });
                 if (pl_state == 0) {
-                    // console.log("pl_state is 0");
                     if (Math.random() < p) {
-                        // console.log("pl_state is 1");
                         pl_state = 1;
                     }
                 }
                 else if (pl_state == 1) {
-                    // console.log("pl_state is 1");
                     if (Math.random() < q) {
-                        // console.log("pl_state is 0")
                         pl_state = 0
                     }
                 }
@@ -662,7 +661,6 @@ function onAddStream(event) {
 
                 pl_state = determinePacketLoss(pl_state, p, q);
                 if (pl_state == 0) {
-                    // console.log("mute");
                     audio3.muted = true;
                 } else {
                     audio3.muted = false;
@@ -744,10 +742,6 @@ rtcPeerConnection.oniceconnectionstatechange = function () {
 
 // call hangup
 function hangup() {
-    // let a = $("#caller").contents().find("form");
-
-    // let b = $("#receiver").contents().find("form");
-    // console.log(a);
 
 
     if (hangupCounter == 0) {
@@ -939,7 +933,6 @@ function sendData() {
             html_party_receiver: htmlPartyReceiver,
             rating_scale_html: ratingScaleHtml,
             scenario: jobConfig.scenario,
-            isCaller: isCaller,
             noise: noise,
             delay: delay,
             SNR_DB: SNR_DB,
@@ -957,6 +950,7 @@ function sendData() {
             averagePacketLoss: averagePacketLoss,
         },
         url: url,
+        isCaller: isCaller,
         roomNumber: roomNumber,
         browser: browser,
         os: os,
@@ -995,10 +989,10 @@ function sendData() {
 }
 
 function getQualAnswers() {
-    if(sessionStorage.hasOwnProperty('qual_test')){
+    if (sessionStorage.hasOwnProperty('qual_test')) {
         let answers = sessionStorage.getItem('qual_test');
         qual_answers = JSON.parse(answers);
-    } 
+    }
 }
 
 
