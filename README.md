@@ -6,10 +6,11 @@ on the WebRTC.
 
 
 
-
 ## Running Locally
 
 Make sure you have [Node.js](http://nodejs.org/) installed.
+
+Please install [Redis](https://redis.io/download). 
 
 ```sh
 git clone https://gitlab.tubit.tu-berlin.de/pavanct/conversation-tests-with-webrtc.git # or clone your own fork
@@ -24,11 +25,23 @@ Your app should now be running on [localhost:3000](http://localhost:3000/).
 
 Make sure you have [Docker](https://docs.docker.com/install/) installed and have permissions to run docker (sudo)
 
+Create Docker network 
+
+```sh
+docker network create webrtc
+```
+
+Start a Redis server with docker and network webrtc
+
+```sh
+docker run --name webrtc-redis -d --network webrtc-redis redis redis-server --appendonly yes 
+```
+
 ```sh
 git clone https://gitlab.tubit.tu-berlin.de/pavanct/conversation-tests-with-webrtc.git # or clone your own fork
 cd conversation-tests-with-webrtc
 docker build . t "conversation-tests-with-webrtc"
-docker run -d -p 3000:3000 conversation-tests-with-webrtc
+docker run -d --name conversation-test --network webrtc -p 3000:3000 conversation-tests-with-webrtc
 ```
 
 
