@@ -161,7 +161,7 @@ let statSchema = new schema({
   testDuration: { type: Number },
   sessionID: { type: String },
   scaleAnswer: { type: String },
-  feedback: { type: String },
+  feedback: { type: JSON },
   callerAnswers: { type: JSON },
   receiverAnswers: { type: JSON },
   qualification_answers: { type: JSON },
@@ -189,6 +189,7 @@ app.post("/stats", async (req, res) => {
 
     await stats.save();
     res.send(status);
+    console.log(status);
   } catch (err) {
     res.status(500).send(err);
   }

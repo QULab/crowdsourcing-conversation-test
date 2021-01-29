@@ -3,7 +3,6 @@ const description = document.getElementById('description');
 const title = document.getElementById('title');
 const agree = document.getElementById('agree');
 let qual_test = false;
-
 qualTest.style.display = "none";
 let browser = (function (agent) {
     switch (true) {

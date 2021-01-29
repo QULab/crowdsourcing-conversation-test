@@ -229,7 +229,7 @@ class MyDelayNode extends GainNode {
 async function fetchJobConfig() {
     let localUrl = "http://localhost:3000/jobConfig";
     let serverUrl = "https://webrtc.pavanct.com/jobConfig"
-    const response = await fetch(serverUrl);
+    const response = await fetch(localUrl);
     const data = await response.json();
     console.log({ data });
     data.data.forEach(e => {
@@ -238,6 +238,7 @@ async function fetchJobConfig() {
         if (e.study_name === String(study_name)) {
             jobConfig = e;
         }
+        
     });
     console.log({ jobConfig });
     loadConfig = setJobConfig(jobConfig);
@@ -966,7 +967,7 @@ function sendData() {
     let serverPost1 = 'https://conversation-test.qulab.org/stats';
     let serverPost2 = 'https://webrtc.pavanct.com/stats';
 
-    fetch(serverPost1, {
+    fetch(localPost, {
         method: 'POST', // or 'PUT'
         headers: {
             'Content-Type': 'application/json',
