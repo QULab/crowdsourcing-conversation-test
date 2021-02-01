@@ -1,0 +1,270 @@
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=1">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta id="theme-color" name="theme-color" content="#ffffff">
+
+    <title>Conversation Test U-F</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+    <link rel="manifest" href="assets/site.webmanifest">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="main.css" />
+
+</head>
+
+<body>
+
+    <div id="container" class="container">
+        <div class="row h-100">
+            <div class="col-sm-12 my-auto">
+                <h1 class="text-center">Conversation Test</h1>
+                <div class="instructions">
+                    <div class="card border-dark mb-3" style="margin-top: 30px">
+                        <div class="card-body text-dark">
+                            <h5 class="card-title text-center"><b>Instructions</b></h5>
+                            <p class="">
+                                The audio file will be streamed to your device, therefore
+                                The test requires media permissions from the browser, so
+                                please allow microphone settings when prompted by the browser.<br />
+                            </p>
+                            <p class="">
+                                <b>Steps:</b><br>
+                            <ol>
+                                <li>Click on the <b>Call <svg width="1em" height="1em" viewBox="0 0 16 16"
+                                            class="bi bi-telephone-fill" fill="green"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd"
+                                                d="M2.267.98a1.636 1.636 0 0 1 2.448.152l1.681 2.162c.309.396.418.913.296 1.4l-.513 2.053a.636.636 0 0 0 .167.604L8.65 9.654a.636.636 0 0 0 .604.167l2.052-.513a1.636 1.636 0 0 1 1.401.296l2.162 1.681c.777.604.849 1.753.153 2.448l-.97.97c-.693.693-1.73.998-2.697.658a17.47 17.47 0 0 1-6.571-4.144A17.47 17.47 0 0 1 .639 4.646c-.34-.967-.035-2.004.658-2.698l.97-.969z" />
+                                        </svg></b> button and listen to the audio
+                                    file carefully until the end.</li>
+                                <li>Audio is about <b>1 minute</b> long</li>    
+                                <li>Rate the quality on the speech clip you listened to using the options displayed below.</li>
+                                <li><b>Submit</b> your answer using the <b>Submit button</b> after the call ends</li>
+                                <li>You will be provided with a <b>Verification code</b>, please copy the code and paste
+                                    it to
+                                    <b>Amazon Mechanical Turk</b>.</li>
+                                <li>You can end the call using <b>Hangup</b>  <svg xmlns="http://www.w3.org/2000/svg"
+                                        height="24" fill="red" viewBox="0 0 24 24" width="24">
+                                        <path d="M0 0h24v24H0z" fill="none" />
+                                        <path
+                                            d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08c-.18-.17-.29-.42-.29-.7 0-.28.11-.53.29-.71C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67c.18.18.29.43.29.71 0 .28-.11.53-.29.71l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28-.79-.74-1.69-1.36-2.67-1.85-.33-.16-.56-.5-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z" />
+                                    </svg> button but only after atleast <b>25 seconds</b> of listeining to the audio file</li>
+                            </ol>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card border-light mb-3">
+                    <div id="audio" class="card-body text-dark">
+                        <div style="display: none">
+                            <div class="label">Local audio:</div>
+                            <audio id="audio1" autoplay controls muted></audio>
+                        </div>
+                        <div id="player">
+                            <!-- <div class="label">Remote audio:</div> -->
+                            <!-- <audio id="audio2" autoplay controls controlsList="nodownload nofullscreen noremoteplayback" ></audio> -->
+                            <audio id="audio2" autoplay src=""></audio>
+                            <div>
+                                <div class="callButton"><button id="callButton" data-toggle="tooltip"
+                                        data-placement="right" title="Call">
+                                        <img id="image-call" src="../assets/call-white-48dp.svg" />
+                                    </button></div>
+
+                                <div class="hangupButton"><button id="hangupButton" data-toggle="tooltip"
+                                        data-placement="right" title="Hangup">
+                                        <img id="image-end" src="../assets/call_end-white-48dp.svg" />
+                                    </button></div>
+
+
+                                <!-- <button onclick="document.getElementById('audio2').pause()">
+                                    <img src="http://icons.iconarchive.com/icons/custom-icon-design/pretty-office-8/48/Pause-icon.png" />
+                                </button> -->
+                                <br>
+                                <div id="progress"><progress id="seekbar" value="0" max="1"
+                                        style="width:200px;"></progress>
+                                    <span id="timer"> 00:00</span></div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="buttons">
+                        <!-- <select id="codec"> -->
+                        <!-- Codec values are matched with how they appear in the SDP.
+                                                                                For instance, opus matches opus/48000/2 in Chrome, and ISAC/16000
+                                                                                matches 16K iSAC (but not 32K iSAC). -->
+                        <!-- <option value="opus">Opus</option>
+                                                                                <option value="ISAC">iSAC 16K</option>
+                                                                                <option value="G722">G722</option>
+                                                                                <option value="PCMU">PCMU</option>
+                                                                            </select> -->
+                        <!-- <button id="callButton" class="btn btn-outline-success text-center">Start</button> -->
+                        <!-- <button id="hangupButton" class="btn btn-outline-danger">Hang Up</button> -->
+                    </div>
+                </div>
+
+                <!-- <div class="graph-container" id="bitrateGraph">
+                                        <div>Bitrate</div>
+                                        <canvas id="bitrateCanvas"></canvas>
+                                    </div>
+                                    <div class="graph-container" id="packetGraph">
+                                        <div>Packets sent per second</div>
+                                        <canvas id="packetCanvas"></canvas>
+                                    </div>
+                                </div>
+                                <table>
+                                    <caption>Bitrate and Packes sent per second - approximate results in browsers</caption>
+                                    <tr>
+                                        <th>Opus</th>
+                                        <th>iSAC 16K</th>
+                                        <th>G722</th>
+                                        <th>PCMU</th>
+                                        <th>Browsers Tested</th>
+                                    </tr>
+                                    <tr>
+                                        <td>~40 kbps / Muted : Same, ~50 Packets, Muted : Same or slight drop</td>
+                                        <td>~30 kbps / Muted : Same, ~33 Packets, Muted : Same or slight drop</td>
+                                        <td>~70 kbps / Muted : Same, ~50 Packets, Muted : Same</td>
+                                        <td>~70 kbps / Muted : Same, ~55 Packets, Muted : Same</td>
+                                        <td>Tested in Chrome, Not tested in Opera, Firefox, Safari, Edge</td>
+                                    </tr>
+                                </table> -->
+                <!-- <table id="table-stats" style="margin-top: 20pt;">
+                    <tbody>
+                        <tr>
+                            <td>Round Trip Time: </td>
+                            <td>
+                                <span id="audio-latency"></span><br>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>packetsLost: </td>
+                            <td>
+                                <span id="audio-packetsLost"></span><br>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>Average Round Trip Time: </td>
+                            <td>
+                                <span id="audio-averageLatency"></span><br>
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table> -->
+                <!-- <hr> -->
+
+                <!-- Modal verification code -->
+                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
+                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Thank you for the Participation<br />
+                                    Please copy and paste the verification code to mTurk platform.
+                                </h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body" id="myModalBody">
+                                <div id="modalBodyMessage">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button id="copy" data-clipboard-target="#verificationCode"
+                                    class="btn btn-secondary mr-auto">
+                                    Copy</button>
+                                <button type="button" id="modalButton" class="btn btn-secondary"
+                                    data-dismiss="modal">Close</button>
+                                <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question card border-light mb-3">
+                    <div class="card-body text-dark">
+                        <form id="question">
+                            <h6 class="card-title">1. How do you rate the
+                                <b>overall quality</b> of the speech sample
+                                played?</h6>
+                            <table class="table table-borderless" id="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Quality of the Speech</th>
+                                        <th scope="col">Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="answer-options">
+                                    <tr>
+                                        <td>
+                                            <label for="Excellent"><input type="radio" name="rating" id=""
+                                                    value="Excellent" required>
+                                                Excellent</label></td>
+                                        <td>5</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label for="Good"><input type="radio" name="rating" id="" value="Good">
+                                                Good</label></td>
+                                        <td>4</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label for="Fair"><input type="radio" name="rating" id="" value="Fair">
+                                                Fair</label> </td>
+                                        <td>3</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label for="Poor"><input type="radio" name="rating" id="" value="Poor">
+                                                Poor</label> </td>
+                                        <td>2</td>
+                                    </tr>
+                                    <tr>
+                                        <td> <label for="Poor"><input type="radio" name="rating" id="" value="Bad">
+                                                Bad</label>
+                                        </td>
+                                        <td>1</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <button type="submit" id="answerButton" class="btn btn-outline-success"
+                                onclick="answer()">Submit</button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+            integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+            crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+            crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js">
+        </script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+            crossorigin="anonymous"></script>
+        <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/core.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/md5.js"></script>
+        <script src="../assets//md5.min.js"></script>
+        <script src="main.js"></script>
+</body>
+
+</html>

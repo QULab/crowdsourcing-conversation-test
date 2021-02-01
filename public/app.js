@@ -96,6 +96,11 @@ if (localStorage.hasOwnProperty('consent')) {
         //     location.href = "../unsupported.html";
         // }
     }
+    
+    if(type =="USER2ECHO"){
+        location.href = "../user-echo/" + queryString;
+    }
+
 } else {
 
     // no consent
@@ -128,6 +133,7 @@ if (localStorage.hasOwnProperty('consent')) {
             // }
         };
     }
+   
 }
 
 const constraints = {
