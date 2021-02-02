@@ -536,7 +536,7 @@ function setLocalAnswer(sessionDescription) {
         room: roomNumber
     });
 }
-
+// AUDIOFUNKTIONEN
 function onAddStream(event) {
     $('.connected').toast('show');
     callButton.style.visibility = 'hidden';
