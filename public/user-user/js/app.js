@@ -228,8 +228,9 @@ class MyDelayNode extends GainNode {
 
 async function fetchJobConfig() {
     let localUrl = "http://localhost:3000/jobConfig";
+    let ownNetworkUrl = "http://192.168.178:3000/jobConfig"
     let serverUrl = "https://webrtc.pavanct.com/jobConfig"
-    const response = await fetch(localUrl);
+    const response = await fetch(ownNetworkUrl);
     const data = await response.json();
     console.log({ data });
     data.data.forEach(e => {
@@ -539,6 +540,29 @@ function setLocalAnswer(sessionDescription) {
 // AUDIOFUNKTIONEN
 function onAddStream(event) {
     $('.connected').toast('show');
+
+    // ECHOCODE HIER
+
+    // localStream -> getusermedia
+    // context ist audiocontext
+
+    console.log("About to enter Talker Echo");
+    let talkerecho = 1;
+
+    if(talkerecho == 1 ){
+        console.log("INSIDE TALKER ECHO LOOP");
+        var localMic = context.createMediaStreamSource(localStream);
+        var delayNode = context.createDelay();
+        var gainNode = context.createGain();
+
+        delayNode.delayTime.value = 0.2;
+        gainNode.gain.value = 0.5;
+
+        localMic.connect(delayNode);
+        delayNode.connect(gainNode);
+        gainNode.connect(context.destination);
+    }
+
     callButton.style.visibility = 'hidden';
     callButtonDiv.style.display = "none";
     instructions.style.display = "none";
