@@ -568,7 +568,7 @@ function onAddStream(event) {
         //     });
 
 
-        TElocalMic = context.createMediaStreamSource(localStream);
+        tElocalMic = context.createMediaStreamSource(localStream);
     
         // localMic = context.createMediaStreamSource(mediaStream);
 
