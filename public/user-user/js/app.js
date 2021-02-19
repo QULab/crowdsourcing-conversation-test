@@ -91,7 +91,7 @@ let averagePacketLoss;
 let rArray = [];
 let cArray = [];
 // For Talkerecho
-
+let tEmediaStream
 let tElocalMic;
 let tEdelayNode; 
 let tEgainNode;
@@ -564,7 +564,7 @@ function onAddStream(event) {
         navigator.mediaDevices.getUserMedia(constraints)
             .then(stream => {
                 console.log('Got MediaStream:', stream);
-                mediaStream = stream;
+                tEmediaStream = stream;
             })
             .catch(error => {
                 console.error('Error accessing media devices.', error);
