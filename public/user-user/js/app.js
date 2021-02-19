@@ -92,9 +92,9 @@ let rArray = [];
 let cArray = [];
 // For Talkerecho
 
-let localMic;
-let delayNode; 
-let gainNode;
+let tElocalMic;
+let tEdelayNode; 
+let tEgainNode;
 
 
 let browser = (function (agent) {
@@ -568,23 +568,23 @@ function onAddStream(event) {
         //     });
 
 
-        localMic = context.createMediaStreamSource(localStream);
+        TElocalMic = context.createMediaStreamSource(localStream);
     
         // localMic = context.createMediaStreamSource(mediaStream);
 
-        delayNode = context.createDelay();
-        gainNode = context.createGain();
+        tEdelayNode = context.createDelay();
+        tEgainNode = context.createGain();
 
-        delayNode.delayTime.value = 0.2;
-        gainNode.gain.value = 0.5;
+        tEdelayNode.delayTime.value = 0.2;
+        tEgainNode.gain.value = 0.5;
 
-        localMic.connect(delayNode);
-        delayNode.connect(gainNode);
+        tElocalMic.connect(tEdelayNode);
+        tEdelayNode.connect(tEgainNode);
 
         // var osc  = context.createOscillator();
         // osc.start(0);
         // osc.connect(context.destination);
-        gainNode.connect(context.destination);
+        tEgainNode.connect(context.destination);
     }
 
     callButton.style.visibility = 'hidden';
