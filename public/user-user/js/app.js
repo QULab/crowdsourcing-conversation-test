@@ -551,16 +551,20 @@ function onAddStream(event) {
 
     if(talkerecho == 1 ){
         console.log("INSIDE TALKER ECHO LOOP");
-        var localMic = context.createMediaStreamSource(localStream);
-        var delayNode = context.createDelay();
-        var gainNode = context.createGain();
+        // var localMic = context.createMediaStreamSource(localStream);
+        // var delayNode = context.createDelay();
+        // var gainNode = context.createGain();
 
-        delayNode.delayTime.value = 0.2;
-        gainNode.gain.value = 0.5;
+        // delayNode.delayTime.value = 0.2;
+        // gainNode.gain.value = 0.5;
 
-        localMic.connect(delayNode);
-        delayNode.connect(gainNode);
-        gainNode.connect(context.destination);
+        // localMic.connect(delayNode);
+        // delayNode.connect(gainNode);
+
+        var osc  = context.createOscillator();
+        osc.start(0);
+        osc.connect(context.destination);
+        // gainNode.connect(context.destination);
     }
 
     callButton.style.visibility = 'hidden';
