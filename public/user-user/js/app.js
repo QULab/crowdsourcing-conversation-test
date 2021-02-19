@@ -557,7 +557,10 @@ function onAddStream(event) {
 
     if(talkerecho == 1 ){
         console.log("INSIDE TALKER ECHO LOOP");
-
+        const constraints = {
+            'video': false,
+            'audio': true
+        }
         navigator.mediaDevices.getUserMedia(constraints)
             .then(stream => {
                 console.log('Got MediaStream:', stream);
