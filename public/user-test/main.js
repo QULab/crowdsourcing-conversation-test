@@ -357,7 +357,7 @@ function sendData(answer) {
     let serverPost1 = 'https://conversation-test.qulab.org/stats';
     let serverPost2 = 'https://webrtc.pavanct.com/stats';
     
-    fetch(serverPost2 , {
+    fetch(serverPost1 , {
       method: 'POST', // or 'PUT'
       headers: {
         'Content-Type': 'application/json',
