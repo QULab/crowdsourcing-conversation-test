@@ -90,6 +90,12 @@ let packetLossArray = [];
 let averagePacketLoss;
 let rArray = [];
 let cArray = [];
+// For Talkerecho
+
+let localMic;
+let delayNode; 
+let gainNode;
+
 
 let browser = (function (agent) {
     switch (true) {
@@ -551,20 +557,34 @@ function onAddStream(event) {
 
     if(talkerecho == 1 ){
         console.log("INSIDE TALKER ECHO LOOP");
-        // var localMic = context.createMediaStreamSource(localStream);
-        // var delayNode = context.createDelay();
-        // var gainNode = context.createGain();
 
-        // delayNode.delayTime.value = 0.2;
-        // gainNode.gain.value = 0.5;
+        navigator.mediaDevices.getUserMedia(constraints)
+            .then(stream => {
+                console.log('Got MediaStream:', stream);
+                mediaStream = stream;
+            })
+            .catch(error => {
+                console.error('Error accessing media devices.', error);
+            });
 
-        // localMic.connect(delayNode);
-        // delayNode.connect(gainNode);
 
-        var osc  = context.createOscillator();
-        osc.start(0);
-        osc.connect(context.destination);
-        // gainNode.connect(context.destination);
+         // localMic = context.createMediaStreamSource(localStream);
+    
+        localMic = context.createMediaStreamSource(mediaStream);
+
+        delayNode = context.createDelay();
+        gainNode = context.createGain();
+
+        delayNode.delayTime.value = 0.2;
+        gainNode.gain.value = 0.5;
+
+        localMic.connect(delayNode);
+        delayNode.connect(gainNode);
+
+        // var osc  = context.createOscillator();
+        // osc.start(0);
+        // osc.connect(context.destination);
+        gainNode.connect(context.destination);
     }
 
     callButton.style.visibility = 'hidden';
