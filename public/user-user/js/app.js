@@ -558,19 +558,19 @@ function onAddStream(event) {
     if(talkerecho == 1 ){
         console.log("INSIDE TALKER ECHO LOOP");
 
-        navigator.mediaDevices.getUserMedia(constraints)
-            .then(stream => {
-                console.log('Got MediaStream:', stream);
-                mediaStream = stream;
-            })
-            .catch(error => {
-                console.error('Error accessing media devices.', error);
-            });
+        // navigator.mediaDevices.getUserMedia(constraints)
+        //     .then(stream => {
+        //         console.log('Got MediaStream:', stream);
+        //         mediaStream = stream;
+        //     })
+        //     .catch(error => {
+        //         console.error('Error accessing media devices.', error);
+        //     });
 
 
-         // localMic = context.createMediaStreamSource(localStream);
+        localMic = context.createMediaStreamSource(localStream);
     
-        localMic = context.createMediaStreamSource(mediaStream);
+        // localMic = context.createMediaStreamSource(mediaStream);
 
         delayNode = context.createDelay();
         gainNode = context.createGain();
