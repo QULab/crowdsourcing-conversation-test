@@ -326,6 +326,7 @@ if (roomNumber != null) {
 }
 
 function startCall() {
+    createAudioContext();
     socket.emit("caller_ready", roomNumber);
     socket.emit("ready", roomNumber);
 }
@@ -341,6 +342,7 @@ socket.on("accept_call", function () {
 })
 
 function acceptCall() {
+    createAudioContext();
     socket.emit("ready", roomNumber);
     audio4.pause();
     audio4.currentTime = 0;
@@ -357,7 +359,6 @@ socket.on("called", function () {
 // on creating the room - call initiator 
 socket.on("created", function (room) {
     fetchJobConfig();
-    createAudioContext();
     console.log("Local User -- Caller");
     navigator.mediaDevices.getUserMedia(
         streamConstraints).then(
@@ -393,7 +394,6 @@ socket.on("created", function (room) {
 // when someone joins - call receiver
 socket.on("joined", function (room) {
     fetchJobConfig();
-    createAudioContext();
 
     // $('.started').toast('show');
     console.log("Remote User - receiver");
@@ -589,6 +589,7 @@ function onAddStream(event) {
         // osc.connect(context.destination);
         console.log(destinationNative)
         tElocalMic.connect(destinationNative);
+       // localAudio.srcObject = tElocalMic;
     }
 
     callButton.style.visibility = 'hidden';
