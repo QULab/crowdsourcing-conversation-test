@@ -185,9 +185,11 @@ const startHeadsetCheck = async function () {
 
 function answer() {
 
-    // FOR TESTING. CHANGE BACK!!!
-    location.href = "../user-user/" + queryString;
+
     console.log("FUNCTION ANSWER IS CALLED");
+
+     // FOR TESTING. CHANGE BACK!!!
+    location.href = "../user-user/" + queryString;
     let form = document.getElementById('question');
     form.onsubmit = function (event) {
         event.preventDefault();
