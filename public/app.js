@@ -63,7 +63,6 @@ let roomNumber = urlParams.get('roomNumber');
 console.log(roomNumber);
 let type = urlParams.get('type');
 console.log(type);
-
 if (sessionStorage.hasOwnProperty('qual_test'))
     sessionStorage.removeItem("qual_test");
 
@@ -181,6 +180,7 @@ const startHeadsetCheck = async function () {
 }
 
 function answer() {
+    console.log("FUNCTION ANSWER IS CALLED");
     let form = document.getElementById('question');
     form.onsubmit = function (event) {
         event.preventDefault();
