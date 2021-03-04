@@ -172,6 +172,7 @@ const startHeadsetCheck = async function () {
                 }
             }
             headsetDetected = isHeadsetOn(device_list);
+            console.log("USER HAS HEADSET ON",headsetDetected);
             $("#webrtc_raw").val(device_list);
             $("#use_headset").val(headsetDetected);
             $("#status").html("Done. Please continue.");
