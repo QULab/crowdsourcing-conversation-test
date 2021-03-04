@@ -144,6 +144,9 @@ const constraints = {
     functions responsible to headset check
 */
 function isHeadsetOn(webrtc_raw) {
+
+    // Manipulation oif headsetecheck for testing purposes. CHANGE BACK!!!
+    document.getElementById('answerButton').disabled = false;
     keywords = ["headphone", "headset", "airpod", "usb audio device"]
     for (var i = 0; i < keywords.length; i++) {
         if (webrtc_raw.includes(keywords[i])) {
@@ -181,6 +184,8 @@ const startHeadsetCheck = async function () {
 }
 
 function answer() {
+
+    // FOR TESTING. CHANGE BACK!!!
     location.href = "../user-user/" + queryString;
     console.log("FUNCTION ANSWER IS CALLED");
     let form = document.getElementById('question');
