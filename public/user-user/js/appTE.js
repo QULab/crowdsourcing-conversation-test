@@ -639,6 +639,7 @@ function onAddStream(event) {
             input.connect(gainNode);
             whiteNoiseNode.connect(gainNode);
             gainNode.connect(context.destination);
+            console.log("NOISE ADDED")
 
 
         }
