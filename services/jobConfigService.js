@@ -29,11 +29,22 @@ exports.createJobConfig = async function createJobConfig(data) {
 exports.deleteJobConfig = async function deleteJobConfig(data){
     try{
         console.log("query", data);
-        let jobConfig = await JobConfig.deleteOne(query,function(err){
-            if(err) console.log(err);
-            console.log("Successful deletion");
-        })
+        let alerts
+      
+            console.log("Deleting One Entry")
+            let jobConfig = await JobConfig.deleteMany(data,function(err,result){
+                if(err){
+                    console.log(err);
+                    alerts = err;
+                }
+                console.log("Answer from DB:" ,result);
+                alerts =  result;
+            })
+            return alerts;
+         
     }catch(e){
         throw Error('Error while deleting config', e)
     }
 }
+
+

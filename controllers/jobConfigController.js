@@ -35,13 +35,13 @@ exports.createJobConfig = async function createJobConfig(req, res, next) {
 exports.deleteJobConfig = async function deleteJobConfig(req,res,next){
     let query = req.body;
     try {
-        let alerts = await jobConfigServive.deleteJobConfig(query)
+        let alerts = await jobConfigService.deleteJobConfig(query)
         return res
             .status(200)
             .json({
                 status: 200,
                 data: alerts,
-                message: "Succesfully deleted Job config"
+                message: "Contacted DB"
             })
             
     } catch (e) {
