@@ -274,7 +274,8 @@ app.get(
 
 router.get("/jobConfig", jobConfigController.getJobConfig);
 router.post("/jobConfig", jobConfigController.createJobConfig);
-router.delete("/jobConfig",jobConfigController.deleJobConfig);
+router.delete("/jobConfig",jobConfigController.deleteJobConfig);
+
 
 app.post("/scenarioAnswers", async (req, res) => {
   console.log("Got query:", req.query);
