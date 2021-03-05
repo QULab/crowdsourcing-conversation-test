@@ -25,3 +25,15 @@ exports.createJobConfig = async function createJobConfig(data) {
         throw Error('Error while creating config', e)
     }
 }
+
+exports.deleteJobConfig = async function deleteJobConfig(data){
+    try{
+        console.log("query", data);
+        let jobConfig = await JobConfig.deleteOne(query,function(err){
+            if(err) console.log(err);
+            console.log("Successful deletion");
+        })
+    }catch(e){
+        throw Error('Error while deleting config', e)
+    }
+}

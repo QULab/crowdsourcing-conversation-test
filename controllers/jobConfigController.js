@@ -31,3 +31,21 @@ exports.createJobConfig = async function createJobConfig(req, res, next) {
         return res.status(400).json({ status: 400, message: e.message });
     }
 }
+
+exports.deleteJobConfig = async function deleteJobConfig(req,res,next){
+    let query = req.body;
+    try {
+        let alerts = await jobConfigServive.deleteJobConfig(query)
+        return res
+            .status(200)
+            .json({
+                status: 200,
+                data: alerts,
+                message: "Succesfully deleted Job config"
+            })
+            
+    } catch (e) {
+        return res.status(400).json({ status: 400, message: e.message });
+    }
+
+}
