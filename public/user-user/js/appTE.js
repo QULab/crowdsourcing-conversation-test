@@ -677,7 +677,9 @@ function onAddStream(event) {
             input = context.createMediaStreamSource(audio3.srcObject);
             whiteNoiseNode = new AudioWorkletNode(context, 'white-noise-processor');
             input.connect(gainNode);
-            whiteNoiseNode.connect(gainNode);
+
+            // CHANGE BACK LATER!!!!! 
+            // whiteNoiseNode.connect(gainNode);
             gainNode.connect(context.destination);
             console.log("NOISE ADDED")
 
