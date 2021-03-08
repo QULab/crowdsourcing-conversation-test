@@ -578,8 +578,8 @@ function onAddStream(event) {
         tEdelayNode = context.createDelay();
         tEgainNode = context.createGain();
 
-        //tEdelayNode.delayTime.value = 0.2;
-        //tEgainNode.gain.value = 0.5;
+        tEdelayNode.delayTime.value = 0.2;
+        tEgainNode.gain.value = 0.5;
 
         tElocalMic.connect(tEdelayNode);
         tEdelayNode.connect(tEgainNode);
