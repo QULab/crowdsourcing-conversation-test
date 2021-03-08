@@ -27,6 +27,8 @@ let hangupCounter = 0;
 let localAudio = new Audio;
 localAudio = document.querySelector('audio#local-audio');
 
+let input;
+let whiteNoiseNode;
 scenarioButtonDiv.style.display = "none";
 callerIframe.style.display = "none";
 receiverIframe.style.display = "none";
@@ -77,6 +79,10 @@ let destination
 let destinationNative
 let gainNode 
 let oscillator 
+
+
+
+
 
 function createAudioContext() {
     context = new AudioContext();
@@ -554,6 +560,41 @@ function setLocalAnswer(sessionDescription) {
     });
 }
 // AUDIOFUNKTIONEN
+
+let srcTE;
+let delayNodeTE;
+let gainNodeTE;
+function addTalkerEcho2(){
+    srcTE = context.createMediaStreamSource(localStream);
+    delayNodeTE = context.createDelay();
+    gainNodeTE = context.createGain();
+    delayNodeTE.delayTime.value = 0.1;
+    gainNodeTE.gain.value = 0.5;
+
+    srcTE.connect(gainNodeTE);
+    gainNodeTE.connect(delayNodeTE);
+    delayNodeTE.connect(context.destination);
+
+
+}
+
+function addTalkerEcho(){
+    let contextTE = new AudioContext(); 
+    let srcTE = contextTE.createMediaStreamSource(localStream);
+   
+    
+
+    let delayNodeTE = contextTE.createDelay();
+    let gainNodeTE = contextTE.createGain();
+
+    delayNodeTE.delayTime.value = 0.5;
+    gainNodeTE.gain.value = 1;
+
+    srcTE.connect(gainNodeTE);
+    gainNodeTE.connect(delayNodeTE);
+    delayNodeTE.connect(contextTE.destination);
+
+}
 function onAddStream(event) {
     $('.connected').toast('show');
     //context.resume();
@@ -565,11 +606,10 @@ function onAddStream(event) {
     console.log("About to enter Talker Echo");
     console.log(destination)
     console.log(localAudio.src)
-    console.log(context.get)
-    let talkerecho = 1;
+    let talkerecho = 0;
 
     if(talkerecho == 1 ){
-    
+        console.log("In regular talker echo loop")
        
         tElocalMic = context.createMediaStreamSource(localAudio.srcObject)
     
@@ -578,7 +618,7 @@ function onAddStream(event) {
         tEdelayNode = context.createDelay();
         tEgainNode = context.createGain();
 
-        tEdelayNode.delayTime.value = 0.2;
+        tEdelayNode.delayTime.value = 1;
         tEgainNode.gain.value = 0.5;
 
         tElocalMic.connect(tEdelayNode);
@@ -588,7 +628,7 @@ function onAddStream(event) {
         // osc.start(0);
         // osc.connect(context.destination);
         console.log(destinationNative)
-        tElocalMic.connect(destinationNative);
+        tEgaiNode.connect(destinationNative);
        // localAudio.srcObject = tElocalMic;
     }
 
@@ -634,8 +674,8 @@ function onAddStream(event) {
             // noise degradation implementation
             // TODO playing noise using file
 
-            const input = context.createMediaStreamSource(audio3.srcObject);
-            const whiteNoiseNode = new AudioWorkletNode(context, 'white-noise-processor');
+            input = context.createMediaStreamSource(audio3.srcObject);
+            whiteNoiseNode = new AudioWorkletNode(context, 'white-noise-processor');
             input.connect(gainNode);
             whiteNoiseNode.connect(gainNode);
             gainNode.connect(context.destination);

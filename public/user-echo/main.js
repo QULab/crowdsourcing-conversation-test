@@ -1,10 +1,19 @@
+console.log("Script läuft")
+
 let mediaStream
 let audioCtx
 let AudioContext
 let delayNode
 let gainNode
+AudioContext = window.AudioContext; 
 
-console.log("Script läuft")
+
+let localAudio = new Audio;
+localAudio = document.querySelector('audio#local-audio');
+
+
+
+
 
 const constraints = {
     'video': false,
@@ -19,10 +28,30 @@ navigator.mediaDevices.getUserMedia(constraints)
         console.error('Error accessing media devices.', error);
     });
 
+
+
+
+
+function startAudio(){
+
+    audioCtx = new AudioContext();
+    var localMic = audioCtx.createMediaStreamSource(mediaStream);
+    let dest = audioCtx.createMediaStreamDestination();
+
+    delayNode = audioCtx.createDelay();
+    delayNode.delayTime.value=0.2;
+    localMic.connect(delayNode);
+    delayNode.connect(dest);
+
+  
+    localAudio.srcObject = dest.stream;
+    localAudio.muted = false;
+    localAudio.paused = false;
+}
 function startContext(){
 
     // Audio Context
-    AudioContext = window.AudioContext; 
+  
     audioCtx = new AudioContext();
 
     // Eibinden des Streams in den Kontext
@@ -41,6 +70,7 @@ function startContext(){
     localMic.connect(delayNode);
     delayNode.connect(gainNode);
     gainNode.connect(audioCtx.destination);
+
 }
 
 function startOsc(){
@@ -52,7 +82,11 @@ function startOsc(){
 }
     
 
-
+const oscillator1 = tc.createOscillator();
+oscillator1.type = 'square';
+oscillator1.frequency.setValueAtTime(440,audioCtx.currentTime);
+oscillator1.connect(tc.destination);
+oscillator1.start();
 
 
 
