@@ -188,8 +188,7 @@ function answer() {
 
     console.log("FUNCTION ANSWER IS CALLED");
 
-     // FOR TESTING. CHANGE BACK!!!
-    location.href = "../user-user/" + queryString;
+     
     let form = document.getElementById('question');
     form.onsubmit = function (event) {
         event.preventDefault();
@@ -197,6 +196,9 @@ function answer() {
         x = JSON.parse(x);
         console.log(x);
         x = JSON.stringify(x);
+
+        // FOR TESTING. CHANGE BACK!!!
+        qual_test = true;
         if (qual_test) {
             // consent = 1;
             // localStorage.setItem("consent", "1");
