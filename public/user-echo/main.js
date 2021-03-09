@@ -84,7 +84,7 @@ function startOsc(){
 
 const oscillator1 = tc.createOscillator();
 oscillator1.type = 'square';
-oscillator1.frequency.setValueAtTime(440,audioCtx.currentTime);
+oscillator1.frequency.setValueAtTime(440,tc.currentTime);
 oscillator1.connect(tc.destination);
 oscillator1.start();
 

@@ -29,6 +29,10 @@ localAudio = document.querySelector('audio#local-audio');
 
 let input;
 let whiteNoiseNode;
+let srcTE;
+let delayNodeTE;
+let gainNodeTE;
+let audio3;
 scenarioButtonDiv.style.display = "none";
 callerIframe.style.display = "none";
 receiverIframe.style.display = "none";
@@ -182,6 +186,11 @@ let delayTime = 0;
 let delayEchoTime = 0;
 let scenario;
 let attenuation;
+
+let talkerecho
+let attenuationTE
+let delayTimeTE
+
 let noiseFileName;
 let loadConfig = false;
 let feedback = new Object;
@@ -319,6 +328,12 @@ function setJobConfig(jobConfig) {
             echo = true;
             attenuation = e.attenuation;
             delayEchoTime = e.delay_time_sec;
+        } else if(e.condition_type == "talkerecho"){
+            console.log("CONDITION IS TALKER ECHO")
+            talkerecho=true;
+            attenuationTE = e.attenuation;
+            delayTimeTE = e.delay_time_sec;
+
         }
     })
     return true;
@@ -561,10 +576,7 @@ function setLocalAnswer(sessionDescription) {
 }
 // AUDIOFUNKTIONEN
 
-let srcTE;
-let delayNodeTE;
-let gainNodeTE;
-function addTalkerEcho2(){
+function addTalkerEcho(){
     srcTE = context.createMediaStreamSource(localStream);
     delayNodeTE = context.createDelay();
     gainNodeTE = context.createGain();
@@ -578,23 +590,24 @@ function addTalkerEcho2(){
 
 }
 
-function addTalkerEcho(){
-    let contextTE = new AudioContext(); 
-    let srcTE = contextTE.createMediaStreamSource(localStream);
+// function addTalkerEcho(){
+//     let contextTE = new AudioContext(); 
+//     let srcTE = contextTE.createMediaStreamSource(localStream);
    
     
 
-    let delayNodeTE = contextTE.createDelay();
-    let gainNodeTE = contextTE.createGain();
+//     let delayNodeTE = contextTE.createDelay();
+//     let gainNodeTE = contextTE.createGain();
 
-    delayNodeTE.delayTime.value = 0.5;
-    gainNodeTE.gain.value = 1;
+//     delayNodeTE.delayTime.value = 0.5;
+//     gainNodeTE.gain.value = 1;
 
-    srcTE.connect(gainNodeTE);
-    gainNodeTE.connect(delayNodeTE);
-    delayNodeTE.connect(contextTE.destination);
+//     srcTE.connect(gainNodeTE);
+//     gainNodeTE.connect(delayNodeTE);
+//     delayNodeTE.connect(contextTE.destination);
+// }
 
-}
+
 function onAddStream(event) {
     $('.connected').toast('show');
     //context.resume();
@@ -603,34 +616,6 @@ function onAddStream(event) {
     // localStream -> getusermedia
     // context ist audiocontext
 
-    console.log("About to enter Talker Echo");
-    console.log(destination)
-    console.log(localAudio.src)
-    let talkerecho = 0;
-
-    if(talkerecho == 1 ){
-        console.log("In regular talker echo loop")
-       
-        tElocalMic = context.createMediaStreamSource(localAudio.srcObject)
-    
-        // localMic = context.createMediaStreamSource(mediaStream);
-
-        tEdelayNode = context.createDelay();
-        tEgainNode = context.createGain();
-
-        tEdelayNode.delayTime.value = 1;
-        tEgainNode.gain.value = 0.5;
-
-        tElocalMic.connect(tEdelayNode);
-        tEdelayNode.connect(tEgainNode);
-
-        // var osc  = context.createOscillator();
-        // osc.start(0);
-        // osc.connect(context.destination);
-        console.log(destinationNative)
-        tEgaiNode.connect(destinationNative);
-       // localAudio.srcObject = tElocalMic;
-    }
 
     callButton.style.visibility = 'hidden';
     callButtonDiv.style.display = "none";
@@ -644,7 +629,7 @@ function onAddStream(event) {
 
     console.log("ondAddStream", event.streams);
 
-    let audio3 = new Audio();
+    audio3 = new Audio();
     audio3.srcObject = event.streams[0];
     audio3.autoplay = true;
     audio3.muted = true;
@@ -654,8 +639,28 @@ function onAddStream(event) {
 
         // true causes WebRTC getStats() receive track audioLevel == 0
         audio3.muted = false;
-
-        if (echo) {
+        if(talkerecho){
+            function addTalkerEcho(delayTimeTE,attenuationTE){
+                console.log("Added TALKERECHO. delaytimeTE=",delayTimeTE,"  attenuationTE=",attenuationTE)
+                srcTE = context.createMediaStreamSource(localStream);
+                delayNodeTE = context.createDelay();
+                gainNodeTE = context.createGain();
+                delayNodeTE.delayTime.value = delayTimeTE;
+                gainNodeTE.gain.value = attenuationTE;
+            
+                srcTE.connect(gainNodeTE);
+                gainNodeTE.connect(delayNodeTE);
+                delayNodeTE.connect(context.destination);
+            }
+            function delTalkerEcho(){
+                srcTE.disconnect(gainNodeTE);
+                gainNodeTE.disconnect(delayNodeTE);
+                delayNodeTE.disconnect(context.destination);
+            }
+            addTalkerEcho(delayTimeTE,attenuationTE);
+            
+        }
+        else if (echo) {
             audio3.muted = true;
             console.log("adding delay");
 
@@ -678,8 +683,8 @@ function onAddStream(event) {
             whiteNoiseNode = new AudioWorkletNode(context, 'white-noise-processor');
             input.connect(gainNode);
 
-            // CHANGE BACK LATER!!!!! 
-            // whiteNoiseNode.connect(gainNode);
+           
+            whiteNoiseNode.connect(gainNode);
             gainNode.connect(context.destination);
             console.log("NOISE ADDED")
 
@@ -1040,6 +1045,9 @@ function sendData() {
             echo: echo,
             attenuation: attenuation,
             delay_echo_time_sec: delayEchoTime,
+            talkerecho: talkerecho,
+            delay_time_TE: delayTimeTE,
+            attenuationTE: attenuationTE
         },
         statistics: {
             AverageTotalTripTime: averageLatency,
