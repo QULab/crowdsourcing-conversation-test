@@ -5,9 +5,8 @@ let audioCtx
 let AudioContext
 let delayNode
 let gainNode
-let mediaRecorder
+
 var RecordRTC
-var chunks = []
 var blob;
 
 AudioContext = window.AudioContext; 
@@ -25,8 +24,8 @@ navigator.mediaDevices.getUserMedia(constraints)
     .then(stream => {
         console.log('Got MediaStream:', stream);
         mediaStream = stream;
-        mediaRecorder = new MediaRecorder(stream);
-        recordRTC = RecordRTC(mediaStream,options);
+  
+
     })
     .catch(error => {
         console.error('Error accessing media devices.', error);
@@ -75,6 +74,7 @@ function startContext(){
     audioCtx = new AudioContext();
 
     // Eibinden des Streams in den Kontext
+   
     var localMic = audioCtx.createMediaStreamSource(mediaStream);
     let dest = audioCtx.createMediaStreamDestination();
     //localMic.connect(audioCtx.destination);
@@ -92,38 +92,7 @@ function startContext(){
     delayNode.connect(gainNode);
     gainNode.connect(audioCtx.destination);
     gainNode.connect(dest);
+    recordRTC = RecordRTC(dest.stream,options);
 
 }
-function recordStart(){
-    //mediaRecorder = new MediaRecorder(stream);
-    mediaRecorder.start(5000);
-    console.log(mediaRecorder.state);
-    console.log("Recorder Started");
-}
-function recordStop(){
-    mediaRecorder.stop()
-    console.log(mediaRecorder.state)
-    console.log("Recorder stopped");
-}
-// mediaRecorder.ondataavailable = function(e){
-//     console.log("data:",e.data);
-//     chunks.push(e.data);
-// }
-
-mediaRecorder.addEventListener("dataavailable",function(event){
-    console.log("EVENT FIRED")
-})
-mediaRecorder.onstop = function(e){
-    console.log("ONSTOP");
-    localAudio.controls=true;
-    blob = new Blob(chunks, {'type':'audio/ogg; codecs=opus'});
-    //chunks = [];
-    localAudio.muted = false;
-    localAudio.paused = false;
-    localAudio.src = URL.createObjectURL(blob)
-
-}
-
-
-
 
