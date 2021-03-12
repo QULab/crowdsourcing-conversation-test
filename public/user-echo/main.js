@@ -26,6 +26,7 @@ navigator.mediaDevices.getUserMedia(constraints)
         console.log('Got MediaStream:', stream);
         mediaStream = stream;
         mediaRecorder = new MediaRecorder(stream);
+        recordRTC = RecordRTC(mediaStream,options);
     })
     .catch(error => {
         console.error('Error accessing media devices.', error);
@@ -38,7 +39,7 @@ navigator.mediaDevices.getUserMedia(constraints)
 function recordStartRTC(){
     recordRTC.startRecording();
 }
-function recordStopRTC(localAudio){
+function recordStopRTC(){
     localAudio.muted=false;
     localAudio.paused=false;
     recordRTC.stopRecording(function(audioURL) {
@@ -91,11 +92,9 @@ function startContext(){
     delayNode.connect(gainNode);
     gainNode.connect(audioCtx.destination);
     gainNode.connect(dest);
-    recordRTC = RecordRTC(mediaStream,options);
-    recordStartRTC(mediaStream);
 
 }
-function recordStart(stream){
+function recordStart(){
     //mediaRecorder = new MediaRecorder(stream);
     mediaRecorder.start(5000);
     console.log(mediaRecorder.state);
