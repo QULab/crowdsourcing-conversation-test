@@ -19,7 +19,6 @@
 </head>
 
 <body>
-    <p>TEST</p>
     <audio id="local-audio" controls autoplay muted style="display: none;"></audio>
     <div class="center" style="margin-bottom: 10px;">
         <button type="button" class="btn btn-primary center"
@@ -27,16 +26,10 @@
     </div>
     <div class="center" style="margin-bottom: 10px;">
         <button type="button" class="btn btn-primary center"
-            onclick="startAudio()">START AUDIO HTML</button>
-    </div>
-
-
-    <div class="center" style="margin-bottom: 10px;">
-        <button type="button" class="btn btn-primary center"
-            onclick="startOsc()">STARTOSC</button>
+            onclick="recordStop()">STOP RECORDING</button>
     </div>
    
    
-
+    <script src="RecordRTC.js"></script>
     <script src="main.js"></script>
 </body>
