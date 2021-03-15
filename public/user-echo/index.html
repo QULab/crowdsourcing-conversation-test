@@ -35,9 +35,12 @@
     </div>
     <div class="center" style="margin-bottom: 10px;">
         <button type="button" class="btn btn-primary center"
-            onclick="startContext()">STOP AUDIO CONTEXT</button>
+            onclick="stopContext()">STOP AUDIO CONTEXT</button>
     </div>
-   
+    <div class="center" style="margin-bottom: 10px;">
+        <button id="saveBlob" class="btn btn-primary center"
+            onclick="saveBlob()">DOWNLOAD AUDIO</button>
+    </div>
    
     <script src="RecordRTC.js"></script>
     <script src="main.js"></script>

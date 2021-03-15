@@ -5,6 +5,9 @@ let audioCtx
 let AudioContext
 let delayNode
 let gainNode
+let dest
+let localMic
+let audioURL
 
 var RecordRTC
 var blob;
@@ -13,7 +16,10 @@ AudioContext = window.AudioContext;
 let localAudio = new Audio();
 localAudio = document.querySelector('audio#local-audio');
 var options = {
-    type: 'audio'}
+    type: 'audio',
+    mimeType: 'audio/wav',
+    recorderType: RecordRTC.StereoAudioRecorder
+}
 
 
 const constraints = {
@@ -35,17 +41,7 @@ navigator.mediaDevices.getUserMedia(constraints)
 
 
 
-function recordStartRTC(){
-    recordRTC.startRecording();
-}
-function recordStopRTC(){
-    localAudio.muted=false;
-    localAudio.paused=false;
-    recordRTC.stopRecording(function(audioURL) {
-        localAudio.src = audioURL;
-     });
-     
-}
+
 
 
 
@@ -75,8 +71,8 @@ function startContext(){
 
     // Eibinden des Streams in den Kontext
    
-    var localMic = audioCtx.createMediaStreamSource(mediaStream);
-    let dest = audioCtx.createMediaStreamDestination();
+    localMic = audioCtx.createMediaStreamSource(mediaStream);
+    dest = audioCtx.createMediaStreamDestination();
     //localMic.connect(audioCtx.destination);
     console.log(audioCtx.destination);
 
@@ -92,7 +88,46 @@ function startContext(){
     delayNode.connect(gainNode);
     gainNode.connect(audioCtx.destination);
     gainNode.connect(dest);
+    localMic.connect(dest);
     recordRTC = RecordRTC(dest.stream,options);
 
 }
 
+function stopContext(){
+    try{
+        gainNode.disconnect(audioCtx.destination);
+        gainNode.disconnect(dest);
+        localMic.disconnect(dest);
+    }
+    catch(e){
+        console.log("error:",e)
+    }
+
+}
+
+
+function saveBlob(url, fileName) {
+    var a = document.createElement("a");
+    document.body.appendChild(a);
+    a.style = "display: none";
+    a.href = url;
+    a.download = fileName;
+    a.click();
+};
+
+
+
+function recordStartRTC(){
+    recordRTC.startRecording();
+}
+function recordStopRTC(){
+    localAudio.muted=false;
+    localAudio.paused=false;
+    recordRTC.stopRecording(function(audioURL) {
+
+        localAudio.src = audioURL;
+        console.log(audioURL)
+        saveBlob(audioURL,"test.wav")
+     });
+     
+}
