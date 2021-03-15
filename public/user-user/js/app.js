@@ -1048,5 +1048,7 @@ function getQualAnswers() {
     }
 }
 
+//KOMMENTAR!!
+
 
 
