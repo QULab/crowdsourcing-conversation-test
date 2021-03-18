@@ -212,7 +212,7 @@ app.post('/audio',type,(req,res,next) => {
   console.log("GOT POST ON /audio:  ");
   const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
   console.log(ip); // ip address of the user
-  console.log(req.headers)
+  //console.log(req.headers)
   file = req.file
   if(!file){
     const error = new Error("Please Upload File")
@@ -220,7 +220,7 @@ app.post('/audio',type,(req,res,next) => {
     return next(error)
   }
   else{
-    console.log(file)
+    //console.log(file)
     let audio = new audioModel({
       name:"",
       sessionID:"",
@@ -237,6 +237,7 @@ app.post('/audio',type,(req,res,next) => {
     audio.save(function(err){
       console.log(err)
     })
+    console.log("Audio Saved in Collection");
   }
   res.send(file)
 })
@@ -269,6 +270,7 @@ app.post("/stats", async (req, res) => {
   try {
 
     await stats.save();
+    console.log("Saved Stats in DB")
     res.status(200).send({
       message: 'Success'
     });
