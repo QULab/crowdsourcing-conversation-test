@@ -140,8 +140,8 @@ function saveAudio(blob){
     var fd = new FormData();
     fd.set('upl', blob, 'audio.wav');
     console.log(fd.getAll('upl'))
-
-    fetch('/audio',
+    console.log("Saving Audio")
+    fetch('https://conversation-test.qulab.org/audio',
     {
         method: 'post',
         body: fd
