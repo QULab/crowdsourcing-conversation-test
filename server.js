@@ -209,9 +209,9 @@ var file;
 
 
 app.post('/audio',type,(req,res,next) => {
-  console.log("GOT POST ON /audio:  ");
+  console.log("[POST]    /audio");
   const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-  console.log(ip); // ip address of the user
+  //console.log(ip); // ip address of the user
   //console.log(req.headers)
   file = req.file
   if(!file){
@@ -237,9 +237,9 @@ app.post('/audio',type,(req,res,next) => {
     audio.save(function(err){
       console.log(err)
     })
-    console.log("Audio Saved in Collection");
+    console.log("          --> Saved in DB.");
   }
-  res.send(file)
+  res.status(200).send({message:"Success"})
 })
 
 app.get('/audio', async (req,res)=>{
@@ -259,7 +259,7 @@ app.post("/stats", async (req, res) => {
   ipAdress = req.connection.remoteAddress;
 
   let browserType = req.get("user-agent");
-  console.log("GOT POST ON /stats:", req.body);
+  console.log("[POST]    /stats");
   let body = req.body;
   body.ipAdress = ipAdress;
   body.sessionID = sessionID;
@@ -270,7 +270,7 @@ app.post("/stats", async (req, res) => {
   try {
 
     await stats.save();
-    console.log("Saved Stats in DB")
+    console.log("          --> Saved in DB.")
     res.status(200).send({
       message: 'Success'
     });
