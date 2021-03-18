@@ -18,6 +18,7 @@ let localAudio = new Audio();
 localAudio = document.querySelector('audio#local-audio');
 var options = {
     type: 'audio',
+    mimeType: 'audio/webm'
     //mimeType: 'audio/wav',
     //recorderType: RecordRTC.StereoAudioRecorder
 }
