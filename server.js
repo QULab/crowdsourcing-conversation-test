@@ -176,14 +176,14 @@ let statModel = mongoose.model("StatModel", statSchema);
 
 // post to mongodb
 
-// var storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     cb(null, 'uploads')
-//   },
-//   filename: function (req, file, cb) {
-//     cb(null, file.fieldname + '-' + Date.now())
-//   }
-// })
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads')
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now())
+  }
+})
 
 var upload = multer({ dest: __dirname + '/uploads/' })
 var type = upload.single('upl');

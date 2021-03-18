@@ -18,8 +18,8 @@ let localAudio = new Audio();
 localAudio = document.querySelector('audio#local-audio');
 var options = {
     type: 'audio',
-    mimeType: 'audio/wav',
-    recorderType: RecordRTC.StereoAudioRecorder
+    //mimeType: 'audio/wav',
+    //recorderType: RecordRTC.StereoAudioRecorder
 }
 
 
@@ -93,7 +93,6 @@ function startContext(){
     recordRTC = RecordRTC(dest.stream,options);
 
 }
-
 function stopContext(){
     try{
         gainNode.disconnect(audioCtx.destination);
@@ -105,8 +104,6 @@ function stopContext(){
     }
 
 }
-
-
 function saveBlob(url, fileName) {
     var a = document.createElement("a");
     document.body.appendChild(a);
@@ -115,10 +112,6 @@ function saveBlob(url, fileName) {
     a.download = fileName;
     a.click();
 };
-
-
-
-
 function recordStartRTC(){
     recordRTC.startRecording();
 }
@@ -134,15 +127,11 @@ function recordStopRTC(){
      });
      
 }
-
-
-
 function saveAudio(blob){
 
    // var fileofblob = new File([blob],'audio.wav');
     var fd = new FormData();
-    fd.append("filename","audio1.wav")
-    fd.append('upl',blob);
+    fd.append('upl',blob,"localfilename");
     console.log(fd.getAll('upl'))
     console.log("Saving Audio")
     fetch('/audio',
@@ -150,4 +139,5 @@ function saveAudio(blob){
         method: 'post',
         body: fd
     }); 
+    console.log("All Data Sent")
 }
