@@ -373,15 +373,15 @@ app.post("/scenarioAnswers", async (req, res) => {
 let rooms = [];
 
 io.on("connection", function (socket) {
-  console.log("a user connected");
+  console.log("[CONNECTION]");
 
   socket.on("create or join", function (room) {
-    console.log("create or join to room ", room);
+    console.log("    Roomnumber:", room);
 
     let myRoom = io.sockets.adapter.rooms[room] || { length: 0 };
     let numClients = myRoom.length;
 
-    console.log(room, " has ", numClients, " clients");
+    console.log("                 has ", numClients, " clients");
 
     if (numClients === 0) {
       socket.join(room);
