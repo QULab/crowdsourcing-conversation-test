@@ -192,9 +192,17 @@ app.post('/audio',type,(req,res,next) => {
   console.log("GOT POST ON /audio:  ");
   const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
   console.log(ip); // ip address of the user
+  console.log(req.headers)
+
+
+ 
+
+  // req.file.filename = req.file.originalname;
+  // req.file.path = req.file.destination + req.file.originalname
 
   const file = req.file
-  console.log(file.filename)
+  console.log(file)
+
   if(!file){
     const error = new Error("Please Upload File")
     error.httpStatusCode = 400;
@@ -219,6 +227,7 @@ app.post("/stats", async (req, res) => {
   let body = req.body;
   body.ipAdress = ipAdress;
   body.sessionID = sessionID;
+
   let stats = new statModel(body);
 
 

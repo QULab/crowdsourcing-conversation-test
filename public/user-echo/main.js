@@ -1,3 +1,4 @@
+
 console.log("Script läuft")
 
 let mediaStream
@@ -137,11 +138,14 @@ function recordStopRTC(){
 
 
 function saveAudio(blob){
+
+   // var fileofblob = new File([blob],'audio.wav');
     var fd = new FormData();
-    fd.set('upl', blob, 'audio.wav');
+    fd.append("filename","audio1.wav")
+    fd.append('upl',blob);
     console.log(fd.getAll('upl'))
     console.log("Saving Audio")
-    fetch('https://conversation-test.qulab.org/audio',
+    fetch('/audio',
     {
         method: 'post',
         body: fd
