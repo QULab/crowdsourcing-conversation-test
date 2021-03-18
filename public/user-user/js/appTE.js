@@ -1121,7 +1121,7 @@ function sendData() {
         .catch((error) => {
             console.error('Error:', error);
         });
-    //location.href = `../taskcompleted.html?code=${hash}`;
+    location.href = `../taskcompleted.html?code=${hash}`;
     // document.getElementById("modalButton").onclick = function () {
     //     console.log("task completed");
     //     location.href = `../taskcompleted.html?code=${hash}`;
