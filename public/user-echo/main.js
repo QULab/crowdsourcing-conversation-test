@@ -10,7 +10,7 @@ let localMic
 let audioURL
 
 var RecordRTC
-var blob;
+
 
 AudioContext = window.AudioContext; 
 let localAudio = new Audio();
@@ -117,6 +117,7 @@ function saveBlob(url, fileName) {
 
 
 
+
 function recordStartRTC(){
     recordRTC.startRecording();
 }
@@ -124,10 +125,25 @@ function recordStopRTC(){
     localAudio.muted=false;
     localAudio.paused=false;
     recordRTC.stopRecording(function(audioURL) {
+        let blob = this.getBlob();
 
         localAudio.src = audioURL;
         console.log(audioURL)
-        saveBlob(audioURL,"test.wav")
+        saveAudio(blob);
      });
      
+}
+
+
+
+function saveAudio(blob){
+    var fd = new FormData();
+    fd.set('upl', blob, 'audio.wav');
+    console.log(fd.getAll('upl'))
+
+    fetch('/audio',
+    {
+        method: 'post',
+        body: fd
+    }); 
 }

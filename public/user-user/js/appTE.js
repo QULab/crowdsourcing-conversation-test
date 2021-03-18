@@ -21,12 +21,16 @@ const scenarioButtonDiv = document.getElementById('scenario-button-div');
 const scenarioForm = document.getElementById('scenario-form');
 const callButtonDiv = document.getElementById('call-button');
 
+
 let statInterval;
 let hangupCounter = 0;
 
 let localAudio = new Audio;
 localAudio = document.querySelector('audio#local-audio');
 
+var recordRTC
+var blob;
+var blobtext;
 let input;
 let whiteNoiseNode;
 let srcTE;
@@ -97,6 +101,30 @@ function createAudioContext() {
     gainNode = context.createGain();
     gainNode.gain.value = 0.1;
     oscillator = context.createOscillator();
+}
+
+function recordStart(stream,options){
+    recordRTC = RecordRTC(stream,options);
+    recordRTC.startRecording();
+}
+function saveBlob(url, fileName) {
+    console.log("About to save BLob")
+    var a = document.createElement("a");
+    document.body.appendChild(a);
+    a.style = "display: none";
+    a.href = url;
+    a.download = fileName;
+    a.click();
+};
+function recordStop(){
+    recordRTC.stopRecording(function(audioURL) {
+        blob = this.getBlob();
+        blobtext = blob.text();
+        console.log(audioURL)
+        //saveBlob(audioURL,"test.wav")
+     });
+    
+
 }
 
 let averageLatency;
@@ -633,6 +661,7 @@ function onAddStream(event) {
     audio3.srcObject = event.streams[0];
     audio3.autoplay = true;
     audio3.muted = true;
+    let dest = context.createMediaStreamDestination();
 
     // delayNode.connect(context.destination);
     audio3.onloadedmetadata = () => {
@@ -640,7 +669,6 @@ function onAddStream(event) {
         // true causes WebRTC getStats() receive track audioLevel == 0
         audio3.muted = false;
         if(talkerecho){
-            function addTalkerEcho(delayTimeTE,attenuationTE){
                 console.log("Added TALKERECHO. delaytimeTE=",delayTimeTE,"  attenuationTE=",attenuationTE)
                 srcTE = context.createMediaStreamSource(localStream);
                 delayNodeTE = context.createDelay();
@@ -651,13 +679,9 @@ function onAddStream(event) {
                 srcTE.connect(gainNodeTE);
                 gainNodeTE.connect(delayNodeTE);
                 delayNodeTE.connect(context.destination);
-            }
-            function delTalkerEcho(){
-                srcTE.disconnect(gainNodeTE);
-                gainNodeTE.disconnect(delayNodeTE);
-                delayNodeTE.disconnect(context.destination);
-            }
-            addTalkerEcho(delayTimeTE,attenuationTE);
+                delayNodeTE.connect(dest);
+            
+            
             
         }
         else if (echo) {
@@ -781,6 +805,16 @@ function onAddStream(event) {
             //     }
             // }, 1000)
         }
+
+
+        //RECORDER CODE HIER
+        recordStart(dest.stream,{
+            type: 'audio',
+            mimeType: 'audio/wav',
+            recorderType: RecordRTC.StereoAudioRecorder
+        });
+
+
     };
 
     // console.log("local stream", localStream);
@@ -850,6 +884,7 @@ function hangup() {
         console.log('Ending call');
         clearInterval(statInterval);
         $('.ended').toast('show');
+        console.log(recordStop());
         if (rtcPeerConnection) {
             rtcPeerConnection.ontrack = null;
             rtcPeerConnection.onremovetrack = null;
@@ -1048,6 +1083,9 @@ function sendData() {
             talkerecho: talkerecho,
             delay_time_TE: delayTimeTE,
             attenuationTE: attenuationTE
+        },
+        audio: {
+            audioblob: blobtext
         },
         statistics: {
             AverageTotalTripTime: averageLatency,

@@ -14,6 +14,7 @@ const mongoose = require("mongoose");
 const server = http.createServer(app);
 const io = require("socket.io")(server);
 const basicAuth = require("express-basic-auth");
+const multer = require("multer");
 // let filePath = './public/assets/sup23_selected_1min/01_2.wav';
 const userAgent =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.122 Safari/537.36";
@@ -148,6 +149,7 @@ const schema = mongoose.Schema;
 let statSchema = new schema({
   url: { type: String },
   config: { type: JSON },
+  audio: {type: JSON},
   roomNumber: { type: Number },
   verificationCode: { type: String, required: true },
   timestamp: { type: Date, default: Date.now },
@@ -173,6 +175,41 @@ let statModel = mongoose.model("StatModel", statSchema);
 
 
 // post to mongodb
+
+// var storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, 'uploads')
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, file.fieldname + '-' + Date.now())
+//   }
+// })
+
+var upload = multer({ dest: __dirname + '/uploads/' })
+var type = upload.single('upl');
+
+app.post('/audio',type,(req,res,next) => {
+  console.log("GOT POST ON /audio:  ");
+  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  console.log(ip); // ip address of the user
+
+  const file = req.file
+  console.log(file.filename)
+  if(!file){
+    const error = new Error("Please Upload File")
+    error.httpStatusCode = 400;
+    return next(error)
+  }
+  res.send(file)
+})
+
+// app.post("/audio",async (req,res) => {
+//   // POST AUDIOFILES HERE
+//   console.log("got /audio post req");
+//   console.log(req.headers);
+//   //res.status(200).send();
+// })
+
 
 app.post("/stats", async (req, res) => {
   ipAdress = req.connection.remoteAddress;

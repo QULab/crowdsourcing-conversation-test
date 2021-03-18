@@ -19,6 +19,12 @@
 </head>
 
 <body>
+
+    <form action="/audio" enctype="multipart/form-data" method="POST"> 
+        <input type="file" name="myFile" />
+        <input type="submit" value="Upload a file"/>
+     </form>
+     
     <audio id="local-audio" controls autoplay muted style="display: none;"></audio>
     <div class="center" style="margin-bottom: 10px;">
         <button type="button" class="btn btn-primary center"
