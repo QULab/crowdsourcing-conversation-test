@@ -157,7 +157,6 @@ const schema = mongoose.Schema;
 let statSchema = new schema({
   url: { type: String },
   config: { type: JSON },
-  audio: {type: JSON},
   roomNumber: { type: Number },
   verificationCode: { type: String, required: true },
   timestamp: { type: Date, default: Date.now },
@@ -259,7 +258,7 @@ app.post("/stats", async (req, res) => {
   ipAdress = req.connection.remoteAddress;
 
   let browserType = req.get("user-agent");
-  console.log("Got body:", req.body);
+  console.log("GOT POST ON /stats:", req.body);
   let body = req.body;
   body.ipAdress = ipAdress;
   body.sessionID = sessionID;
@@ -270,9 +269,12 @@ app.post("/stats", async (req, res) => {
   try {
 
     await stats.save();
-    res.send(status);
-    console.log(status);
+    res.status(200).send({
+      message: 'Success'
+    });
+  
   } catch (err) {
+    console.log("Saving went wrong",err)
     res.status(500).send(err);
   }
   // console.log(req.headers);

@@ -1083,12 +1083,12 @@ function sendData() {
             delay_echo_time_sec: delayEchoTime,
             talkerecho: talkerecho,
             delay_time_TE: delayTimeTE,
-            attenuationTE: attenuationTE,
+            attenuationTE: attenuationTE
         },
         statistics: {
             AverageTotalTripTime: averageLatency,
             rttArr: rttArr,
-            averagePacketLoss: averagePacketLoss,
+            averagePacketLoss: averagePacketLoss
         },
         url: url,
         isCaller: isCaller,
@@ -1100,19 +1100,19 @@ function sendData() {
         receiverAnswers: rArray,
         callerAnswers: cArray,
         feedback: feedback,
-        qualification_answers: qual_answers,
+        qualification_answers: qual_answers
     };
     console.log("data sent", data);
     let localPost = 'http://localhost:3000/stats';
     let serverPost1 = 'https://conversation-test.qulab.org/stats';
     let serverPost2 = 'https://webrtc.pavanct.com/stats';
-
+    let bodydata = JSON.stringify(data);
     fetch(serverPost1, {
         method: 'POST', // or 'PUT'
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: bodydata,
     })
         .then((response) => response.json())
         .then((data) => {
