@@ -208,7 +208,7 @@ var file;
 
 
 app.post('/audio',type,(req,res,next) => {
-  console.log("[POST]    /audio");
+  console.log("[POST]  /audio");
   const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
   //console.log(ip); // ip address of the user
   //console.log(req.headers)
@@ -231,18 +231,18 @@ app.post('/audio',type,(req,res,next) => {
 
       }
     },function(err){
-      console.log(err)
+      if(err)console.log(err)
     })
     audio.save(function(err){
-      console.log(err)
+      if(err)console.log(err)
     })
-    console.log("          --> Saved in DB.");
+    console.log("      --> Saved in DB.");
   }
   res.status(200).send({message:"Success"})
 })
 
 app.get('/audio', async (req,res)=>{
-  console.log("[GET]     /audio")
+  console.log("[GET]   /audio")
   let audio = await audioModel.find().sort({timestamp:'asc'})
   res
     .status(200)
@@ -250,7 +250,7 @@ app.get('/audio', async (req,res)=>{
       data: audio,
       message:"success"
     });
-  console.log("audio retrieved")
+  console.log("      Audio retrieved")
   
 
 });
