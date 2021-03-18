@@ -3,7 +3,7 @@ const JobConfig = require("../models/JobConfig");
 exports.getJobConfig = async function getJobConfig(query, page, limit) {
 
     try {
-        console.log("query", query);
+        console.log("[GET]     /jobConfig");
         let jobConfig = await JobConfig.find(query).sort({ timestamp: 'asc' })
         return jobConfig;
     } catch (e) {
@@ -16,7 +16,7 @@ exports.getJobConfig = async function getJobConfig(query, page, limit) {
 
 exports.createJobConfig = async function createJobConfig(data) {
     try {
-        console.log("query", data);
+        console.log("[POST]    /JobConfig");
         let job = new JobConfig(data);
         job.save();
         // return id;
@@ -28,7 +28,7 @@ exports.createJobConfig = async function createJobConfig(data) {
 
 exports.deleteJobConfig = async function deleteJobConfig(data){
     try{
-        console.log("query", data);
+        console.log("[DELETE]  /jobConfig");
         let alerts
       
             console.log("Deleting One Entry")
@@ -37,7 +37,7 @@ exports.deleteJobConfig = async function deleteJobConfig(data){
                     console.log(err);
                     alerts = err;
                 }
-                console.log("Answer from DB:" ,result);
+                //console.log("Answer from DB:" ,result);
                 alerts =  result;
             })
             return alerts;

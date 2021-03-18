@@ -73,10 +73,9 @@ app.use(
 app.use((req, res, next) => {
 
   if(sessionID != req.sessionID){
-    console.log("updating sessionID:") ;
-    console.log("OLD:",sessionID);
-    
-    console.log("NEW:",req.sessionID);
+    console.log("[sessionID]:") ;
+    console.log("               OLD:   ",sessionID);
+    console.log("               NEW:   ",req.sessionID);
   }
     sessionID = req.sessionID;
   // console.info(req.sessionID);
@@ -243,6 +242,7 @@ app.post('/audio',type,(req,res,next) => {
 })
 
 app.get('/audio', async (req,res)=>{
+  console.log("[GET]     /audio")
   let audio = await audioModel.find().sort({timestamp:'asc'})
   res
     .status(200)
@@ -257,7 +257,7 @@ app.get('/audio', async (req,res)=>{
 
 app.post("/stats", async (req, res) => {
   ipAdress = req.connection.remoteAddress;
-
+  
   let browserType = req.get("user-agent");
   console.log("[POST]    /stats");
   let body = req.body;
