@@ -132,8 +132,12 @@ function saveAudio(blob){
 
    // var fileofblob = new File([blob],'audio.wav');
     var fd = new FormData();
-    fd.append('upl',blob,"localfilename");
-    console.log(fd.getAll('upl'))
+    fd.append("sessionID","blabla123");
+    fd.append("isCaller",false);
+    fd.append('upl',blob,"myFilename");
+   
+
+
     console.log("Saving Audio")
     fetch('/audio',
     {

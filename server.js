@@ -69,8 +69,16 @@ app.use(
   })
 );
 
+
 app.use((req, res, next) => {
-  sessionID = req.sessionID;
+
+  if(sessionID != req.sessionID){
+    console.log("updating sessionID:") ;
+    console.log("OLD:",sessionID);
+    
+    console.log("NEW:",req.sessionID);
+  }
+    sessionID = req.sessionID;
   // console.info(req.sessionID);
   let fileP = req.query.fileName;
   if (fileP != null) {
@@ -172,52 +180,80 @@ let statSchema = new schema({
 
 let statModel = mongoose.model("StatModel", statSchema);
 
+let audioSchema = new schema({
+  name:String,
+  sessionID: String,
+  isCaller: Boolean,
+  audio:
+  {
+    data:Buffer,
+    contentType:String
+  }
+},{ collection: "audio", timestamps: true, strict: false  })
 
+let audioModel = mongoose.model("AudioModel",audioSchema);
 
 // post to mongodb
 
-var storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads')
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.fieldname + '-' + Date.now())
-  }
-})
+// var storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, 'uploads')
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, file.fieldname + '-' + Date.now())
+//   }
+// })
 
 var upload = multer({ dest: __dirname + '/uploads/' })
 var type = upload.single('upl');
+var file;
+
 
 app.post('/audio',type,(req,res,next) => {
   console.log("GOT POST ON /audio:  ");
   const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
   console.log(ip); // ip address of the user
   console.log(req.headers)
-
-
- 
-
-  // req.file.filename = req.file.originalname;
-  // req.file.path = req.file.destination + req.file.originalname
-
-  const file = req.file
-  console.log(file)
-
+  file = req.file
   if(!file){
     const error = new Error("Please Upload File")
     error.httpStatusCode = 400;
     return next(error)
   }
+  else{
+    console.log(file)
+    let audio = new audioModel({
+      name:"",
+      sessionID:"",
+      isCaller: false,
+      audio:
+      {
+        data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
+        contentType:'audio/webm'
+
+      }
+    },function(err){
+      console.log(err)
+    })
+    audio.save(function(err){
+      console.log(err)
+    })
+  }
   res.send(file)
 })
 
-// app.post("/audio",async (req,res) => {
-//   // POST AUDIOFILES HERE
-//   console.log("got /audio post req");
-//   console.log(req.headers);
-//   //res.status(200).send();
-// })
+app.get('/audio', async (req,res)=>{
+  let audio = await audioModel.find().sort({timestamp:'asc'})
+  res
+    .status(200)
+    .json({
+      data: audio,
+      message:"success"
+    });
+  console.log("audio retrieved")
+  
 
+});
 
 app.post("/stats", async (req, res) => {
   ipAdress = req.connection.remoteAddress;

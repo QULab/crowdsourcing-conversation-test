@@ -29,8 +29,7 @@ let localAudio = new Audio;
 localAudio = document.querySelector('audio#local-audio');
 
 var recordRTC
-var blob;
-var blobtext;
+
 let input;
 let whiteNoiseNode;
 let srcTE;
@@ -107,21 +106,23 @@ function recordStart(stream,options){
     recordRTC = RecordRTC(stream,options);
     recordRTC.startRecording();
 }
-function saveBlob(url, fileName) {
-    console.log("About to save BLob")
-    var a = document.createElement("a");
-    document.body.appendChild(a);
-    a.style = "display: none";
-    a.href = url;
-    a.download = fileName;
-    a.click();
+function saveAudio(blob) {
+    var fd = new FormData();
+    fd.append('upl',blob,"localfilename");
+  
+    console.log("Saving Audio")
+    fetch('/audio',
+    {
+        method: 'post',
+        body: fd
+    }); 
+    console.log("All Data Sent")
 };
 function recordStop(){
     recordRTC.stopRecording(function(audioURL) {
-        blob = this.getBlob();
-        blobtext = blob.text();
+        let blob = this.getBlob();
         console.log(audioURL)
-        //saveBlob(audioURL,"test.wav")
+        saveAudio(blob)
      });
     
 
@@ -810,8 +811,8 @@ function onAddStream(event) {
         //RECORDER CODE HIER
         recordStart(dest.stream,{
             type: 'audio',
-            mimeType: 'audio/wav',
-            recorderType: RecordRTC.StereoAudioRecorder
+            mimeType: 'audio/webm',
+            //recorderType: RecordRTC.StereoAudioRecorder
         });
 
 
@@ -1082,10 +1083,7 @@ function sendData() {
             delay_echo_time_sec: delayEchoTime,
             talkerecho: talkerecho,
             delay_time_TE: delayTimeTE,
-            attenuationTE: attenuationTE
-        },
-        audio: {
-            audioblob: blobtext
+            attenuationTE: attenuationTE,
         },
         statistics: {
             AverageTotalTripTime: averageLatency,
@@ -1123,7 +1121,7 @@ function sendData() {
         .catch((error) => {
             console.error('Error:', error);
         });
-    location.href = `../taskcompleted.html?code=${hash}`;
+    //location.href = `../taskcompleted.html?code=${hash}`;
     // document.getElementById("modalButton").onclick = function () {
     //     console.log("task completed");
     //     location.href = `../taskcompleted.html?code=${hash}`;
