@@ -425,4 +425,4 @@ io.on("connection", function (socket) {
 });
 
 server.listen(port);
-console.log(`Server running at http://localhost:${port}`);
+console.log("[SERVER RUNNING]");
