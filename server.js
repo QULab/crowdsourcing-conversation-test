@@ -78,7 +78,7 @@ app.use((req, res, next) => {
   //   console.log("               NEW:   ",req.sessionID);
   // }
     sessionID = req.sessionID;
-    console.log("                                          ID:",sessionID)
+    //console.log("                                          ID:",sessionID)
   // console.info(req.sessionID);
   let fileP = req.query.fileName;
   if (fileP != null) {
@@ -156,6 +156,7 @@ const schema = mongoose.Schema;
 
 let statSchema = new schema({
   url: { type: String },
+  key:String,
   config: { type: JSON },
   roomNumber: { type: Number },
   verificationCode: { type: String, required: true },
@@ -180,9 +181,7 @@ let statSchema = new schema({
 let statModel = mongoose.model("StatModel", statSchema);
 
 let audioSchema = new schema({
-  name:String,
-  sessionID: String,
-  isCaller: Boolean,
+  key:String,
   audio:
   {
     data:Buffer,
@@ -225,9 +224,7 @@ app.post('/audio',type,(req,res,next) => {
       //console.log(file)
     
       let audio = new audioModel({
-        name:sessionID +"_"+ file.originalname,
-        sessionID:sessionID,
-        isCaller: file.originalname,
+        key:file.originalname,
         audio:
         {
           data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
@@ -236,7 +233,7 @@ app.post('/audio',type,(req,res,next) => {
         }
       },(err)=>{if(err)console.log(err)})
       audio.save((err)=>{if(err)console.log(err)})
-      console.log("      Saved in DB, ID:",sessionID);
+      console.log("      Saved in DB, ID:",file.originalname);
     }
     
     fs.unlink(path.join(__dirname + '/uploads/' + req.file.filename),(err)=>{if(err)console.log(err)});
@@ -301,7 +298,7 @@ app.post("/stats", async (req, res) => {
   try {
 
     await stats.save();
-    console.log("      Saved in DB, ID:",body.sessionID);
+    console.log("      Saved in DB, ID:",body.key);
     res.status(200).send({
       message: 'Success'
     });
@@ -405,7 +402,6 @@ let rooms = [];
 
 io.on("connection", function (socket) {
   console.log("[CONNECTION]");
-
   socket.on("create or join", function (room) {
     console.log("    Roomnumber:", room);
 
@@ -416,13 +412,14 @@ io.on("connection", function (socket) {
 
     if (numClients === 0) {
       socket.join(room);
-      socket.emit("created", room);
+      socket.emit("created", room, {message:"test"});
 
       rooms.push(room);
     } else if (numClients === 1) {
+      let key = uuidv4();
       socket.join(room);
-      socket.emit("joined", room);
-      socket.broadcast.to(room).emit("user_joined");
+      socket.emit("joined", room,key);
+      socket.broadcast.to(room).emit("user_joined",key);
     } else {
       socket.emit("full", `Sorry room '${room}' are full.`);
     }

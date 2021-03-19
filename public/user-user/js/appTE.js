@@ -60,7 +60,7 @@ hangupButton.onclick = endCall;
 
 // for call begin
 
-
+let uniqueKey; 
 let roomNumber;
 let localStream = new MediaStream();
 let remoteStream;
@@ -108,8 +108,10 @@ function recordStart(stream,options){
 }
 function saveAudio(blob) {
     var fd = new FormData();
-    let r = 'thomas'+Math.random().toString(36).substring(7);
-    fd.append('upl',blob,isCaller);
+    let ident
+    if(isCaller){ident = uniqueKey + "_"+1}
+    else{ident = uniqueKey +"_"+0}
+    fd.append('upl',blob,ident);
   
     console.log("Saving Audio")
     fetch('/audio',
@@ -408,8 +410,10 @@ socket.on("called", function () {
 
 
 // on creating the room - call initiator 
-socket.on("created", function (room) {
+
+socket.on("created", function (room, data) {
     fetchJobConfig();
+    console.log(data);
     console.log("Local User -- Caller");
     navigator.mediaDevices.getUserMedia(
         streamConstraints).then(
@@ -443,7 +447,9 @@ socket.on("created", function (room) {
 });
 
 // when someone joins - call receiver
-socket.on("joined", function (room) {
+socket.on("joined", function (room,key) {
+    uniqueKey = key;
+    console.log("KEY:",uniqueKey)
     fetchJobConfig();
 
     // $('.started').toast('show');
@@ -475,8 +481,11 @@ socket.on("joined", function (room) {
     // $('.started').toast('show');
 });
 
-socket.on("user_joined", function () {
+socket.on("user_joined", function (key) {
+    uniqueKey=key;
+    console.log("KEY:",uniqueKey)
     $('.started').toast('show');
+    console.log("USER JOINED")
     if (isCaller) {
         callButton.disabled = false;
         console.log("inside user_joined");
@@ -1066,8 +1075,12 @@ function sendData() {
 
     // if (rttArr.length) {
     // post data to backend after hangup
+    let ident
+    if(isCaller){ident = uniqueKey + "_"+1}
+    else{ident = uniqueKey +"_"+0}
     const data = {
         verificationCode: fullhash,
+        key:ident,
         config: {
             study_name: study_name,
             instruction_html: instructionHtml,
