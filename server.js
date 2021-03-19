@@ -233,7 +233,7 @@ app.post('/audio',type,(req,res,next) => {
         }
       },(err)=>{if(err)console.log(err)})
       audio.save((err)=>{if(err)console.log(err)})
-      console.log("      Saved in DB, ID:",file.originalname);
+      console.log("      Saved in DB, Key:",file.originalname);
     }
     
     fs.unlink(path.join(__dirname + '/uploads/' + req.file.filename),(err)=>{if(err)console.log(err)});
@@ -298,7 +298,7 @@ app.post("/stats", async (req, res) => {
   try {
 
     await stats.save();
-    console.log("      Saved in DB, ID:",body.key);
+    console.log("      Saved in DB, Key:",body.key);
     res.status(200).send({
       message: 'Success'
     });

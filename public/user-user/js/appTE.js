@@ -615,47 +615,11 @@ function setLocalAnswer(sessionDescription) {
 }
 // AUDIOFUNKTIONEN
 
-function addTalkerEcho(){
-    srcTE = context.createMediaStreamSource(localStream);
-    delayNodeTE = context.createDelay();
-    gainNodeTE = context.createGain();
-    delayNodeTE.delayTime.value = 0.1;
-    gainNodeTE.gain.value = 0.5;
 
-    srcTE.connect(gainNodeTE);
-    gainNodeTE.connect(delayNodeTE);
-    delayNodeTE.connect(context.destination);
-
-
-}
-
-// function addTalkerEcho(){
-//     let contextTE = new AudioContext(); 
-//     let srcTE = contextTE.createMediaStreamSource(localStream);
-   
-    
-
-//     let delayNodeTE = contextTE.createDelay();
-//     let gainNodeTE = contextTE.createGain();
-
-//     delayNodeTE.delayTime.value = 0.5;
-//     gainNodeTE.gain.value = 1;
-
-//     srcTE.connect(gainNodeTE);
-//     gainNodeTE.connect(delayNodeTE);
-//     delayNodeTE.connect(contextTE.destination);
-// }
 
 
 function onAddStream(event) {
     $('.connected').toast('show');
-    //context.resume();
-    // ECHOCODE HIER
-
-    // localStream -> getusermedia
-    // context ist audiocontext
-
-
     callButton.style.visibility = 'hidden';
     callButtonDiv.style.display = "none";
     instructions.style.display = "none";
@@ -674,7 +638,6 @@ function onAddStream(event) {
     audio3.muted = true;
     let dest = context.createMediaStreamDestination();
 
-    // delayNode.connect(context.destination);
     audio3.onloadedmetadata = () => {
 
         // true causes WebRTC getStats() receive track audioLevel == 0
