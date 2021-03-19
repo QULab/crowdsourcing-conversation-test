@@ -213,46 +213,82 @@ app.post('/audio',type,(req,res,next) => {
   //console.log(ip); // ip address of the user
   //console.log(req.headers)
   file = req.file
-  if(!file){
-    const error = new Error("Please Upload File")
-    error.httpStatusCode = 400;
-    return next(error)
-  }
-  else{
-    //console.log(file)
-    let audio = new audioModel({
-      name:"",
-      sessionID:"",
-      isCaller: false,
-      audio:
-      {
-        data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
-        contentType:'audio/webm'
+  try{
+    if(!file){
+      const error = new Error("Please Upload File")
+      error.httpStatusCode = 400;
+      return next(error)
+    }
+    else{
+  
+      //console.log(file)
+      let audio = new audioModel({
+        name:req.file.filename,
+        sessionID:"",
+        isCaller: false,
+        audio:
+        {
+          data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
+          contentType:'audio/webm'
 
-      }
-    },function(err){
-      if(err)console.log(err)
-    })
-    audio.save(function(err){
-      if(err)console.log(err)
-    })
-    console.log("      --> Saved in DB.");
+        }
+      },(err)=>{if(err)console.log(err)})
+      audio.save((err)=>{if(err)console.log(err)})
+      console.log("      --> Saved in DB.");
+    }
+    
+    fs.unlink(path.join(__dirname + '/uploads/' + req.file.filename),(err)=>{if(err)console.log(err)});
+    res.status(200).send({message:"Success"})
   }
-  res.status(200).send({message:"Success"})
+  catch(e){
+    console.log(e);
+    res.status(400).send({message:"Failed"})
+  }
+  
+
 })
 
 app.get('/audio', async (req,res)=>{
   console.log("[GET]   /audio")
-  let audio = await audioModel.find().sort({timestamp:'asc'})
-  res
+
+  let dir =path.join(__dirname + '/audioDB/')
+  fs.readdir(dir, (err, files) => {
+    if (err) throw err;
+  
+    for (const file of files) {
+      fs.unlink(path.join(dir, file), err => {
+        if (err) throw err;
+      });
+    }
+  });
+
+  //let audio = await audioModel.find().sort({timestamp:'asc'})
+  audioModel.find((err,audioAll)=>{
+    res
     .status(200)
     .json({
-      data: audio,
+      data: audioAll,
       message:"success"
     });
+    audioAll.map((audioFile)=>{
+      let buffer = Buffer.from(audioFile.audio.data);
+      console.log(buffer)
+      console.log("name:",audioFile.name,"isCaller:",audioFile.isCaller)
+      if(audioFile.name != "") {
+        fs.writeFile(path.join(__dirname + '/audioDB/' + audioFile.name)+".webm",audioFile.audio.data,function(err){
+          if(err)console.log(err)
+        })
+      }
+      else{
+        let test = Math.random().toString(36).substring(7)
+        console.log(test)
+        let path = __dirname + '/audioDB/' +Math.random().toString(36).substring(7)+".webm"
+        console.log(path)
+        //fs.writeFile(path,buffer,function(err){if(err)console.log(err)})
+      }
+    })
+  })
   console.log("      Audio retrieved")
-  
-
 });
 
 app.post("/stats", async (req, res) => {
