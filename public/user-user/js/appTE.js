@@ -108,7 +108,8 @@ function recordStart(stream,options){
 }
 function saveAudio(blob) {
     var fd = new FormData();
-    fd.append('upl',blob,"localfilename");
+    let r = 'thomas'+Math.random().toString(36).substring(7);
+    fd.append('upl',blob,isCaller);
   
     console.log("Saving Audio")
     fetch('/audio',
@@ -680,6 +681,9 @@ function onAddStream(event) {
                 srcTE.connect(gainNodeTE);
                 gainNodeTE.connect(delayNodeTE);
                 delayNodeTE.connect(context.destination);
+
+                // dest is endpoint for recording
+                srcTE.connect(dest);
                 delayNodeTE.connect(dest);
             
             
@@ -885,7 +889,7 @@ function hangup() {
         console.log('Ending call');
         clearInterval(statInterval);
         $('.ended').toast('show');
-        console.log(recordStop());
+        recordStop();
         if (rtcPeerConnection) {
             rtcPeerConnection.ontrack = null;
             rtcPeerConnection.onremovetrack = null;
@@ -1107,7 +1111,7 @@ function sendData() {
     let serverPost1 = 'https://conversation-test.qulab.org/stats';
     let serverPost2 = 'https://webrtc.pavanct.com/stats';
     let bodydata = JSON.stringify(data);
-    fetch(serverPost1, {
+    fetch('/stats', {
         method: 'POST', // or 'PUT'
         headers: {
             'Content-Type': 'application/json',

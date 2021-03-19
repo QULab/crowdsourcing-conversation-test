@@ -72,12 +72,13 @@ app.use(
 
 app.use((req, res, next) => {
 
-  if(sessionID != req.sessionID){
-    console.log("[sessionID]:") ;
-    console.log("               OLD:   ",sessionID);
-    console.log("               NEW:   ",req.sessionID);
-  }
+  // if(sessionID != req.sessionID){
+  //   console.log("[sessionID]:") ;
+  //   console.log("               OLD:   ",sessionID);
+  //   console.log("               NEW:   ",req.sessionID);
+  // }
     sessionID = req.sessionID;
+    console.log("                                          ID:",sessionID)
   // console.info(req.sessionID);
   let fileP = req.query.fileName;
   if (fileP != null) {
@@ -222,10 +223,11 @@ app.post('/audio',type,(req,res,next) => {
     else{
   
       //console.log(file)
+    
       let audio = new audioModel({
-        name:req.file.filename,
-        sessionID:"",
-        isCaller: false,
+        name:sessionID +"_"+ file.originalname,
+        sessionID:sessionID,
+        isCaller: file.originalname,
         audio:
         {
           data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
@@ -234,7 +236,7 @@ app.post('/audio',type,(req,res,next) => {
         }
       },(err)=>{if(err)console.log(err)})
       audio.save((err)=>{if(err)console.log(err)})
-      console.log("      --> Saved in DB.");
+      console.log("      Saved in DB, ID:",sessionID);
     }
     
     fs.unlink(path.join(__dirname + '/uploads/' + req.file.filename),(err)=>{if(err)console.log(err)});
@@ -262,6 +264,7 @@ app.get('/audio', async (req,res)=>{
     }
   });
 
+
   //let audio = await audioModel.find().sort({timestamp:'asc'})
   audioModel.find((err,audioAll)=>{
     res
@@ -272,19 +275,11 @@ app.get('/audio', async (req,res)=>{
     });
     audioAll.map((audioFile)=>{
       let buffer = Buffer.from(audioFile.audio.data);
-      console.log(buffer)
-      console.log("name:",audioFile.name,"isCaller:",audioFile.isCaller)
+
       if(audioFile.name != "") {
         fs.writeFile(path.join(__dirname + '/audioDB/' + audioFile.name)+".webm",audioFile.audio.data,function(err){
           if(err)console.log(err)
         })
-      }
-      else{
-        let test = Math.random().toString(36).substring(7)
-        console.log(test)
-        let path = __dirname + '/audioDB/' +Math.random().toString(36).substring(7)+".webm"
-        console.log(path)
-        //fs.writeFile(path,buffer,function(err){if(err)console.log(err)})
       }
     })
   })
@@ -306,7 +301,7 @@ app.post("/stats", async (req, res) => {
   try {
 
     await stats.save();
-    console.log("          --> Saved in DB.")
+    console.log("      Saved in DB, ID:",body.sessionID);
     res.status(200).send({
       message: 'Success'
     });
