@@ -32,6 +32,7 @@ const jobConfigController = require("./controllers/jobConfigController");
 const port = process.env.PORT || 3000;
 let ipAdress;
 let fileName;
+
 // TODO session management
 app.set("view engine", "ejs");
 app.use(cors());
@@ -398,33 +399,91 @@ app.post("/scenarioAnswers", async (req, res) => {
 
 // rooms and socket IO
 
-let rooms = [];
+
+
+
+
+function randomConfig(){
+  let conf = ["testServerTE1","testServerChristian"]
+
+  let min = Math.ceil(0);
+  let max = Math.floor(conf.length-1);
+  let config = conf[Math.floor(Math.random() * (max - min +1)) + min]
+  //console.log("CONFIG:",config)
+  return config
+}
+function setRoom(){
+  let room = 1; 
+  while(io.sockets.adapter.rooms[room]!=undefined){
+    room ++;
+  }
+  console.log(room)
+  return room;
+}
+
+
+
+
+let keysSession;
+function keyDouble(key){
+
+  for (var e in keysDB){
+    console.log(e.key)
+  }
+
+ 
+  return false
+  
+}
+async function setKey(){
+  var newkey = uuidv4()
+  while(keyDouble(newkey) == true ){
+    newkey = uuidv4();
+  }
+  return newkey;
+}
+
+let keysDB;
+audioModel.find().select("key -_id").exec(function(err,val){
+  if(err)console.log(err)
+  else{
+    keysDB = Array.from(val)
+  }
+})
+
+let nextroom = setRoom();
+let nextconfig = randomConfig();
+
 
 io.on("connection", function (socket) {
-  console.log("[CONNECTION]");
-  socket.on("create or join", function (room) {
-    console.log("    Roomnumber:", room);
+  console.log("[CONNECTION]")
+  setKey();
 
-    let myRoom = io.sockets.adapter.rooms[room] || { length: 0 };
+  socket.on("create or join", function () {
+    let myRoom = io.sockets.adapter.rooms[nextroom] || { length: 0 }
     let numClients = myRoom.length;
+    
+    console.log("Room ",nextroom,"has ", numClients+1, " clients");
 
-    console.log("                 has ", numClients, " clients");
-
-    if (numClients === 0) {
-      socket.join(room);
-      socket.emit("created", room, {message:"test"});
-
-      rooms.push(room);
-    } else if (numClients === 1) {
-      let key = uuidv4();
-      socket.join(room);
-      socket.emit("joined", room,key);
-      socket.broadcast.to(room).emit("user_joined",key);
+    if (numClients == 0) {
+      // Dieser Socket ist einziger.
+      // CREATE ROOM
+      socket.join(nextroom);
+      socket.emit("created",nextconfig,nextroom);
+      
+    } else if (numClients == 1) {
+      // Dieser Socket ist der zweite.
+      // JOIN ROOM
+      let key = setKey();
+      socket.join(nextroom);
+      socket.emit("joined", nextconfig,nextroom,key);
+      socket.broadcast.to(nextroom).emit("user_joined",key);
+      nextconfig = randomConfig();
+      nextroom = setRoom();
     } else {
-      socket.emit("full", `Sorry room '${room}' are full.`);
+      console.log("WTF??")
     }
   });
-
   socket.on("caller_ready", function (room) {
     socket.emit("called", room);
     socket.broadcast.to(room).emit("accept_call");
@@ -450,7 +509,69 @@ io.on("connection", function (socket) {
   socket.on("answer", function (event) {
     socket.broadcast.to(event.room).emit("answer", event.sdp);
   });
+  socket.on("disconnect",function(event){
+    console.log("Disconnected");
+  
+  })
 });
+
+// io.on("connection", function (socket) {
+//   console.log("[CONNECTION]");
+//   socket.on("create or join", function (room) {
+//     console.log("    Roomnumber:", room);
+
+//     let myRoom = io.sockets.adapter.rooms[room] || { length: 0 };
+//     let numClients = myRoom.length;
+
+//     console.log("                 has ", numClients, " clients");
+
+//     if (numClients === 0) {
+
+      
+//       socket.join(room);
+//       socket.emit("created", room, {message:"test"});
+//       rooms.push(room);
+//       console.log("numclients New",io.sockets.adapter.rooms[room].length);
+//     } else if (numClients === 1) {
+//       let key = uuidv4();
+//       socket.join(room);
+//       socket.emit("joined", room,key);
+//       socket.broadcast.to(room).emit("user_joined",key);
+//     } else {
+//       socket.emit("full", `Sorry room '${room}' are full.`);
+//     }
+//   });
+
+//   socket.on("caller_ready", function (room) {
+//     socket.emit("called", room);
+//     socket.broadcast.to(room).emit("accept_call");
+//   })
+
+//   socket.on("ready", function (room) {
+//     socket.broadcast.to(room).emit("ready");
+//   });
+
+//   socket.on("hangup", function (room) {
+//     socket.broadcast.to(room).emit("endCall");
+//     socket.emit("endCall", room);
+//   })
+
+//   socket.on("candidate", function (event) {
+//     socket.broadcast.to(event.room).emit("candidate", event);
+//   });
+
+//   socket.on("offer", function (event) {
+//     socket.broadcast.to(event.room).emit("offer", event.sdp);
+//   });
+
+//   socket.on("answer", function (event) {
+//     socket.broadcast.to(event.room).emit("answer", event.sdp);
+//   });
+//   socket.on("disconnect",function(event){
+//     console.log("Disconnected");
+//   })
+// });
 
 server.listen(port);
 console.log("[SERVER RUNNING]");
+

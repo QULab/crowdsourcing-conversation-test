@@ -79,7 +79,7 @@ if (localStorage.hasOwnProperty('consent')) {
     consent = localStorage.getItem('consent');
     console.log("localStorage consent found", consent);
 
-    if (roomNumber != null && type.toString() == "USER2USER") {
+    if (type.toString() == "USER2USER") {
 
         // if (supported) {
         location.href = "../user-user/" + queryString;

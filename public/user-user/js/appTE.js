@@ -208,7 +208,7 @@ let ppl = 0.1;
 let burstRate = 2;
 let audio4 = new Audio();
 let jobConfig;
-let study_name;
+
 let instructionHtml;
 let htmlPartyCaller;
 let htmlPartyReceiver;
@@ -234,7 +234,7 @@ console.log("url", url);
 const queryString = window.location.search;
 console.log("queryString", queryString);
 const urlParams = new URLSearchParams(queryString);
-roomNumber = urlParams.get('roomNumber');
+// roomNumber = urlParams.get('roomNumber');
 // noise = urlParams.get('noise');
 // oscillate = urlParams.get('oscillate');
 // delay = urlParams.get('delay');
@@ -244,7 +244,7 @@ roomNumber = urlParams.get('roomNumber');
 // pl = urlParams.get('pl');
 // ppl = urlParams.get('ppl');
 // burstRate = urlParams.get('burstRate');
-study_name = urlParams.get('study_name');
+//study_name = urlParams.get('study_name');
 
 // myDelayNode
 
@@ -287,7 +287,7 @@ class MyDelayNode extends GainNode {
     }
 }
 
-async function fetchJobConfig() {
+async function fetchJobConfig(study_name) {
     let localUrl = "http://localhost:3000/jobConfig";
     let ownNetworkUrl = "http://192.168.178:3000/jobConfig"
     let serverUrl = "https://conversation-test.qulab.org/jobConfig"
@@ -371,12 +371,9 @@ function setJobConfig(jobConfig) {
     return true;
 }
 
-console.log(roomNumber);
-if (roomNumber != null) {
-    socket.emit("create or join", roomNumber);
+socket.emit("create or join");
     // divConsultingRoom.style = "display: block";
 
-}
 
 function startCall() {
     createAudioContext();
@@ -411,9 +408,10 @@ socket.on("called", function () {
 
 // on creating the room - call initiator 
 
-socket.on("created", function (room, data) {
-    fetchJobConfig();
-    console.log(data);
+socket.on("created", function (study_name,room) {
+    console.log(study_name);
+    fetchJobConfig(study_name);
+    roomNumber = room;
     console.log("Local User -- Caller");
     navigator.mediaDevices.getUserMedia(
         streamConstraints).then(
@@ -447,10 +445,11 @@ socket.on("created", function (room, data) {
 });
 
 // when someone joins - call receiver
-socket.on("joined", function (room,key) {
+socket.on("joined", function (study_name,room,key) {
     uniqueKey = key;
-    console.log("KEY:",uniqueKey)
-    fetchJobConfig();
+    roomNumber=room;
+    console.log(study_name)
+    fetchJobConfig(study_name);
 
     // $('.started').toast('show');
     console.log("Remote User - receiver");
@@ -488,7 +487,6 @@ socket.on("user_joined", function (key) {
     console.log("USER JOINED")
     if (isCaller) {
         callButton.disabled = false;
-        console.log("inside user_joined");
     }
     let audio5 = new Audio;
     audio5.src = "../../assets/notification.mp3";
