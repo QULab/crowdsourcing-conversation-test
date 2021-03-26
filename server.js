@@ -405,12 +405,13 @@ app.post("/scenarioAnswers", async (req, res) => {
 
 function randomConfig(){
   let conf = ["testServerTE1","testServerChristian"];
-  conf = "testServerNoGain"
+  
 
   let min = Math.ceil(0);
   let max = Math.floor(conf.length-1);
   let config = conf[Math.floor(Math.random() * (max - min +1)) + min]
   //console.log("CONFIG:",config)
+  config = "testServerNoGain"
   return config
 }
 function setRoom(){
