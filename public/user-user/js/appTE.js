@@ -447,6 +447,7 @@ socket.on("created", function (study_name,room) {
 // when someone joins - call receiver
 socket.on("joined", function (study_name,room,key) {
     uniqueKey = key;
+    console.log("KEY:",uniqueKey);
     roomNumber=room;
     console.log(study_name)
     fetchJobConfig(study_name);

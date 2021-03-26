@@ -417,39 +417,40 @@ function setRoom(){
   while(io.sockets.adapter.rooms[room]!=undefined){
     room ++;
   }
-  console.log(room)
+  console.log("NEXTROOM:",room)
   return room;
 }
+// let keysSession;
+// let keysDB;
+// audioModel.find().select("key -_id").exec(function(err,val){
+//   if(err)console.log(err)
+//   else{
+//     console.log(typeof(val))
+//     for(e in val){
+//       console.log(e)
+//     }
+//   }
+// })
 
-
-
-
-let keysSession;
-function keyDouble(key){
-
-  for (var e in keysDB){
-    console.log(e.key)
-  }
+// function keyDouble(key){
+//   console.log(keysDB)
+//   for (var e in keysDB){
+//     console.log(e)
+//   }
 
  
-  return false
+//   return false
   
-}
-async function setKey(){
-  var newkey = uuidv4()
-  while(keyDouble(newkey) == true ){
-    newkey = uuidv4();
-  }
-  return newkey;
-}
+// }
+// async function setKey(){
+//   var newkey = uuidv4()
+//   while(keyDouble(newkey) == true ){
+//     newkey = uuidv4();
+//   }
+//   console.log("KEY:",newkey)
+//   return newkey;
+// }
 
-let keysDB;
-audioModel.find().select("key -_id").exec(function(err,val){
-  if(err)console.log(err)
-  else{
-    keysDB = Array.from(val)
-  }
-})
 
 let nextroom = setRoom();
 let nextconfig = randomConfig();
@@ -457,7 +458,6 @@ let nextconfig = randomConfig();
 
 io.on("connection", function (socket) {
   console.log("[CONNECTION]")
-  setKey();
 
   socket.on("create or join", function () {
     let myRoom = io.sockets.adapter.rooms[nextroom] || { length: 0 }
@@ -474,7 +474,7 @@ io.on("connection", function (socket) {
     } else if (numClients == 1) {
       // Dieser Socket ist der zweite.
       // JOIN ROOM
-      let key = setKey();
+      let key = uuidv4();
       socket.join(nextroom);
       socket.emit("joined", nextconfig,nextroom,key);
       socket.broadcast.to(nextroom).emit("user_joined",key);
