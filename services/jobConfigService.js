@@ -3,7 +3,7 @@ const JobConfig = require("../models/JobConfig");
 exports.getJobConfig = async function getJobConfig(query, page, limit) {
 
     try {
-        console.log("[GET]     /jobConfig",query,page,limit);
+        console.log("[GET]     /jobConfig");
         let jobConfig = await JobConfig.find(query).sort({ timestamp: 'asc' })
         return jobConfig;
     } catch (e) {
