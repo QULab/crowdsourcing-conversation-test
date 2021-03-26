@@ -387,7 +387,7 @@ app.get(
   }
 );
 
-router.get("/jobConfig/*", jobConfigController.getJobConfig);
+router.get("/jobConfig", jobConfigController.getJobConfig);
 router.post("/jobConfig", jobConfigController.createJobConfig);
 router.delete("/jobConfig",jobConfigController.deleteJobConfig);
 
