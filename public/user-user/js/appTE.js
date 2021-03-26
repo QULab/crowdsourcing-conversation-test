@@ -86,7 +86,7 @@ let destination
 let destinationNative
 let gainNode 
 let oscillator 
-
+let recTime;
 
 
 
@@ -103,6 +103,7 @@ function createAudioContext() {
 }
 
 function recordStart(stream,options){
+    recTime = Date.now()
     recordRTC = RecordRTC(stream,options);
     recordRTC.startRecording();
 }
@@ -228,6 +229,7 @@ let loadConfig = false;
 let feedback = new Object;
 let dArray = [];
 let qual_answers;
+let study_name;
 
 const url = window.location.href;
 console.log("url", url);
@@ -287,18 +289,26 @@ class MyDelayNode extends GainNode {
     }
 }
 
-async function fetchJobConfig(study_name) {
+async function fetchJobConfig() {
+    //console.log("FETCHING JOB CONFIG",study_name)
     let localUrl = "http://localhost:3000/jobConfig";
     let ownNetworkUrl = "http://192.168.178:3000/jobConfig"
     let serverUrl = "https://conversation-test.qulab.org/jobConfig"
+    // const response = fetch('/jobConfig/'+study_name, {
+    //     method: 'GET', // or 'PUT'
+    //     headers: {
+    //         'Content-Type': 'application/json',
+    //     }
+    // })
     const response = await fetch(serverUrl);
     const data = await response.json();
     console.log({ data });
     data.data.forEach(e => {
-        console.log({ study_name });
-        console.log({ e });
+        //console.log({ study_name });
+        //console.log({ e });
         if (e.study_name === String(study_name)) {
             jobConfig = e;
+            //console.log(e);
         }
         
     });
@@ -408,9 +418,10 @@ socket.on("called", function () {
 
 // on creating the room - call initiator 
 
-socket.on("created", function (study_name,room) {
-    console.log(study_name);
-    fetchJobConfig(study_name);
+socket.on("created", function (config,room) {
+    study_name = config;
+    console.log("STUDY_NAME:",config,"ROOM:",room);
+    fetchJobConfig(config);
     roomNumber = room;
     console.log("Local User -- Caller");
     navigator.mediaDevices.getUserMedia(
@@ -445,12 +456,13 @@ socket.on("created", function (study_name,room) {
 });
 
 // when someone joins - call receiver
-socket.on("joined", function (study_name,room,key) {
+socket.on("joined", function (config,room,key) {
+    study_name = config;
     uniqueKey = key;
     console.log("KEY:",uniqueKey);
     roomNumber=room;
-    console.log(study_name)
-    fetchJobConfig(study_name);
+    console.log(config)
+    fetchJobConfig(config);
 
     // $('.started').toast('show');
     console.log("Remote User - receiver");
@@ -784,6 +796,7 @@ function onAddStream(event) {
 
 
         //RECORDER CODE HIER
+
         recordStart(dest.stream,{
             type: 'audio',
             mimeType: 'audio/webm',
@@ -1062,7 +1075,8 @@ function sendData() {
             delay_echo_time_sec: delayEchoTime,
             talkerecho: talkerecho,
             delay_time_TE: delayTimeTE,
-            attenuationTE: attenuationTE
+            attenuationTE: attenuationTE,
+            recTime:recTime
         },
         statistics: {
             AverageTotalTripTime: averageLatency,

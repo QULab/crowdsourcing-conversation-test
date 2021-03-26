@@ -387,7 +387,7 @@ app.get(
   }
 );
 
-router.get("/jobConfig", jobConfigController.getJobConfig);
+router.get("/jobConfig/*", jobConfigController.getJobConfig);
 router.post("/jobConfig", jobConfigController.createJobConfig);
 router.delete("/jobConfig",jobConfigController.deleteJobConfig);
 
@@ -404,7 +404,7 @@ app.post("/scenarioAnswers", async (req, res) => {
 
 
 function randomConfig(){
-  let conf = ["testServerTE1","testServerChristian"]
+  let conf = ["testServerTE1","testServerChristian"];
 
   let min = Math.ceil(0);
   let max = Math.floor(conf.length-1);
@@ -417,7 +417,7 @@ function setRoom(){
   while(io.sockets.adapter.rooms[room]!=undefined){
     room ++;
   }
-  console.log("NEXTROOM:",room)
+  //console.log("NEXTROOM:",room)
   return room;
 }
 // let keysSession;
