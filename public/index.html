@@ -30,6 +30,9 @@
                             so please allow microphone settings when prompted by the browser.
                             You will be taken to a page where you need to play an audio file
                             listen carefully and replay if required.
+
+                            Please wear a headset, or headphones with an attached microphone. 
+                            This is very important for the test. 
                         </p>
                         <p>
                             Please complete the <b>Qualification test</b> before moving onto the conversation test.
@@ -38,12 +41,20 @@
                     <div class="agree" id="agree">
                         <div class="text-center">
                             <span>
-                                <input type="checkbox" name="terms" onclick="change_button(this,'start')">
+                                <input type="checkbox" name="terms" onclick="startQual1()">
                                 <label for="terms" style="color:#337ab7">
                                     <a href="#" rel="noopener noreferrer">I agree to participate
                                         in the test and agree the to terms presented above</a>
                                 </label>
                             </span>
+                            <div>
+                                <span>
+                                    <input type="checkbox" name="headset" onclick="startQual2()">
+                                    <label for="terms" style="color:#337ab7">
+                                        <a href="#" rel="noopener noreferrer">I ensure that I am wearing a headset, or headphones with an attached microphone.</a>
+                                    </label>
+                                </span>
+                            </div>
                             <span class="start-test">
                                 <button type="button" name="Start Test" id="start" disabled="disabled"
                                     class="btn btn-outline-success">

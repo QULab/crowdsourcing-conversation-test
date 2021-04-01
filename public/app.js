@@ -75,6 +75,8 @@ function change_button(checkbx, button_id) {
     }
 }
 
+// CHANGE BACK
+//localStorage.removeItem('consent')
 if (localStorage.hasOwnProperty('consent')) {
     consent = localStorage.getItem('consent');
     console.log("localStorage consent found", consent);
@@ -82,6 +84,7 @@ if (localStorage.hasOwnProperty('consent')) {
     if (type.toString() == "USER2USER") {
 
         // if (supported) {
+
         location.href = "../user-user/" + queryString;
         // } else {
         //     location.href = "../unsupported.html";
@@ -104,7 +107,7 @@ if (localStorage.hasOwnProperty('consent')) {
 
     // no consent
 
-    if (roomNumber != null && type.toString() == "USER2USER") {
+    if (type.toString() == "USER2USER") {
 
         document.getElementById("start").onclick = function () {
             // if (supported) {
@@ -139,6 +142,18 @@ const constraints = {
     audio: true,
     video: false
 };
+let qual1 = false; 
+let qual2 = false;
+function startQual1(){
+    qual1 = !qual1
+    if(qual1 && qual2)document.getElementById('start').disabled = false
+    else document.getElementById('start').disabled = true
+}
+function startQual2(){
+    qual2 = !qual2
+    if(qual1 && qual2)document.getElementById('start').disabled = false
+    else document.getElementById('start').disabled = true
+}
 
 /*
     functions responsible to headset check
