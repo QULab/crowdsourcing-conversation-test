@@ -312,7 +312,7 @@ async function fetchJobConfig() {
     } 
     else study_nameWorking = study_name;
     console.log("JobConfig:",study_nameWorking);
-    const response = await fetch(localUrl);
+    const response = await fetch(serverUrl);
     const data = await response.json();
     console.log({ data });
     data.data.forEach(e => {
