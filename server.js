@@ -265,19 +265,22 @@ app.get('/audio', async (req,res)=>{
 
   //let audio = await audioModel.find().sort({timestamp:'asc'})
   audioModel.find((err,audioAll)=>{
+    let names; 
     res
     .status(200)
     .json({
-      data: audioAll,
+      data: audioAll.key,
       message:"success"
     });
     audioAll.map((audioFile)=>{
-      let buffer = Buffer.from(audioFile.audio.data);
+
+      //let buffer = Buffer.from(audioFile.audio.data);
 
       if(audioFile.name != "") {
-        fs.writeFile(path.join(__dirname + '/audioDB/' + audioFile.name)+".webm",audioFile.audio.data,function(err){
+        fs.writeFile(path.join(__dirname + '/audioDB/' + audioFile.key)+".webm",audioFile.audio.data,function(err){
           if(err)console.log(err)
         })
+        //console.log("WRITTEN",path.join(__dirname + '/audioDB/' + audioFile.key)+".webm")
       }
     })
   })
@@ -404,16 +407,18 @@ app.post("/scenarioAnswers", async (req, res) => {
 
 
 function randomConfig(){
-  let conf = ["testServerTE1","testServerChristian"];
+  let conf = ["testServerTE1","testServerChristian","testServerNoGain"];
   
 
   let min = Math.ceil(0);
   let max = Math.floor(conf.length-1);
   let config = conf[Math.floor(Math.random() * (max - min +1)) + min]
   //console.log("CONFIG:",config)
-  config = "testServerNoGain"
   return config
 }
+
+
+
 function setRoom(){
   let room = 1; 
   while(io.sockets.adapter.rooms[room]!=undefined){
@@ -512,67 +517,11 @@ io.on("connection", function (socket) {
     socket.broadcast.to(event.room).emit("answer", event.sdp);
   });
   socket.on("disconnect",function(event){
-    console.log("Disconnected");
+   // console.log("Disconnected");
   
   })
 });
 
-// io.on("connection", function (socket) {
-//   console.log("[CONNECTION]");
-//   socket.on("create or join", function (room) {
-//     console.log("    Roomnumber:", room);
-
-//     let myRoom = io.sockets.adapter.rooms[room] || { length: 0 };
-//     let numClients = myRoom.length;
-
-//     console.log("                 has ", numClients, " clients");
-
-//     if (numClients === 0) {
-
-      
-//       socket.join(room);
-//       socket.emit("created", room, {message:"test"});
-//       rooms.push(room);
-//       console.log("numclients New",io.sockets.adapter.rooms[room].length);
-//     } else if (numClients === 1) {
-//       let key = uuidv4();
-//       socket.join(room);
-//       socket.emit("joined", room,key);
-//       socket.broadcast.to(room).emit("user_joined",key);
-//     } else {
-//       socket.emit("full", `Sorry room '${room}' are full.`);
-//     }
-//   });
-
-//   socket.on("caller_ready", function (room) {
-//     socket.emit("called", room);
-//     socket.broadcast.to(room).emit("accept_call");
-//   })
-
-//   socket.on("ready", function (room) {
-//     socket.broadcast.to(room).emit("ready");
-//   });
-
-//   socket.on("hangup", function (room) {
-//     socket.broadcast.to(room).emit("endCall");
-//     socket.emit("endCall", room);
-//   })
-
-//   socket.on("candidate", function (event) {
-//     socket.broadcast.to(event.room).emit("candidate", event);
-//   });
-
-//   socket.on("offer", function (event) {
-//     socket.broadcast.to(event.room).emit("offer", event.sdp);
-//   });
-
-//   socket.on("answer", function (event) {
-//     socket.broadcast.to(event.room).emit("answer", event.sdp);
-//   });
-//   socket.on("disconnect",function(event){
-//     console.log("Disconnected");
-//   })
-// });
 
 server.listen(port);
 console.log("[SERVER RUNNING]");

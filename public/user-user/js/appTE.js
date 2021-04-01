@@ -230,6 +230,7 @@ let feedback = new Object;
 let dArray = [];
 let qual_answers;
 let study_name;
+let study_nameURL
 
 const url = window.location.href;
 console.log("url", url);
@@ -246,7 +247,11 @@ const urlParams = new URLSearchParams(queryString);
 // pl = urlParams.get('pl');
 // ppl = urlParams.get('ppl');
 // burstRate = urlParams.get('burstRate');
-//study_name = urlParams.get('study_name');
+study_nameURL = urlParams.get('study_name');
+
+if(study_nameURL){
+    console.log("STUDY_NAME URL:",study_nameURL);
+}
 
 // myDelayNode
 
@@ -300,18 +305,26 @@ async function fetchJobConfig() {
     //         'Content-Type': 'application/json',
     //     }
     // })
-    const response = await fetch(serverUrl);
+    let study_nameWorking;
+    if(study_nameURL){
+        console.log("CLIENT OVERRIDE STUDY_NAME")
+        study_nameWorking = study_nameURL;
+    } 
+    else study_nameWorking = study_name;
+    console.log("JobConfig:",study_nameWorking);
+    const response = await fetch(localUrl);
     const data = await response.json();
     console.log({ data });
     data.data.forEach(e => {
         //console.log({ study_name });
         //console.log({ e });
-        if (e.study_name === String(study_name)) {
+        if (e.study_name === String(study_nameWorking)) {
             jobConfig = e;
             //console.log(e);
         }
         
     });
+    if(jobConfig == undefined) console.log("CONFIG DOESNT EXIST")
     console.log({ jobConfig });
     loadConfig = setJobConfig(jobConfig);
 
@@ -420,8 +433,8 @@ socket.on("called", function () {
 
 socket.on("created", function (config,room) {
     study_name = config;
-    console.log("STUDY_NAME:",config,"ROOM:",room);
-    fetchJobConfig(config);
+    console.log("SERVER INSTRUCTIONS -- STUDY_NAME:",config,"ROOM:",room);
+    fetchJobConfig();
     roomNumber = room;
     console.log("Local User -- Caller");
     navigator.mediaDevices.getUserMedia(
@@ -462,7 +475,7 @@ socket.on("joined", function (config,room,key) {
     console.log("KEY:",uniqueKey);
     roomNumber=room;
     console.log(config)
-    fetchJobConfig(config);
+    fetchJobConfig();
 
     // $('.started').toast('show');
     console.log("Remote User - receiver");
