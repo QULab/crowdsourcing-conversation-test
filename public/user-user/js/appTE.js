@@ -125,7 +125,7 @@ function saveAudio(blob) {
 function recordStop(){
     recordRTC.stopRecording(function(audioURL) {
         let blob = this.getBlob();
-        console.log(audioURL)
+        //console.log(audioURL)
         saveAudio(blob)
      });
     
@@ -810,7 +810,7 @@ function onAddStream(event) {
 
         //RECORDER CODE HIER
 
-        recordStart(dest.stream,{
+        recordStart(destRec.stream,{
             type: 'audio',
             mimeType: 'audio/webm',
             //recorderType: RecordRTC.StereoAudioRecorder
