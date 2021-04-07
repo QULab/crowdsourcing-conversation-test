@@ -252,15 +252,15 @@ app.get('/audio', async (req,res)=>{
   console.log("[GET]   /audio")
 
   let dir =path.join(__dirname + '/audioDB/')
-  fs.readdir(dir, (err, files) => {
-    if (err) throw err;
+  // fs.readdir(dir, (err, files) => {
+  //   if (err) throw err;
   
-    for (const file of files) {
-      fs.unlink(path.join(dir, file), err => {
-        if (err) throw err;
-      });
-    }
-  });
+  //   for (const file of files) {
+  //     fs.unlink(path.join(dir, file), err => {
+  //       if (err) throw err;
+  //     });
+  //   }
+  // });
 
 
   //let audio = await audioModel.find().sort({timestamp:'asc'})
