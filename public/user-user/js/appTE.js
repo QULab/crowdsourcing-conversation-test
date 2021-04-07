@@ -660,7 +660,7 @@ function onAddStream(event) {
     audio3.srcObject = event.streams[0];
     audio3.autoplay = true;
     audio3.muted = true;
-    let dest = context.createMediaStreamDestination();
+    let destRec = context.createMediaStreamDestination();
 
     audio3.onloadedmetadata = () => {
 
@@ -679,8 +679,8 @@ function onAddStream(event) {
                 delayNodeTE.connect(context.destination);
 
                 // dest is endpoint for recording
-                srcTE.connect(dest);
-                delayNodeTE.connect(dest);
+                srcTE.connect(destRec);
+                delayNodeTE.connect(destRec);
             
             
             
