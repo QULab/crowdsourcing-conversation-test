@@ -485,6 +485,7 @@ io.on("connection", function (socket) {
       socket.join(nextroom);
       socket.emit("joined", nextconfig,nextroom,key);
       socket.broadcast.to(nextroom).emit("user_joined",key);
+      console.log("ROOM "+nextroom+" CREATED, JobConfig:",nextconfig);
       nextconfig = randomConfig();
       nextroom = setRoom();
     } else {

@@ -144,17 +144,22 @@ const constraints = {
 };
 let qual1 = false; 
 let qual2 = false;
+let qual3 = false;
 function startQual1(){
     qual1 = !qual1
-    if(qual1 && qual2)document.getElementById('start').disabled = false
+    if(qual1 && qual2 && qual3)document.getElementById('start').disabled = false
     else document.getElementById('start').disabled = true
 }
 function startQual2(){
     qual2 = !qual2
-    if(qual1 && qual2)document.getElementById('start').disabled = false
+    if(qual1 && qual2 && qual3)document.getElementById('start').disabled = false
     else document.getElementById('start').disabled = true
 }
-
+function startQual3(){
+    qual3 = !qual3
+    if(qual1 && qual2 && qual3)document.getElementById('start').disabled = false
+    else document.getElementById('start').disabled = true
+}
 /*
     functions responsible to headset check
 */

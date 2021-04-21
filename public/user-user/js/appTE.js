@@ -36,6 +36,8 @@ let srcTE;
 let delayNodeTE;
 let gainNodeTE;
 let audio3;
+let recorderClean;
+let recorderEcho;
 scenarioButtonDiv.style.display = "none";
 callerIframe.style.display = "none";
 receiverIframe.style.display = "none";
@@ -88,6 +90,61 @@ let gainNode
 let oscillator 
 let recTime;
 
+// TO MAKE SURE CROWD WORKERS CAN ONLY OPEN ONE TAB, DONT PARTICIPATE TO OFTEN
+// SET crowdRestrictions for preventing crowdworkers from using app at multiple tabs and too often
+let crowdRestrictions = false 
+let maxParticipations = 10
+let participationCounter  = Number(localStorage.getItem("participationCounter"))
+
+function setWithExpiry(key, value, ttl) {
+    // SETS LOCALSTORAGE WITH EXPIRY TIME
+	const now = new Date()
+	const item = {
+		value: value,
+		expiry: now.getTime() + ttl,
+	}
+	localStorage.setItem(key, JSON.stringify(item))
+}
+function getWithExpiry(key) {
+    // GETS LOCAL STORAGE WITH EXPIRY TIME
+	const itemStr = localStorage.getItem(key)
+	if (!itemStr) {
+		return null
+	}
+	const item = JSON.parse(itemStr)
+	const now = new Date()
+	if (now.getTime() > item.expiry) {
+		localStorage.removeItem(key)
+		return null
+	}
+	return item.value
+}
+function renewStorage(){
+    //console.log("RENEW TAB OPEN STORAGE")
+    setWithExpiry("participant","1",15000)
+    window.setTimeout(renewStorage,15000);
+}
+let alreadyTabOpen = false; 
+if(getWithExpiry("participant")==1){
+    console.log("<<Participation Restricted>> Multiple Tabs Opened")
+    if(crowdRestrictions){
+        location.href = "../tabOpened.html";
+        alreadyTabOpen = true;
+    }
+}
+else renewStorage();
+window.onbeforeunload = function(){
+    localStorage.removeItem("participant"); 
+}
+
+if(participationCounter && participationCounter >= maxParticipations){
+    console.log("<<Participation Restricted>> Too many Participations: ",participationCounter)
+    if(crowdRestrictions)location.href = "../unsupported.html";
+}
+
+
+
+
 
 
 
@@ -103,17 +160,20 @@ function createAudioContext() {
 }
 
 function recordStart(stream,options){
+    // STARTS RECORDING AN AUDIO STREAM
     recTime = Date.now()
     recordRTC = RecordRTC(stream,options);
     recordRTC.startRecording();
+    return recordRTC;
 }
-function saveAudio(blob) {
+function saveAudio(blob,description) {
+    // SAVES RECORDED BLOB IN DATABASE
     var fd = new FormData();
-    let ident
-    if(isCaller){ident = uniqueKey + "_"+1}
-    else{ident = uniqueKey +"_"+0}
+    let ident = uniqueKey + "_" 
+    if(isCaller){ident +=1}
+    else{ident +=0}
+    ident += "_"+description;
     fd.append('upl',blob,ident);
-  
     console.log("Saving Audio")
     fetch('/audio',
     {
@@ -122,11 +182,12 @@ function saveAudio(blob) {
     }); 
     console.log("All Data Sent")
 };
-function recordStop(){
-    recordRTC.stopRecording(function(audioURL) {
+function recordStop(recorder,description){
+    // STOPS RECORDING OF AUDIO STREAM, TRIGGERS SAVING THE RECORDING
+    recorder.stopRecording(function(audioURL) {
         let blob = this.getBlob();
         //console.log(audioURL)
-        saveAudio(blob)
+        saveAudio(blob,description)
      });
     
 
@@ -248,7 +309,6 @@ const urlParams = new URLSearchParams(queryString);
 // ppl = urlParams.get('ppl');
 // burstRate = urlParams.get('burstRate');
 study_nameURL = urlParams.get('study_name');
-
 if(study_nameURL){
     console.log("STUDY_NAME URL:",study_nameURL);
 }
@@ -295,6 +355,7 @@ class MyDelayNode extends GainNode {
 }
 
 async function fetchJobConfig() {
+    // FETCHES THE JOBCONFIG FROM THE SERVER 
     //console.log("FETCHING JOB CONFIG",study_name)
     let localUrl = "http://localhost:3000/jobConfig";
     let ownNetworkUrl = "http://192.168.178:3000/jobConfig"
@@ -352,6 +413,7 @@ async function fetchJobConfig() {
 
 
 function setJobConfig(jobConfig) {
+    // SAVES FETCHED JOBCONFIG INFORMATION IN LOCAL VARIABLES
     // fetchJobConfig();
     instructionHtml = jobConfig.instruction_html;
     htmlPartyCaller = jobConfig.html_party_caller;
@@ -394,7 +456,11 @@ function setJobConfig(jobConfig) {
     return true;
 }
 
-socket.emit("create or join");
+
+// COMMUNICATION WITH SERVER AND OR OTHER USERS. 
+// USING SOCKET IO AND EVENTS
+
+if (!alreadyTabOpen)socket.emit("create or join");
     // divConsultingRoom.style = "display: block";
 
 
@@ -470,6 +536,7 @@ socket.on("created", function (config,room) {
 
 // when someone joins - call receiver
 socket.on("joined", function (config,room,key) {
+ 
     study_name = config;
     uniqueKey = key;
     console.log("KEY:",uniqueKey);
@@ -521,6 +588,7 @@ socket.on("user_joined", function (key) {
 
 function endCall() {
     socket.emit("hangup", roomNumber);
+    
 }
 
 socket.on("endCall", function () {
@@ -640,10 +708,21 @@ function setLocalAnswer(sessionDescription) {
 // AUDIOFUNKTIONEN
 
 
-
+function ontrack(event){
+    console.log("ontrack")
+}
 
 function onAddStream(event) {
-    $('.connected').toast('show');
+
+
+    // COUNT PARTICIPATIONS
+    if(participationCounter){
+        localStorage.setItem("participationCounter",(participationCounter+1))
+        console.log("PARTICIPATIONS: ",participationCounter);
+    }
+
+    console.log("onAddStream")
+    $('.connected').toast('show');  
     callButton.style.visibility = 'hidden';
     callButtonDiv.style.display = "none";
     instructions.style.display = "none";
@@ -660,7 +739,8 @@ function onAddStream(event) {
     audio3.srcObject = event.streams[0];
     audio3.autoplay = true;
     audio3.muted = true;
-    let destRec = context.createMediaStreamDestination();
+    let destRecClean = context.createMediaStreamDestination();
+    let destRecEcho = context.createMediaStreamDestination();
 
     audio3.onloadedmetadata = () => {
 
@@ -679,8 +759,8 @@ function onAddStream(event) {
                 delayNodeTE.connect(context.destination);
 
                 // dest is endpoint for recording
-                srcTE.connect(destRec);
-                delayNodeTE.connect(destRec);
+                srcTE.connect(destRecClean);
+                delayNodeTE.connect(destRecEcho);
             
             
             
@@ -810,12 +890,14 @@ function onAddStream(event) {
 
         //RECORDER CODE HIER
 
-        recordStart(destRec.stream,{
+        recorderClean = recordStart(destRecClean.stream,{
             type: 'audio',
             mimeType: 'audio/webm',
-            //recorderType: RecordRTC.StereoAudioRecorder
         });
-
+        recorderEcho = recordStart(destRecEcho.stream,{
+            type: 'audio',
+            mimeType: 'audio/webm',
+        });
 
     };
 
@@ -886,7 +968,8 @@ function hangup() {
         console.log('Ending call');
         clearInterval(statInterval);
         $('.ended').toast('show');
-        recordStop();
+        recordStop(recorderClean,"clean");
+        recordStop(recorderEcho,"echo");
         if (rtcPeerConnection) {
             rtcPeerConnection.ontrack = null;
             rtcPeerConnection.onremovetrack = null;
