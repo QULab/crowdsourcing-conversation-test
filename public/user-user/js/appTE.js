@@ -90,57 +90,7 @@ let gainNode
 let oscillator 
 let recTime;
 
-// TO MAKE SURE CROWD WORKERS CAN ONLY OPEN ONE TAB, DONT PARTICIPATE TO OFTEN
-// SET crowdRestrictions for preventing crowdworkers from using app at multiple tabs and too often
-let crowdRestrictions = false 
-let maxParticipations = 10
-let participationCounter  = Number(localStorage.getItem("participationCounter"))
 
-function setWithExpiry(key, value, ttl) {
-    // SETS LOCALSTORAGE WITH EXPIRY TIME
-	const now = new Date()
-	const item = {
-		value: value,
-		expiry: now.getTime() + ttl,
-	}
-	localStorage.setItem(key, JSON.stringify(item))
-}
-function getWithExpiry(key) {
-    // GETS LOCAL STORAGE WITH EXPIRY TIME
-	const itemStr = localStorage.getItem(key)
-	if (!itemStr) {
-		return null
-	}
-	const item = JSON.parse(itemStr)
-	const now = new Date()
-	if (now.getTime() > item.expiry) {
-		localStorage.removeItem(key)
-		return null
-	}
-	return item.value
-}
-function renewStorage(){
-    //console.log("RENEW TAB OPEN STORAGE")
-    setWithExpiry("participant","1",15000)
-    window.setTimeout(renewStorage,15000);
-}
-let alreadyTabOpen = false; 
-if(getWithExpiry("participant")==1){
-    console.log("<<Participation Restricted>> Multiple Tabs Opened")
-    if(crowdRestrictions){
-        location.href = "../tabOpened.html";
-        alreadyTabOpen = true;
-    }
-}
-else renewStorage();
-window.onbeforeunload = function(){
-    localStorage.removeItem("participant"); 
-}
-
-if(participationCounter && participationCounter >= maxParticipations){
-    console.log("<<Participation Restricted>> Too many Participations: ",participationCounter)
-    if(crowdRestrictions)location.href = "../unsupported.html";
-}
 
 
 
@@ -298,6 +248,7 @@ console.log("url", url);
 const queryString = window.location.search;
 console.log("queryString", queryString);
 const urlParams = new URLSearchParams(queryString);
+
 // roomNumber = urlParams.get('roomNumber');
 // noise = urlParams.get('noise');
 // oscillate = urlParams.get('oscillate');
@@ -313,6 +264,64 @@ if(study_nameURL){
     console.log("STUDY_NAME URL:",study_nameURL);
 }
 
+
+
+
+// TO MAKE SURE CROWD WORKERS CAN ONLY OPEN ONE TAB, DONT PARTICIPATE TO OFTEN
+// SET crowdRestrictions for preventing crowdworkers from using app at multiple tabs and too often
+let crowdRestrictions = false 
+if(urlParams.get('crowd')){ 
+    crowdRestrictions=true;
+    console.log("CROWD RESTRICTIONS ARE BEING APPLIED")
+}
+let maxParticipations = 10
+let participationCounter  = Number(localStorage.getItem("participationCounter"))
+
+function setWithExpiry(key, value, ttl) {
+    // SETS LOCALSTORAGE WITH EXPIRY TIME
+	const now = new Date()
+	const item = {
+		value: value,
+		expiry: now.getTime() + ttl,
+	}
+	localStorage.setItem(key, JSON.stringify(item))
+}
+function getWithExpiry(key) {
+    // GETS LOCAL STORAGE WITH EXPIRY TIME
+	const itemStr = localStorage.getItem(key)
+	if (!itemStr) {
+		return null
+	}
+	const item = JSON.parse(itemStr)
+	const now = new Date()
+	if (now.getTime() > item.expiry) {
+		localStorage.removeItem(key)
+		return null
+	}
+	return item.value
+}
+function renewStorage(){
+    //console.log("RENEW TAB OPEN STORAGE")
+    setWithExpiry("participant","1",15000)
+    window.setTimeout(renewStorage,15000);
+}
+let alreadyTabOpen = false; 
+if(getWithExpiry("participant")==1){
+    console.log("<<Participation Restricted>> Multiple Tabs Opened")
+    if(crowdRestrictions){
+        location.href = "../moreThanOneTabOpened.html";
+        alreadyTabOpen = true;
+    }
+}
+else renewStorage();
+window.onbeforeunload = function(){
+    localStorage.removeItem("participant"); 
+}
+
+if(participationCounter && participationCounter >= maxParticipations){
+    console.log("<<Participation Restricted>> Too many Participations: ",participationCounter)
+    if(crowdRestrictions)location.href = "../tooManyParticipations.html";
+}
 // myDelayNode
 
 // Custom class definition
