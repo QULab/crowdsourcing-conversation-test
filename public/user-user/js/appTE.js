@@ -322,6 +322,7 @@ if(participationCounter && participationCounter >= maxParticipations){
     console.log("<<Participation Restricted>> Too many Participations: ",participationCounter)
     if(crowdRestrictions)location.href = "../tooManyParticipations.html";
 }
+else console.log("Number of Participations: ",participationCounter);
 // myDelayNode
 
 // Custom class definition
