@@ -318,11 +318,11 @@ window.onbeforeunload = function(){
     localStorage.removeItem("participant"); 
 }
 
-if(participationCounter && participationCounter >= maxParticipations){
+if(participationCounter >= maxParticipations){
     console.log("<<Participation Restricted>> Too many Participations: ",participationCounter)
     if(crowdRestrictions)location.href = "../tooManyParticipations.html";
 }
-else console.log("Number of Participations: ",participationCounter);
+else console.log("Prior Participations",participationCounter);
 // myDelayNode
 
 // Custom class definition
@@ -726,10 +726,9 @@ function onAddStream(event) {
 
 
     // COUNT PARTICIPATIONS
-    if(participationCounter){
-        localStorage.setItem("participationCounter",(participationCounter+1))
-        console.log("PARTICIPATIONS: ",participationCounter);
-    }
+    
+    localStorage.setItem("participationCounter",(participationCounter+1));
+    console.log("PARTICIPATIONS NOW: ",localStorage.getItem("participationCounter"));
 
     console.log("onAddStream")
     $('.connected').toast('show');  
