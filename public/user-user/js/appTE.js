@@ -269,11 +269,13 @@ if(study_nameURL){
 
 // TO MAKE SURE CROWD WORKERS CAN ONLY OPEN ONE TAB, DONT PARTICIPATE TO OFTEN
 // SET crowdRestrictions for preventing crowdworkers from using app at multiple tabs and too often
-let crowdRestrictions = false 
+let crowdRestrictions = true 
 if(urlParams.get('crowd')){ 
-    crowdRestrictions=true;
-    console.log("CROWD RESTRICTIONS ARE BEING APPLIED")
+    crowdRestrictions=false;
+    console.log("Crowd Restrictions BYPASSED")
+    
 }
+else{console.log("Crowd Restrictions APPLIED")}
 let maxParticipations = 10
 let participationCounter  = Number(localStorage.getItem("participationCounter"))
 
